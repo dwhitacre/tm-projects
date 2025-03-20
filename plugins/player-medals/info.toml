@@ -1,0 +1,10 @@
+[meta]
+name = "Player Medals"
+author = "DanOnTheMoon"
+category = "Race"
+version = "1.2.1"
+siteid = 610
+
+[script]
+dependencies = ["NadeoServices"]
+optional_dependencies = ["mapinfo"]

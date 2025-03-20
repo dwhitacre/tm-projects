@@ -1,0 +1,9 @@
+[meta]
+name = "HD's Bounty"
+author = "DanOnTheMoon"
+category = "Race"
+version = "2.1.2"
+siteid = 450
+
+[script]
+dependencies = ["NadeoServices"]
