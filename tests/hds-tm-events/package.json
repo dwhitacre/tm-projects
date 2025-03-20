@@ -1,0 +1,17 @@
+{
+  "name": "e2e",
+  "version": "1.0.0",
+  "author": "Dan Whitacre <dan@whitacre.dev>",
+  "license": "MIT",
+  "private": true,
+  "dependencies": {
+    "@bahmutov/cy-api": "^2.2.6",
+    "@faker-js/faker": "^8.4.1",
+    "cypress": "^13",
+    "pg-promise": "^11.8.0"
+  },
+  "scripts": {
+    "test": "yarn cypress open --browser firefox --e2e"
+  },
+  "packageManager": "yarn@1.22.19+sha1.4ba7fc5c6e704fce2066ecbfb0b0d8976fe62447"
+}
