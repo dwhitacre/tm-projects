@@ -1,0 +1,35 @@
+name: tm-projects
+
+services:
+  tm-medals-api:
+    build:
+      context: apis/tm-medals
+    image: danonthemoon/tm-medals-api:latest
+    restart: unless-stopped
+    environment:
+      DATABASE_CONNSTR: postgres://admin:Passw0rd!@dbs:5432/tmmedals?pool_max_conns=10
+      HOST: 0.0.0.0
+    ports:
+      - 8081:8081
+    networks:
+      - server-network
+    depends_on:
+      - dbs
+  dbs:
+    image: postgres:16
+    restart: unless-stopped
+    shm_size: 128mb
+    environment:
+      POSTGRES_PASSWORD: Passw0rd!
+      POSTGRES_USER: doadmin
+      POSTGRES_DB: defaultdb
+    networks:
+      - server-network
+    ports:
+      - 5432:5432
+    volumes:
+      - ./dbs/init-user-db.sh:/docker-entrypoint-initdb.d/init-user-db.sh
+
+networks:
+  server-network:
+    driver: bridge
