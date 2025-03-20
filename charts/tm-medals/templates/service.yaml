@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "tm-medals.fullname" . }}
+  labels:
+    {{- include "tm-medals.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - port: {{ .Values.api.service.port }}
+      targetPort: api-http
+      protocol: TCP
+      name: api-http
+  selector:
+    {{- include "tm-medals.selectorLabels" . | nindent 4 }}

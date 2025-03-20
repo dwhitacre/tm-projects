@@ -1,0 +1,79 @@
+replicaCount: 2
+maxUnavailable: 1
+
+app:
+  image:
+    repository: hdstmevents/app
+    pullPolicy: Always
+    tag: latest
+  resources:
+    limits:
+      cpu: 250m
+      memory: 256Mi
+    requests:
+      cpu: 100m
+      memory: 128Mi
+  service:
+    port: 80
+  securityContext: {}
+
+api:
+  image:
+    repository: hdstmevents/api
+    pullPolicy: Always
+    tag: latest
+  resources:
+    limits:
+      cpu: 250m
+      memory: 256Mi
+    requests:
+      cpu: 100m
+      memory: 128Mi
+  service:
+    port: 8081
+  securityContext: {}
+
+tmioUrl: https://trackmania.io
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  create: true
+  annotations: {}
+  name: ""
+
+podAnnotations: {}
+podSecurityContext: {}
+
+service:
+  type: ClusterIP
+
+ingress:
+  enabled: true
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    nginx.ingress.kubernetes.io/from-to-www-redirect: "true"
+  hosts:
+    - host: hdweeklyleague.com
+    - host: www.hdweeklyleague.com
+    - host: liguehebdomadairehd.com
+    - host: www.liguehebdomadairehd.com
+  tls:
+    - hosts:
+        - hdweeklyleague.com
+        - www.hdweeklyleague.com
+        - join.hdweeklyleague.com
+        - liguehebdomadairehd.com
+        - www.liguehebdomadairehd.com
+        - join.liguehebdomadairehd.com
+      secretName: hdweeklyleague-tls
+  directs:
+    - host: join.hdweeklyleague.com
+    - host: join.liguehebdomadairehd.com
+
+nodeSelector: {}
+tolerations: []
+affinity: {}

@@ -1,0 +1,75 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "tm-medals.fullname" . }}
+  labels:
+    {{- include "tm-medals.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  strategy:
+   type: RollingUpdate
+   rollingUpdate:
+     maxUnavailable: {{ .Values.maxUnavailable }}
+  selector:
+    matchLabels:
+      {{- include "tm-medals.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      annotations:
+        rollme: {{ randAlphaNum 5 | quote }}
+    {{- with .Values.podAnnotations }}
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+      labels:
+        {{- include "tm-medals.selectorLabels" . | nindent 8 }}
+    spec:
+      serviceAccountName: {{ include "tm-medals.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: api
+          securityContext:
+            {{- toYaml .Values.api.securityContext | nindent 12 }}
+          image: "{{ .Values.api.image.repository }}:{{ .Values.api.image.tag }}"
+          imagePullPolicy: {{ .Values.api.image.pullPolicy }}
+          env:
+            - name: DATABASE_CONNSTR
+              valueFrom:
+                secretKeyRef:
+                  name: tm-medals-api
+                  key: DATABASE_CONNSTR
+            - name: DATABASE_SSL
+              value: "true"
+            - name: ADMIN_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: tm-medals-api
+                  key: ADMIN_KEY
+            - name: HOST
+              value: "0.0.0.0"
+          ports:
+            - name: api-http
+              containerPort: 8081
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /ready
+              port: api-http
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: api-http
+          resources:
+            {{- toYaml .Values.api.resources | nindent 12 }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
