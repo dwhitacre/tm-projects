@@ -1,0 +1,3 @@
+*.conf
+*.crt
+!tern.conf
