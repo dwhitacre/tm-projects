@@ -1,0 +1,511 @@
+{
+  "uuid": "49e0f346-6f58-4c1c-818b-fddcbd78e9ae",
+  "lastMigration": 33,
+  "name": "TM.IO Sim",
+  "endpointPrefix": "",
+  "latency": 0,
+  "port": 8100,
+  "hostname": "",
+  "folders": [],
+  "routes": [
+    {
+      "uuid": "83e8197c-c3ca-4910-b0d8-413e6fa761ed",
+      "type": "http",
+      "documentation": "",
+      "method": "get",
+      "endpoint": "api/player/:accountId",
+      "responses": [
+        {
+          "uuid": "27749883-0e0b-4b3c-9204-a5c9da80d566",
+          "body": "{\"error\":\"account not found\"}",
+          "latency": 0,
+          "statusCode": 500,
+          "label": "Player not found",
+          "headers": [],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [
+            {
+              "target": "params",
+              "modifier": "accountId",
+              "value": "404",
+              "invert": false,
+              "operator": "equals"
+            }
+          ],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": false,
+          "crudKey": "id",
+          "callbacks": []
+        },
+        {
+          "uuid": "f3ce06e1-fee9-42e9-852e-34dc8f7773b9",
+          "body": "{\n  \"accountid\": \"{{ urlParam 'accountId' }}\",\n  \"displayname\": \"{{ faker 'internet.userName' }}\",\n  \"trophies\": {\n    \"zone\": {\n      \"flag\": \"{{ faker 'location.countryCode' 'alpha-3' }}\",\n      \"parent\": {\n        \"flag\": \"nothing\",\n        \"parent\": {\n          \"flag\": \"nothing\",\n          \"parent\": {\n            \"flag\": \"nothing\"\n          }\n        }\n      }\n    }\n  }\n}",
+          "latency": 0,
+          "statusCode": 200,
+          "label": "Player found top level flag",
+          "headers": [],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": true,
+          "crudKey": "id",
+          "callbacks": []
+        },
+        {
+          "uuid": "645ec725-5b17-44a9-89d4-9ad64810adc9",
+          "body": "{\n  \"accountid\": \"{{ urlParam 'accountId' }}\",\n  \"displayname\": \"{{ faker 'internet.userName' }}\",\n  \"trophies\": {\n    \"zone\": {\n      \"flag\": \"nothing\",\n      \"parent\": {\n        \"flag\": \"{{ faker 'location.countryCode' 'alpha-3' }}\",\n        \"parent\": {\n          \"flag\": \"nothing\",\n          \"parent\": {\n            \"flag\": \"nothing\"\n          }\n        }\n      }\n    }\n  }\n}",
+          "latency": 0,
+          "statusCode": 200,
+          "label": "Player found second level flag",
+          "headers": [],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [
+            {
+              "target": "params",
+              "modifier": "accountId",
+              "value": "^2001.*",
+              "invert": false,
+              "operator": "regex"
+            }
+          ],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": false,
+          "crudKey": "id",
+          "callbacks": []
+        },
+        {
+          "uuid": "3976b5cc-fc64-4e35-bbea-2990096d1b2b",
+          "body": "{\n  \"accountid\": \"{{ urlParam 'accountId' }}\",\n  \"displayname\": \"{{ faker 'internet.userName' }}\",\n  \"trophies\": {\n    \"zone\": {\n      \"flag\": \"nothing\",\n      \"parent\": {\n        \"flag\": \"nothing\",\n        \"parent\": {\n          \"flag\": \"{{ faker 'location.countryCode' 'alpha-3' }}\",\n          \"parent\": {\n            \"flag\": \"nothing\"\n          }\n        }\n      }\n    }\n  }\n}",
+          "latency": 0,
+          "statusCode": 200,
+          "label": "Player found third level flag",
+          "headers": [],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [
+            {
+              "target": "params",
+              "modifier": "accountId",
+              "value": "^2002.*",
+              "invert": false,
+              "operator": "regex"
+            }
+          ],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": false,
+          "crudKey": "id",
+          "callbacks": []
+        },
+        {
+          "uuid": "a09a2fa7-e04d-4314-bbb4-748818d5a0c2",
+          "body": "{\n  \"accountid\": \"{{ urlParam 'accountId' }}\",\n  \"displayname\": \"{{ faker 'internet.userName' }}\",\n  \"trophies\": {\n    \"zone\": {\n      \"flag\": \"nothing\",\n      \"parent\": {\n        \"flag\": \"nothing\",\n        \"parent\": {\n          \"flag\": \"nothing\",\n          \"parent\": {\n            \"flag\": \"{{ faker 'location.countryCode' 'alpha-3' }}\"\n          }\n        }\n      }\n    }\n  }\n}",
+          "latency": 0,
+          "statusCode": 200,
+          "label": "Player found fourth level flag",
+          "headers": [],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [
+            {
+              "target": "params",
+              "modifier": "accountId",
+              "value": "^2003.*",
+              "invert": false,
+              "operator": "regex"
+            }
+          ],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": false,
+          "crudKey": "id",
+          "callbacks": []
+        },
+        {
+          "uuid": "f412120b-e22c-4459-af18-86a32ac9f14e",
+          "body": "{\n  \"accountid\": \"{{ urlParam 'accountId' }}\",\n  \"displayname\": \"{{ faker 'internet.userName' }}\",\n  \"trophies\": {\n    \"zone\": {\n      \"flag\": \"nothing\",\n      \"parent\": {\n        \"flag\": \"nothing\",\n        \"parent\": {\n          \"flag\": \"nothing\",\n          \"parent\": {\n            \"flag\": \"nothing\"\n          }\n        }\n      }\n    }\n  }\n}",
+          "latency": 0,
+          "statusCode": 200,
+          "label": "Player found no flags",
+          "headers": [],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [
+            {
+              "target": "params",
+              "modifier": "accountId",
+              "value": "2004",
+              "invert": false,
+              "operator": "equals"
+            }
+          ],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": false,
+          "crudKey": "id",
+          "callbacks": []
+        },
+        {
+          "uuid": "76f96da6-38aa-446b-a22e-014c5cbb7f82",
+          "body": "{\n  \"displayname\": \"{{ faker 'internet.userName' }}\",\n  \"trophies\": {\n    \"zone\": {\n      \"flag\": \"{{ faker 'location.countryCode' 'alpha-3' }}\",\n      \"parent\": {\n        \"flag\": \"nothing\",\n        \"parent\": {\n          \"flag\": \"nothing\",\n          \"parent\": {\n            \"flag\": \"nothing\"\n          }\n        }\n      }\n    }\n  }\n}",
+          "latency": 0,
+          "statusCode": 200,
+          "label": "Player found no accountid",
+          "headers": [],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [
+            {
+              "target": "params",
+              "modifier": "accountId",
+              "value": "4000",
+              "invert": false,
+              "operator": "equals"
+            }
+          ],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": false,
+          "crudKey": "id",
+          "callbacks": []
+        },
+        {
+          "uuid": "f5c3227f-703b-4141-9753-4c06c007d2d3",
+          "body": "{\n  \"accountid\": \"{{ urlParam 'accountId' }}\",\n  \"trophies\": {\n    \"zone\": {\n      \"flag\": \"{{ faker 'location.countryCode' 'alpha-3' }}\",\n      \"parent\": {\n        \"flag\": \"nothing\",\n        \"parent\": {\n          \"flag\": \"nothing\",\n          \"parent\": {\n            \"flag\": \"nothing\"\n          }\n        }\n      }\n    }\n  }\n}",
+          "latency": 0,
+          "statusCode": 200,
+          "label": "Player found no displayname",
+          "headers": [],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [
+            {
+              "target": "params",
+              "modifier": "accountId",
+              "value": "4001",
+              "invert": false,
+              "operator": "equals"
+            }
+          ],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": false,
+          "crudKey": "id",
+          "callbacks": []
+        }
+      ],
+      "responseMode": null,
+      "streamingMode": null,
+      "streamingInterval": 0
+    },
+    {
+      "uuid": "82027271-1261-47a2-b601-0aacde61b623",
+      "type": "http",
+      "documentation": "",
+      "method": "get",
+      "endpoint": "api/map/:mapUid",
+      "responses": [
+        {
+          "uuid": "38031f15-439c-4d18-887d-0202a0f760a3",
+          "body": "{\n  \"author\": \"{{ faker 'string.uuid' }}\",\n  \"name\": \"{{ faker 'lorem.words' }}\",\n  \"mapType\": \"TrackMania\\\\TM_Race\",\n  \"mapStyle\": \"\",\n  \"authorScore\": {{ faker 'number.int' min=10000 max=60000 }},\n  \"goldScore\": {{ faker 'number.int' min=60000 max=70000 }},\n  \"silverScore\": {{ faker 'number.int' min=70000 max=80000 }},\n  \"bronzeScore\": {{ faker 'number.int' min=80000 max=90000 }},\n  \"collectionName\": \"Stadium\",\n  \"filename\": \"{{ faker 'lorem.words' }}.Gbx\",\n  \"isPlayable\": true,\n  \"mapId\": \"{{ faker 'string.uuid' }}\",\n  \"mapUid\": \"{{ urlParam 'mapUid' }}\",\n  \"submitter\": \"{{ faker 'string.uuid' }}\",\n  \"timestamp\": \"2023-03-19T20:35:47+00:00\",\n  \"fileUrl\": \"https://core.trackmania.nadeo.live/storageObjects/2919f5e1-adca-472f-9dad-13ec267a11e6\",\n  \"thumbnailUrl\": \"https://core.trackmania.nadeo.live/storageObjects/5f321ab4-0dd8-46fb-b14f-f9d8772f21fd.jpg\",\n  \"authorplayer\": {\n    \"name\": \"{{ faker 'internet.userName' }}\",\n    \"tag\": \"\",\n    \"id\": \"{{ faker 'string.uuid' }}\",\n    \"zone\": {},\n    \"meta\": {}\n  },\n  \"submitterplayer\": {\n    \"name\": \"{{ faker 'internet.userName' }}\",\n    \"tag\": \"\",\n    \"id\": \"{{ faker 'string.uuid' }}\",\n    \"zone\": {},\n    \"meta\": {}\n  },\n  \"exchangeid\": {{ faker 'number.int' min=5000 max=200000 }}\n}",
+          "latency": 0,
+          "statusCode": 200,
+          "label": "Map found",
+          "headers": [],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": true,
+          "crudKey": "id",
+          "callbacks": []
+        },
+        {
+          "uuid": "1c92fca9-678c-4975-81c6-575f24918fa1",
+          "body": "{\n  \"author\": \"{{ faker 'string.uuid' }}\",\n  \"mapType\": \"TrackMania\\\\TM_Race\",\n  \"mapStyle\": \"\",\n  \"authorScore\": {{ faker 'number.int' min=10000 max=60000 }},\n  \"goldScore\": {{ faker 'number.int' min=60000 max=70000 }},\n  \"silverScore\": {{ faker 'number.int' min=70000 max=80000 }},\n  \"bronzeScore\": {{ faker 'number.int' min=80000 max=90000 }},\n  \"collectionName\": \"Stadium\",\n  \"filename\": \"{{ faker 'lorem.words' }}.Gbx\",\n  \"isPlayable\": true,\n  \"mapId\": \"{{ faker 'string.uuid' }}\",\n  \"mapUid\": \"{{ urlParam 'mapUid' }}\",\n  \"submitter\": \"{{ faker 'string.uuid' }}\",\n  \"timestamp\": \"2023-03-19T20:35:47+00:00\",\n  \"fileUrl\": \"https://core.trackmania.nadeo.live/storageObjects/2919f5e1-adca-472f-9dad-13ec267a11e6\",\n  \"thumbnailUrl\": \"https://core.trackmania.nadeo.live/storageObjects/5f321ab4-0dd8-46fb-b14f-f9d8772f21fd.jpg\",\n  \"authorplayer\": {\n    \"name\": \"{{ faker 'internet.userName' }}\",\n    \"tag\": \"\",\n    \"id\": \"{{ faker 'string.uuid' }}\",\n    \"zone\": {},\n    \"meta\": {}\n  },\n  \"submitterplayer\": {\n    \"name\": \"{{ faker 'internet.userName' }}\",\n    \"tag\": \"\",\n    \"id\": \"{{ faker 'string.uuid' }}\",\n    \"zone\": {},\n    \"meta\": {}\n  },\n  \"exchangeid\": {{ faker 'number.int' min=5000 max=200000 }}\n}",
+          "latency": 0,
+          "statusCode": 200,
+          "label": "Map found no name",
+          "headers": [],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [
+            {
+              "target": "params",
+              "modifier": "mapUid",
+              "value": "4001",
+              "invert": false,
+              "operator": "equals"
+            }
+          ],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": false,
+          "crudKey": "id",
+          "callbacks": []
+        },
+        {
+          "uuid": "75e0c3d5-6b22-4d3f-abdf-eea57a741936",
+          "body": "{\n  \"author\": \"{{ faker 'string.uuid' }}\",\n  \"name\": \"{{ faker 'lorem.words' }}\",\n  \"mapType\": \"TrackMania\\\\TM_Race\",\n  \"mapStyle\": \"\",\n  \"authorScore\": {{ faker 'number.int' min=10000 max=60000 }},\n  \"goldScore\": {{ faker 'number.int' min=60000 max=70000 }},\n  \"silverScore\": {{ faker 'number.int' min=70000 max=80000 }},\n  \"bronzeScore\": {{ faker 'number.int' min=80000 max=90000 }},\n  \"collectionName\": \"Stadium\",\n  \"filename\": \"{{ faker 'lorem.words' }}.Gbx\",\n  \"isPlayable\": true,\n  \"mapId\": \"{{ faker 'string.uuid' }}\",\n  \"submitter\": \"{{ faker 'string.uuid' }}\",\n  \"timestamp\": \"2023-03-19T20:35:47+00:00\",\n  \"fileUrl\": \"https://core.trackmania.nadeo.live/storageObjects/2919f5e1-adca-472f-9dad-13ec267a11e6\",\n  \"thumbnailUrl\": \"https://core.trackmania.nadeo.live/storageObjects/5f321ab4-0dd8-46fb-b14f-f9d8772f21fd.jpg\",\n  \"authorplayer\": {\n    \"name\": \"{{ faker 'internet.userName' }}\",\n    \"tag\": \"\",\n    \"id\": \"{{ faker 'string.uuid' }}\",\n    \"zone\": {},\n    \"meta\": {}\n  },\n  \"submitterplayer\": {\n    \"name\": \"{{ faker 'internet.userName' }}\",\n    \"tag\": \"\",\n    \"id\": \"{{ faker 'string.uuid' }}\",\n    \"zone\": {},\n    \"meta\": {}\n  },\n  \"exchangeid\": {{ faker 'number.int' min=5000 max=200000 }}\n}",
+          "latency": 0,
+          "statusCode": 200,
+          "label": "Map found no mapUid",
+          "headers": [],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [
+            {
+              "target": "params",
+              "modifier": "mapUid",
+              "value": "4000",
+              "invert": false,
+              "operator": "equals"
+            }
+          ],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": false,
+          "crudKey": "id",
+          "callbacks": []
+        },
+        {
+          "uuid": "a688e308-bf8b-4e68-8370-34825ee6da39",
+          "body": "{\"error\":\"map does not exist on API. (If you're trying to get your map visible on Trackmania.io, upload your map in-game via the Upload button in the map browser, via Map Review, a Club Campaign, or a Club Room.)\"}",
+          "latency": 0,
+          "statusCode": 500,
+          "label": "Map not found",
+          "headers": [],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [
+            {
+              "target": "params",
+              "modifier": "mapUid",
+              "value": "404",
+              "invert": false,
+              "operator": "equals"
+            }
+          ],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": false,
+          "crudKey": "id",
+          "callbacks": []
+        }
+      ],
+      "responseMode": null,
+      "streamingMode": null,
+      "streamingInterval": 0
+    },
+    {
+      "uuid": "a2e6794e-c6ef-419b-8abe-fa8053203f1e",
+      "type": "http",
+      "documentation": "",
+      "method": "get",
+      "endpoint": "api/campaign/:clubId/:campaignId",
+      "responses": [
+        {
+          "uuid": "e721b1d0-9a6b-49b7-9658-815c6203791b",
+          "body": "{\n  \"id\": 50483,\n  \"name\": \"HD's Weekly\",\n  \"media\": \"https://trackmania-prod-media-s3.cdn.ubi.com/media/image/live-api/77a3a8e8-3862-4b8f-a711-bf69785050a1/png/large.png?timestamp=1715985318.png\",\n  \"creationtime\": 1692996497,\n  \"publishtime\": 1692996497,\n  \"clubid\": 50092,\n  \"clubname\": \"Kentucky Trackmania\",\n  \"leaderboarduid\": \"NLS-axnEWpgj1uyPICKMgtHQdGMQoksAFmv2RDN\",\n  \"playlist\": [\n    {\n      \"author\": \"3c7699e6-3e08-406a-90fa-9affe0d46a8c\",\n      \"name\": \"$9ffDappled $zft BsnipezTM\",\n      \"mapType\": \"TrackMania\\\\TM_Race\",\n      \"mapStyle\": \"\",\n      \"authorScore\": 46018,\n      \"goldScore\": 49000,\n      \"silverScore\": 56000,\n      \"bronzeScore\": 70000,\n      \"collectionName\": \"Stadium\",\n      \"filename\": \"Dappled ft BsnipezTM.Map.Gbx\",\n      \"isPlayable\": true,\n      \"mapId\": \"7f3dff59-37f7-424a-be34-688ca56949b5\",\n      \"mapUid\": \"Q1chfMsE3ahdUN8B5V1FmP8hg50\",\n      \"submitter\": \"6cfaba87-bde8-4b4c-909b-c92186a9e9e9\",\n      \"timestamp\": \"2024-06-21T01:32:29+00:00\",\n      \"fileUrl\": \"https://core.trackmania.nadeo.live/maps/7f3dff59-37f7-424a-be34-688ca56949b5/file\",\n      \"thumbnailUrl\": \"https://core.trackmania.nadeo.live/maps/7f3dff59-37f7-424a-be34-688ca56949b5/thumbnail.jpg\",\n      \"authorplayer\": {\n        \"name\": \"WeeRelix\",\n        \"tag\": \"$T$C9FWE$FFFWO\",\n        \"id\": \"3c7699e6-3e08-406a-90fa-9affe0d46a8c\",\n        \"zone\": {\n          \"id\": \"3022b270-7e13-11e8-8060-e284abfd2bc4\",\n          \"name\": \"Colorado\",\n          \"flag\": \"Colorado\",\n          \"parent\": {\n            \"id\": \"3022ab53-7e13-11e8-8060-e284abfd2bc4\",\n            \"name\": \"United States\",\n            \"flag\": \"USA\",\n            \"parent\": {\n              \"id\": \"301e2274-7e13-11e8-8060-e284abfd2bc4\",\n              \"name\": \"North America\",\n              \"flag\": \"namerica\",\n              \"parent\": {\n                \"id\": \"301e1b69-7e13-11e8-8060-e284abfd2bc4\",\n                \"name\": \"World\",\n                \"flag\": \"WOR\"\n              }\n            }\n          }\n        },\n        \"meta\": {}\n      },\n      \"submitterplayer\": {\n        \"name\": \"FyredUp\",\n        \"tag\": \"$C03Ø$FFFU$400T\",\n        \"id\": \"6cfaba87-bde8-4b4c-909b-c92186a9e9e9\",\n        \"zone\": {\n          \"id\": \"3022ed9f-7e13-11e8-8060-e284abfd2bc4\",\n          \"name\": \"Texas\",\n          \"flag\": \"Texas\",\n          \"parent\": {\n            \"id\": \"3022ab53-7e13-11e8-8060-e284abfd2bc4\",\n            \"name\": \"United States\",\n            \"flag\": \"USA\",\n            \"parent\": {\n              \"id\": \"301e2274-7e13-11e8-8060-e284abfd2bc4\",\n              \"name\": \"North America\",\n              \"flag\": \"namerica\",\n              \"parent\": {\n                \"id\": \"301e1b69-7e13-11e8-8060-e284abfd2bc4\",\n                \"name\": \"World\",\n                \"flag\": \"WOR\"\n              }\n            }\n          }\n        },\n        \"meta\": {}\n      },\n      \"exchangeid\": 177518\n    },\n    {\n      \"author\": \"4783f6fc-fcbb-41b1-a0aa-2b0d1bc62765\",\n      \"name\": \"Shrek domination\",\n      \"mapType\": \"TrackMania\\\\TM_Race\",\n      \"mapStyle\": \"\",\n      \"authorScore\": 48501,\n      \"goldScore\": 52000,\n      \"silverScore\": 59000,\n      \"bronzeScore\": 73000,\n      \"collectionName\": \"Stadium\",\n      \"filename\": \"Shrek domination.Map.Gbx\",\n      \"isPlayable\": true,\n      \"mapId\": \"4f293dc8-3356-446b-87bf-2b1f18156793\",\n      \"mapUid\": \"oSF4IYSGzfC5b9NE_2NeXoosyf5\",\n      \"submitter\": \"4783f6fc-fcbb-41b1-a0aa-2b0d1bc62765\",\n      \"timestamp\": \"2024-01-29T17:26:31+00:00\",\n      \"fileUrl\": \"https://core.trackmania.nadeo.live/maps/4f293dc8-3356-446b-87bf-2b1f18156793/file\",\n      \"thumbnailUrl\": \"https://core.trackmania.nadeo.live/maps/4f293dc8-3356-446b-87bf-2b1f18156793/thumbnail.jpg\",\n      \"authorplayer\": {\n        \"name\": \"Chacalou.\",\n        \"tag\": \"$090D$2A2E$3B3G$5B5S$6C6\",\n        \"id\": \"4783f6fc-fcbb-41b1-a0aa-2b0d1bc62765\",\n        \"zone\": {\n          \"id\": \"301faa64-7e13-11e8-8060-e284abfd2bc4\",\n          \"name\": \"Pas-de-Calais\",\n          \"flag\": \"Pas-de-Calais\",\n          \"parent\": {\n            \"id\": \"301fa812-7e13-11e8-8060-e284abfd2bc4\",\n            \"name\": \"Hauts-de-France\",\n            \"flag\": \"hauts-de-france\",\n            \"parent\": {\n              \"id\": \"301f6188-7e13-11e8-8060-e284abfd2bc4\",\n              \"name\": \"France\",\n              \"flag\": \"FRA\",\n              \"parent\": {\n                \"id\": \"301e2106-7e13-11e8-8060-e284abfd2bc4\",\n                \"name\": \"Europe\",\n                \"flag\": \"europe\",\n                \"parent\": {\n                  \"id\": \"301e1b69-7e13-11e8-8060-e284abfd2bc4\",\n                  \"name\": \"World\",\n                  \"flag\": \"WOR\"\n                }\n              }\n            }\n          }\n        },\n        \"meta\": {}\n      },\n      \"submitterplayer\": {\n        \"name\": \"Chacalou.\",\n        \"tag\": \"$090D$2A2E$3B3G$5B5S$6C6\",\n        \"id\": \"4783f6fc-fcbb-41b1-a0aa-2b0d1bc62765\",\n        \"zone\": {\n          \"id\": \"301faa64-7e13-11e8-8060-e284abfd2bc4\",\n          \"name\": \"Pas-de-Calais\",\n          \"flag\": \"Pas-de-Calais\",\n          \"parent\": {\n            \"id\": \"301fa812-7e13-11e8-8060-e284abfd2bc4\",\n            \"name\": \"Hauts-de-France\",\n            \"flag\": \"hauts-de-france\",\n            \"parent\": {\n              \"id\": \"301f6188-7e13-11e8-8060-e284abfd2bc4\",\n              \"name\": \"France\",\n              \"flag\": \"FRA\",\n              \"parent\": {\n                \"id\": \"301e2106-7e13-11e8-8060-e284abfd2bc4\",\n                \"name\": \"Europe\",\n                \"flag\": \"europe\",\n                \"parent\": {\n                  \"id\": \"301e1b69-7e13-11e8-8060-e284abfd2bc4\",\n                  \"name\": \"World\",\n                  \"flag\": \"WOR\"\n                }\n              }\n            }\n          }\n        },\n        \"meta\": {}\n      },\n      \"exchangeid\": 0\n    },\n    {\n      \"author\": \"934d9f6f-2faa-4ea2-b262-5c2afae030a8\",\n      \"name\": \"$s$b14Freedom $ffffor $136All\",\n      \"mapType\": \"TrackMania\\\\TM_Race\",\n      \"mapStyle\": \"\",\n      \"authorScore\": 52575,\n      \"goldScore\": 56000,\n      \"silverScore\": 64000,\n      \"bronzeScore\": 79000,\n      \"collectionName\": \"Stadium\",\n      \"filename\": \"Freedom for All.Map.Gbx\",\n      \"isPlayable\": true,\n      \"mapId\": \"2dd130ed-7dfe-43c5-9cf3-8471957bd9e7\",\n      \"mapUid\": \"nxF6yYQXjiCBs9lCe9D6BjzqXs9\",\n      \"submitter\": \"934d9f6f-2faa-4ea2-b262-5c2afae030a8\",\n      \"timestamp\": \"2024-07-05T16:41:57+00:00\",\n      \"fileUrl\": \"https://core.trackmania.nadeo.live/maps/2dd130ed-7dfe-43c5-9cf3-8471957bd9e7/file\",\n      \"thumbnailUrl\": \"https://core.trackmania.nadeo.live/maps/2dd130ed-7dfe-43c5-9cf3-8471957bd9e7/thumbnail.jpg\",\n      \"authorplayer\": {\n        \"name\": \"Rabbi-\",\n        \"tag\": \"$S$O$08BH$FC3LCY$08BN\",\n        \"id\": \"934d9f6f-2faa-4ea2-b262-5c2afae030a8\",\n        \"zone\": {\n          \"id\": \"3022b270-7e13-11e8-8060-e284abfd2bc4\",\n          \"name\": \"Colorado\",\n          \"flag\": \"Colorado\",\n          \"parent\": {\n            \"id\": \"3022ab53-7e13-11e8-8060-e284abfd2bc4\",\n            \"name\": \"United States\",\n            \"flag\": \"USA\",\n            \"parent\": {\n              \"id\": \"301e2274-7e13-11e8-8060-e284abfd2bc4\",\n              \"name\": \"North America\",\n              \"flag\": \"namerica\",\n              \"parent\": {\n                \"id\": \"301e1b69-7e13-11e8-8060-e284abfd2bc4\",\n                \"name\": \"World\",\n                \"flag\": \"WOR\"\n              }\n            }\n          }\n        },\n        \"meta\": {\n          \"twitch\": \"R6bbi\",\n          \"youtube\": \"@r6bbi\"\n        }\n      },\n      \"submitterplayer\": {\n        \"name\": \"Rabbi-\",\n        \"tag\": \"$S$O$08BH$FC3LCY$08BN\",\n        \"id\": \"934d9f6f-2faa-4ea2-b262-5c2afae030a8\",\n        \"zone\": {\n          \"id\": \"3022b270-7e13-11e8-8060-e284abfd2bc4\",\n          \"name\": \"Colorado\",\n          \"flag\": \"Colorado\",\n          \"parent\": {\n            \"id\": \"3022ab53-7e13-11e8-8060-e284abfd2bc4\",\n            \"name\": \"United States\",\n            \"flag\": \"USA\",\n            \"parent\": {\n              \"id\": \"301e2274-7e13-11e8-8060-e284abfd2bc4\",\n              \"name\": \"North America\",\n              \"flag\": \"namerica\",\n              \"parent\": {\n                \"id\": \"301e1b69-7e13-11e8-8060-e284abfd2bc4\",\n                \"name\": \"World\",\n                \"flag\": \"WOR\"\n              }\n            }\n          }\n        },\n        \"meta\": {\n          \"twitch\": \"R6bbi\",\n          \"youtube\": \"@r6bbi\"\n        }\n      },\n      \"exchangeid\": 180418\n    },\n    {\n      \"author\": \"38559d59-6a7e-4c76-8d84-5f7456581429\",\n      \"name\": \"$ff0Distant $c3fworld\",\n      \"mapType\": \"TrackMania\\\\TM_Race\",\n      \"mapStyle\": \"\",\n      \"authorScore\": 48228,\n      \"goldScore\": 52000,\n      \"silverScore\": 58000,\n      \"bronzeScore\": 73000,\n      \"collectionName\": \"Stadium\",\n      \"filename\": \"Distant world.Map.Gbx\",\n      \"isPlayable\": true,\n      \"mapId\": \"c9dab92c-f3b2-430f-917e-6b0f7ee917ea\",\n      \"mapUid\": \"RvG_FsKRfugB22YZUdmWDgM0i_8\",\n      \"submitter\": \"38559d59-6a7e-4c76-8d84-5f7456581429\",\n      \"timestamp\": \"2024-07-25T15:36:08+00:00\",\n      \"fileUrl\": \"https://core.trackmania.nadeo.live/maps/c9dab92c-f3b2-430f-917e-6b0f7ee917ea/file\",\n      \"thumbnailUrl\": \"https://core.trackmania.nadeo.live/maps/c9dab92c-f3b2-430f-917e-6b0f7ee917ea/thumbnail.jpg\",\n      \"authorplayer\": {\n        \"name\": \"xxxN3XTxxx\",\n        \"tag\": \"$92FN$C2F-$F2AG$F27E$F23N\",\n        \"id\": \"38559d59-6a7e-4c76-8d84-5f7456581429\",\n        \"zone\": {\n          \"id\": \"30224e52-7e13-11e8-8060-e284abfd2bc4\",\n          \"name\": \"Kruševac\",\n          \"flag\": \"Kruševac\",\n          \"parent\": {\n            \"id\": \"30224d28-7e13-11e8-8060-e284abfd2bc4\",\n            \"name\": \"Serbia\",\n            \"flag\": \"SRB\",\n            \"parent\": {\n              \"id\": \"301e2106-7e13-11e8-8060-e284abfd2bc4\",\n              \"name\": \"Europe\",\n              \"flag\": \"europe\",\n              \"parent\": {\n                \"id\": \"301e1b69-7e13-11e8-8060-e284abfd2bc4\",\n                \"name\": \"World\",\n                \"flag\": \"WOR\"\n              }\n            }\n          }\n        },\n        \"meta\": {}\n      },\n      \"submitterplayer\": {\n        \"name\": \"xxxN3XTxxx\",\n        \"tag\": \"$92FN$C2F-$F2AG$F27E$F23N\",\n        \"id\": \"38559d59-6a7e-4c76-8d84-5f7456581429\",\n        \"zone\": {\n          \"id\": \"30224e52-7e13-11e8-8060-e284abfd2bc4\",\n          \"name\": \"Kruševac\",\n          \"flag\": \"Kruševac\",\n          \"parent\": {\n            \"id\": \"30224d28-7e13-11e8-8060-e284abfd2bc4\",\n            \"name\": \"Serbia\",\n            \"flag\": \"SRB\",\n            \"parent\": {\n              \"id\": \"301e2106-7e13-11e8-8060-e284abfd2bc4\",\n              \"name\": \"Europe\",\n              \"flag\": \"europe\",\n              \"parent\": {\n                \"id\": \"301e1b69-7e13-11e8-8060-e284abfd2bc4\",\n                \"name\": \"World\",\n                \"flag\": \"WOR\"\n              }\n            }\n          }\n        },\n        \"meta\": {}\n      },\n      \"exchangeid\": 178300\n    },\n    {\n      \"author\": \"5244711e-ff6b-4bec-9d6e-1343ceaaa803\",\n      \"name\": \"$s$oPipe$f32phobia $111$nft Nightwolf\",\n      \"mapType\": \"TrackMania\\\\TM_Race\",\n      \"mapStyle\": \"\",\n      \"authorScore\": 45000,\n      \"goldScore\": 50000,\n      \"silverScore\": 55000,\n      \"bronzeScore\": 70000,\n      \"collectionName\": \"Stadium\",\n      \"filename\": \"Pipephobia ft Nightwolf.Map.Gbx\",\n      \"isPlayable\": true,\n      \"mapId\": \"2c06c25a-b442-431f-a968-2627ddbde11d\",\n      \"mapUid\": \"mijbrgeyRo6XyjlulEE6QhZSQNm\",\n      \"submitter\": \"5244711e-ff6b-4bec-9d6e-1343ceaaa803\",\n      \"timestamp\": \"2022-01-01T17:48:44+00:00\",\n      \"fileUrl\": \"https://core.trackmania.nadeo.live/maps/2c06c25a-b442-431f-a968-2627ddbde11d/file\",\n      \"thumbnailUrl\": \"https://core.trackmania.nadeo.live/maps/2c06c25a-b442-431f-a968-2627ddbde11d/thumbnail.jpg\",\n      \"authorplayer\": {\n        \"name\": \"Osoguineapig\",\n        \"tag\": \"$DDDT$E72M$CEFA\",\n        \"id\": \"5244711e-ff6b-4bec-9d6e-1343ceaaa803\",\n        \"zone\": {\n          \"id\": \"3022ea33-7e13-11e8-8060-e284abfd2bc4\",\n          \"name\": \"Oregon\",\n          \"flag\": \"Oregon\",\n          \"parent\": {\n            \"id\": \"3022ab53-7e13-11e8-8060-e284abfd2bc4\",\n            \"name\": \"United States\",\n            \"flag\": \"USA\",\n            \"parent\": {\n              \"id\": \"301e2274-7e13-11e8-8060-e284abfd2bc4\",\n              \"name\": \"North America\",\n              \"flag\": \"namerica\",\n              \"parent\": {\n                \"id\": \"301e1b69-7e13-11e8-8060-e284abfd2bc4\",\n                \"name\": \"World\",\n                \"flag\": \"WOR\"\n              }\n            }\n          }\n        },\n        \"meta\": {}\n      },\n      \"submitterplayer\": {\n        \"name\": \"Osoguineapig\",\n        \"tag\": \"$DDDT$E72M$CEFA\",\n        \"id\": \"5244711e-ff6b-4bec-9d6e-1343ceaaa803\",\n        \"zone\": {\n          \"id\": \"3022ea33-7e13-11e8-8060-e284abfd2bc4\",\n          \"name\": \"Oregon\",\n          \"flag\": \"Oregon\",\n          \"parent\": {\n            \"id\": \"3022ab53-7e13-11e8-8060-e284abfd2bc4\",\n            \"name\": \"United States\",\n            \"flag\": \"USA\",\n            \"parent\": {\n              \"id\": \"301e2274-7e13-11e8-8060-e284abfd2bc4\",\n              \"name\": \"North America\",\n              \"flag\": \"namerica\",\n              \"parent\": {\n                \"id\": \"301e1b69-7e13-11e8-8060-e284abfd2bc4\",\n                \"name\": \"World\",\n                \"flag\": \"WOR\"\n              }\n            }\n          }\n        },\n        \"meta\": {}\n      },\n      \"exchangeid\": 45340\n    },\n    {\n      \"author\": \"38559d59-6a7e-4c76-8d84-5f7456581429\",\n      \"name\": \"$3CFInj$0CFec$6CFtion$FFF feat DanOnTheMoon\",\n      \"mapType\": \"TrackMania\\\\TM_Race\",\n      \"mapStyle\": \"\",\n      \"authorScore\": 44434,\n      \"goldScore\": 48000,\n      \"silverScore\": 54000,\n      \"bronzeScore\": 67000,\n      \"collectionName\": \"Stadium\",\n      \"filename\": \"Injection feat DanOnTheMoon.Map.Gbx\",\n      \"isPlayable\": true,\n      \"mapId\": \"9ebc66bc-f302-4f78-a09c-075a39705ae0\",\n      \"mapUid\": \"DlUXxerXE6Qqx188xhYkGJZvoXe\",\n      \"submitter\": \"38559d59-6a7e-4c76-8d84-5f7456581429\",\n      \"timestamp\": \"2024-07-07T23:54:12+00:00\",\n      \"fileUrl\": \"https://core.trackmania.nadeo.live/maps/9ebc66bc-f302-4f78-a09c-075a39705ae0/file\",\n      \"thumbnailUrl\": \"https://core.trackmania.nadeo.live/maps/9ebc66bc-f302-4f78-a09c-075a39705ae0/thumbnail.jpg\",\n      \"authorplayer\": {\n        \"name\": \"xxxN3XTxxx\",\n        \"tag\": \"$92FN$C2F-$F2AG$F27E$F23N\",\n        \"id\": \"38559d59-6a7e-4c76-8d84-5f7456581429\",\n        \"zone\": {\n          \"id\": \"30224e52-7e13-11e8-8060-e284abfd2bc4\",\n          \"name\": \"Kruševac\",\n          \"flag\": \"Kruševac\",\n          \"parent\": {\n            \"id\": \"30224d28-7e13-11e8-8060-e284abfd2bc4\",\n            \"name\": \"Serbia\",\n            \"flag\": \"SRB\",\n            \"parent\": {\n              \"id\": \"301e2106-7e13-11e8-8060-e284abfd2bc4\",\n              \"name\": \"Europe\",\n              \"flag\": \"europe\",\n              \"parent\": {\n                \"id\": \"301e1b69-7e13-11e8-8060-e284abfd2bc4\",\n                \"name\": \"World\",\n                \"flag\": \"WOR\"\n              }\n            }\n          }\n        },\n        \"meta\": {}\n      },\n      \"submitterplayer\": {\n        \"name\": \"xxxN3XTxxx\",\n        \"tag\": \"$92FN$C2F-$F2AG$F27E$F23N\",\n        \"id\": \"38559d59-6a7e-4c76-8d84-5f7456581429\",\n        \"zone\": {\n          \"id\": \"30224e52-7e13-11e8-8060-e284abfd2bc4\",\n          \"name\": \"Kruševac\",\n          \"flag\": \"Kruševac\",\n          \"parent\": {\n            \"id\": \"30224d28-7e13-11e8-8060-e284abfd2bc4\",\n            \"name\": \"Serbia\",\n            \"flag\": \"SRB\",\n            \"parent\": {\n              \"id\": \"301e2106-7e13-11e8-8060-e284abfd2bc4\",\n              \"name\": \"Europe\",\n              \"flag\": \"europe\",\n              \"parent\": {\n                \"id\": \"301e1b69-7e13-11e8-8060-e284abfd2bc4\",\n                \"name\": \"World\",\n                \"flag\": \"WOR\"\n              }\n            }\n          }\n        },\n        \"meta\": {}\n      },\n      \"exchangeid\": 173438\n    },\n    {\n      \"author\": \"711036bf-d90b-4fa4-9be5-964eb3912256\",\n      \"name\": \"$sFrosty creek\",\n      \"mapType\": \"TrackMania\\\\TM_Race\",\n      \"mapStyle\": \"\",\n      \"authorScore\": 42051,\n      \"goldScore\": 45000,\n      \"silverScore\": 51000,\n      \"bronzeScore\": 64000,\n      \"collectionName\": \"Stadium\",\n      \"filename\": \"Frosty creek.Map.Gbx\",\n      \"isPlayable\": true,\n      \"mapId\": \"f301c6e6-b608-4e20-a0ae-ed48aef8b29d\",\n      \"mapUid\": \"E14e8D93S7QI2_xinrM6ZxWlSc\",\n      \"submitter\": \"711036bf-d90b-4fa4-9be5-964eb3912256\",\n      \"timestamp\": \"2022-03-03T14:17:03+00:00\",\n      \"fileUrl\": \"https://core.trackmania.nadeo.live/maps/f301c6e6-b608-4e20-a0ae-ed48aef8b29d/file\",\n      \"thumbnailUrl\": \"https://core.trackmania.nadeo.live/maps/f301c6e6-b608-4e20-a0ae-ed48aef8b29d/thumbnail.jpg\",\n      \"authorplayer\": {\n        \"name\": \"S.sarah\",\n        \"tag\": \"$606<3\",\n        \"id\": \"711036bf-d90b-4fa4-9be5-964eb3912256\",\n        \"zone\": {\n          \"id\": \"30205b79-7e13-11e8-8060-e284abfd2bc4\",\n          \"name\": \"Ireland\",\n          \"flag\": \"IRL\",\n          \"parent\": {\n            \"id\": \"301e2106-7e13-11e8-8060-e284abfd2bc4\",\n            \"name\": \"Europe\",\n            \"flag\": \"europe\",\n            \"parent\": {\n              \"id\": \"301e1b69-7e13-11e8-8060-e284abfd2bc4\",\n              \"name\": \"World\",\n              \"flag\": \"WOR\"\n            }\n          }\n        },\n        \"meta\": {\n          \"twitch\": \"Mariina9899\"\n        }\n      },\n      \"submitterplayer\": {\n        \"name\": \"S.sarah\",\n        \"tag\": \"$606<3\",\n        \"id\": \"711036bf-d90b-4fa4-9be5-964eb3912256\",\n        \"zone\": {\n          \"id\": \"30205b79-7e13-11e8-8060-e284abfd2bc4\",\n          \"name\": \"Ireland\",\n          \"flag\": \"IRL\",\n          \"parent\": {\n            \"id\": \"301e2106-7e13-11e8-8060-e284abfd2bc4\",\n            \"name\": \"Europe\",\n            \"flag\": \"europe\",\n            \"parent\": {\n              \"id\": \"301e1b69-7e13-11e8-8060-e284abfd2bc4\",\n              \"name\": \"World\",\n              \"flag\": \"WOR\"\n            }\n          }\n        },\n        \"meta\": {\n          \"twitch\": \"Mariina9899\"\n        }\n      },\n      \"exchangeid\": 51774\n    },\n    {\n      \"author\": \"da944352-d9c8-4826-b572-98c06f956656\",\n      \"name\": \"New Orleans\",\n      \"mapType\": \"TrackMania\\\\TM_Race\",\n      \"mapStyle\": \"\",\n      \"authorScore\": 48105,\n      \"goldScore\": 51000,\n      \"silverScore\": 58000,\n      \"bronzeScore\": 73000,\n      \"collectionName\": \"Stadium\",\n      \"filename\": \"New Orleans.Map.Gbx\",\n      \"isPlayable\": true,\n      \"mapId\": \"de53e377-b8a4-4157-9863-e98cb6e137a9\",\n      \"mapUid\": \"OJxg9aBz6jCbHpZb6YoeLaa_dlf\",\n      \"submitter\": \"da944352-d9c8-4826-b572-98c06f956656\",\n      \"timestamp\": \"2022-09-05T17:11:53+00:00\",\n      \"fileUrl\": \"https://core.trackmania.nadeo.live/maps/de53e377-b8a4-4157-9863-e98cb6e137a9/file\",\n      \"thumbnailUrl\": \"https://core.trackmania.nadeo.live/maps/de53e377-b8a4-4157-9863-e98cb6e137a9/thumbnail.jpg\",\n      \"authorplayer\": {\n        \"name\": \"Rioyter\",\n        \"id\": \"da944352-d9c8-4826-b572-98c06f956656\",\n        \"zone\": {\n          \"id\": \"302013ca-7e13-11e8-8060-e284abfd2bc4\",\n          \"name\": \"Essen\",\n          \"flag\": \"Essen\",\n          \"parent\": {\n            \"id\": \"30200d6a-7e13-11e8-8060-e284abfd2bc4\",\n            \"name\": \"Nordrhein-Westfalen\",\n            \"flag\": \"nordrhein-westfalen\",\n            \"parent\": {\n              \"id\": \"301ff622-7e13-11e8-8060-e284abfd2bc4\",\n              \"name\": \"Germany\",\n              \"flag\": \"GER\",\n              \"parent\": {\n                \"id\": \"301e2106-7e13-11e8-8060-e284abfd2bc4\",\n                \"name\": \"Europe\",\n                \"flag\": \"europe\",\n                \"parent\": {\n                  \"id\": \"301e1b69-7e13-11e8-8060-e284abfd2bc4\",\n                  \"name\": \"World\",\n                  \"flag\": \"WOR\"\n                }\n              }\n            }\n          }\n        },\n        \"meta\": {}\n      },\n      \"submitterplayer\": {\n        \"name\": \"Rioyter\",\n        \"id\": \"da944352-d9c8-4826-b572-98c06f956656\",\n        \"zone\": {\n          \"id\": \"302013ca-7e13-11e8-8060-e284abfd2bc4\",\n          \"name\": \"Essen\",\n          \"flag\": \"Essen\",\n          \"parent\": {\n            \"id\": \"30200d6a-7e13-11e8-8060-e284abfd2bc4\",\n            \"name\": \"Nordrhein-Westfalen\",\n            \"flag\": \"nordrhein-westfalen\",\n            \"parent\": {\n              \"id\": \"301ff622-7e13-11e8-8060-e284abfd2bc4\",\n              \"name\": \"Germany\",\n              \"flag\": \"GER\",\n              \"parent\": {\n                \"id\": \"301e2106-7e13-11e8-8060-e284abfd2bc4\",\n                \"name\": \"Europe\",\n                \"flag\": \"europe\",\n                \"parent\": {\n                  \"id\": \"301e1b69-7e13-11e8-8060-e284abfd2bc4\",\n                  \"name\": \"World\",\n                  \"flag\": \"WOR\"\n                }\n              }\n            }\n          }\n        },\n        \"meta\": {}\n      },\n      \"exchangeid\": 62617\n    }\n  ],\n  \"mediae\": {\n    \"buttonbackground\": \"\",\n    \"buttonforeground\": \"\",\n    \"decal\": \"\",\n    \"popupbackground\": \"\",\n    \"popup\": \"\",\n    \"livebuttonbackground\": \"\",\n    \"livebuttonforeground\": \"\"\n  },\n  \"tracked\": false\n}",
+          "latency": 0,
+          "statusCode": 200,
+          "label": "Campaign/Club Found",
+          "headers": [],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": true,
+          "crudKey": "id",
+          "callbacks": []
+        },
+        {
+          "uuid": "c60c9486-5e2a-4c08-a6df-42333de9d41e",
+          "body": "{\n  \"error\": \"error 404 from server: [\\\"activity:error-notFound\\\"] (json: cannot unmarshal array into Go value of type nadeo.errorResponse)\"\n}",
+          "latency": 0,
+          "statusCode": 500,
+          "label": "Campaign Not Found",
+          "headers": [],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [
+            {
+              "target": "params",
+              "modifier": "campaignId",
+              "value": "404",
+              "invert": false,
+              "operator": "equals"
+            }
+          ],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": false,
+          "crudKey": "id",
+          "callbacks": []
+        }
+      ],
+      "responseMode": null,
+      "streamingMode": null,
+      "streamingInterval": 0
+    },
+    {
+      "uuid": "29562f94-455b-463f-80b8-155f64d1a4af",
+      "type": "http",
+      "documentation": "",
+      "method": "get",
+      "endpoint": "api/leaderboard/:lbId/:mapUid",
+      "responses": [
+        {
+          "uuid": "d5806989-9f34-4a83-8d45-895b5254fcc7",
+          "body": "{\n  \"tops\": [\n    {\n      \"player\": {\n        \"name\": \"noiszia\",\n        \"tag\": \"$W$FFF$Z$O$EEEA$DDDI$CCCR\",\n        \"id\": \"dae72d20-d7d1-4908-ac8b-9ae1994cb3b4\",\n        \"zone\": {\n          \"id\": \"301e2c9d-7e13-11e8-8060-e284abfd2bc4\",\n          \"name\": \"Argentina\",\n          \"flag\": \"ARG\",\n          \"parent\": {\n            \"id\": \"301e243e-7e13-11e8-8060-e284abfd2bc4\",\n            \"name\": \"South America\",\n            \"flag\": \"samerica\",\n            \"parent\": {\n              \"id\": \"301e1b69-7e13-11e8-8060-e284abfd2bc4\",\n              \"name\": \"World\",\n              \"flag\": \"WOR\"\n            }\n          }\n        },\n        \"meta\": {\n          \"twitch\": \"noiszia\"\n        }\n      },\n      \"position\": 1,\n      \"time\": 50655,\n      \"score\": 50655,\n      \"filename\": \"Replays\\\\Downloaded\\\\93799ac2-63c0-46cb-8891-b7d9ebd56e8e_dae72d20-d7d1-4908-ac8b-9ae1994cb3b4_(0'50''65).replay.gbx\",\n      \"timestamp\": \"2024-09-15T18:01:35+00:00\",\n      \"url\": \"/api/download/ghost/7516c241-b175-4a8e-8b37-0aea877a2659\"\n    },\n    {\n      \"player\": {\n        \"name\": \"FlimsyElbowTM\",\n        \"tag\": \"$S$O$08BH$FC3LCY$08BN\",\n        \"id\": \"c2b06237-0994-4ec7-881e-52edf3a76f70\",\n        \"zone\": {\n          \"id\": \"3022e90b-7e13-11e8-8060-e284abfd2bc4\",\n          \"name\": \"Ohio\",\n          \"flag\": \"Ohio\",\n          \"parent\": {\n            \"id\": \"3022ab53-7e13-11e8-8060-e284abfd2bc4\",\n            \"name\": \"United States\",\n            \"flag\": \"USA\",\n            \"parent\": {\n              \"id\": \"301e2274-7e13-11e8-8060-e284abfd2bc4\",\n              \"name\": \"North America\",\n              \"flag\": \"namerica\",\n              \"parent\": {\n                \"id\": \"301e1b69-7e13-11e8-8060-e284abfd2bc4\",\n                \"name\": \"World\",\n                \"flag\": \"WOR\"\n              }\n            }\n          }\n        },\n        \"meta\": {}\n      },\n      \"position\": 2,\n      \"time\": 50712,\n      \"score\": 50712,\n      \"filename\": \"Replays\\\\Downloaded\\\\93799ac2-63c0-46cb-8891-b7d9ebd56e8e_c2b06237-0994-4ec7-881e-52edf3a76f70_(0'50''71).replay.gbx\",\n      \"timestamp\": \"2024-09-13T18:14:36+00:00\",\n      \"url\": \"/api/download/ghost/3c058c38-c06a-45ce-8c0c-43bb193c2194\"\n    },\n    {\n      \"player\": {\n        \"name\": \"DirtySteveSlide\",\n        \"tag\": \"$S$O$08BH$FC3LCY$08BN\",\n        \"id\": \"ec0269d5-2d19-41eb-a931-01b8a11c2784\",\n        \"zone\": {\n          \"id\": \"3022ed9f-7e13-11e8-8060-e284abfd2bc4\",\n          \"name\": \"Texas\",\n          \"flag\": \"Texas\",\n          \"parent\": {\n            \"id\": \"3022ab53-7e13-11e8-8060-e284abfd2bc4\",\n            \"name\": \"United States\",\n            \"flag\": \"USA\",\n            \"parent\": {\n              \"id\": \"301e2274-7e13-11e8-8060-e284abfd2bc4\",\n              \"name\": \"North America\",\n              \"flag\": \"namerica\",\n              \"parent\": {\n                \"id\": \"301e1b69-7e13-11e8-8060-e284abfd2bc4\",\n                \"name\": \"World\",\n                \"flag\": \"WOR\"\n              }\n            }\n          }\n        },\n        \"meta\": {}\n      },\n      \"position\": 3,\n      \"time\": 50751,\n      \"score\": 50751,\n      \"filename\": \"Replays\\\\Downloaded\\\\93799ac2-63c0-46cb-8891-b7d9ebd56e8e_ec0269d5-2d19-41eb-a931-01b8a11c2784_(0'50''75).replay.gbx\",\n      \"timestamp\": \"2024-09-15T20:45:09+00:00\",\n      \"url\": \"/api/download/ghost/adfa531c-dd29-4a02-96dc-4bec03dd1bda\"\n    },\n    {\n      \"player\": {\n        \"name\": \"Sully_TM\",\n        \"tag\": \"$S$O$FC3H$000D\",\n        \"id\": \"a66d376b-2973-42b2-98c4-ed8aaf70d904\",\n        \"zone\": {\n          \"id\": \"3022ed9f-7e13-11e8-8060-e284abfd2bc4\",\n          \"name\": \"Texas\",\n          \"flag\": \"Texas\",\n          \"parent\": {\n            \"id\": \"3022ab53-7e13-11e8-8060-e284abfd2bc4\",\n            \"name\": \"United States\",\n            \"flag\": \"USA\",\n            \"parent\": {\n              \"id\": \"301e2274-7e13-11e8-8060-e284abfd2bc4\",\n              \"name\": \"North America\",\n              \"flag\": \"namerica\",\n              \"parent\": {\n                \"id\": \"301e1b69-7e13-11e8-8060-e284abfd2bc4\",\n                \"name\": \"World\",\n                \"flag\": \"WOR\"\n              }\n            }\n          }\n        },\n        \"meta\": {}\n      },\n      \"position\": 4,\n      \"time\": 50757,\n      \"score\": 50757,\n      \"filename\": \"Replays\\\\Downloaded\\\\93799ac2-63c0-46cb-8891-b7d9ebd56e8e_a66d376b-2973-42b2-98c4-ed8aaf70d904_(0'50''75).replay.gbx\",\n      \"timestamp\": \"2024-09-13T04:44:45+00:00\",\n      \"url\": \"/api/download/ghost/46f36f91-887d-4b39-917a-eb13a045b10b\"\n    },\n    {\n      \"player\": {\n        \"name\": \"aBadPCGamer\",\n        \"tag\": \"$S$FA0W$FB4A$FD8L$FEBL$I$FFF🔎\",\n        \"id\": \"46abb244-11b4-4da7-8e4e-f04b05cc1c4b\",\n        \"zone\": {\n          \"id\": \"301e728a-7e13-11e8-8060-e284abfd2bc4\",\n          \"name\": \"Ontario\",\n          \"flag\": \"Ontario\",\n          \"parent\": {\n            \"id\": \"301e6dd7-7e13-11e8-8060-e284abfd2bc4\",\n            \"name\": \"Canada\",\n            \"flag\": \"CAN\",\n            \"parent\": {\n              \"id\": \"301e2274-7e13-11e8-8060-e284abfd2bc4\",\n              \"name\": \"North America\",\n              \"flag\": \"namerica\",\n              \"parent\": {\n                \"id\": \"301e1b69-7e13-11e8-8060-e284abfd2bc4\",\n                \"name\": \"World\",\n                \"flag\": \"WOR\"\n              }\n            }\n          }\n        },\n        \"meta\": {}\n      },\n      \"position\": 5,\n      \"time\": 50871,\n      \"score\": 50871,\n      \"filename\": \"Replays\\\\Downloaded\\\\93799ac2-63c0-46cb-8891-b7d9ebd56e8e_46abb244-11b4-4da7-8e4e-f04b05cc1c4b_(0'50''87).replay.gbx\",\n      \"timestamp\": \"2024-09-15T23:45:54+00:00\",\n      \"url\": \"/api/download/ghost/5350c786-5712-406d-beb5-18318198e7d6\"\n    },\n    {\n      \"player\": {\n        \"name\": \"BMQS\",\n        \"tag\": \"$3F6Y$3F9E$3FCP\",\n        \"id\": \"4dc757eb-c1dc-42e4-9040-910ba593bd67\",\n        \"zone\": {\n          \"id\": \"301e6e5b-7e13-11e8-8060-e284abfd2bc4\",\n          \"name\": \"Alberta\",\n          \"flag\": \"Alberta\",\n          \"parent\": {\n            \"id\": \"301e6dd7-7e13-11e8-8060-e284abfd2bc4\",\n            \"name\": \"Canada\",\n            \"flag\": \"CAN\",\n            \"parent\": {\n              \"id\": \"301e2274-7e13-11e8-8060-e284abfd2bc4\",\n              \"name\": \"North America\",\n              \"flag\": \"namerica\",\n              \"parent\": {\n                \"id\": \"301e1b69-7e13-11e8-8060-e284abfd2bc4\",\n                \"name\": \"World\",\n                \"flag\": \"WOR\"\n              }\n            }\n          }\n        },\n        \"meta\": {\n          \"twitch\": \"BMQS\",\n          \"youtube\": \"UCHFKo939xOISMXwSEsg5IOg\"\n        }\n      },\n      \"position\": 6,\n      \"time\": 50962,\n      \"score\": 50962,\n      \"filename\": \"Replays\\\\Downloaded\\\\93799ac2-63c0-46cb-8891-b7d9ebd56e8e_4dc757eb-c1dc-42e4-9040-910ba593bd67_(0'50''96).replay.gbx\",\n      \"timestamp\": \"2024-09-14T23:43:11+00:00\",\n      \"url\": \"/api/download/ghost/28213f68-505a-4243-93df-305d95fa78bb\"\n    },\n    {\n      \"player\": {\n        \"name\": \"ThomBern\",\n        \"tag\": \"$00CQ$00CC$FFFT$FFFM\",\n        \"id\": \"a383c8e6-145a-4404-9478-4fdbf620ed16\",\n        \"zone\": {\n          \"id\": \"301e73a7-7e13-11e8-8060-e284abfd2bc4\",\n          \"name\": \"Quebec\",\n          \"flag\": \"Quebec\",\n          \"parent\": {\n            \"id\": \"301e6dd7-7e13-11e8-8060-e284abfd2bc4\",\n            \"name\": \"Canada\",\n            \"flag\": \"CAN\",\n            \"parent\": {\n              \"id\": \"301e2274-7e13-11e8-8060-e284abfd2bc4\",\n              \"name\": \"North America\",\n              \"flag\": \"namerica\",\n              \"parent\": {\n                \"id\": \"301e1b69-7e13-11e8-8060-e284abfd2bc4\",\n                \"name\": \"World\",\n                \"flag\": \"WOR\"\n              }\n            }\n          }\n        },\n        \"meta\": {\n          \"twitch\": \"thombern\"\n        }\n      },\n      \"position\": 7,\n      \"time\": 50998,\n      \"score\": 50998,\n      \"filename\": \"Replays\\\\Downloaded\\\\93799ac2-63c0-46cb-8891-b7d9ebd56e8e_a383c8e6-145a-4404-9478-4fdbf620ed16_(0'50''99).replay.gbx\",\n      \"timestamp\": \"2024-09-15T23:39:03+00:00\",\n      \"url\": \"/api/download/ghost/11dc352a-403f-4373-b720-b8601cdd4887\"\n    },\n    {\n      \"player\": {\n        \"name\": \"Stokeine\",\n        \"tag\": \"$3F6Y$3F9E$3FCP\",\n        \"id\": \"d8d836fa-6cc1-4d06-869c-efa0d25ca5a2\",\n        \"zone\": {\n          \"id\": \"301e73a7-7e13-11e8-8060-e284abfd2bc4\",\n          \"name\": \"Quebec\",\n          \"flag\": \"Quebec\",\n          \"parent\": {\n            \"id\": \"301e6dd7-7e13-11e8-8060-e284abfd2bc4\",\n            \"name\": \"Canada\",\n            \"flag\": \"CAN\",\n            \"parent\": {\n              \"id\": \"301e2274-7e13-11e8-8060-e284abfd2bc4\",\n              \"name\": \"North America\",\n              \"flag\": \"namerica\",\n              \"parent\": {\n                \"id\": \"301e1b69-7e13-11e8-8060-e284abfd2bc4\",\n                \"name\": \"World\",\n                \"flag\": \"WOR\"\n              }\n            }\n          }\n        },\n        \"meta\": {}\n      },\n      \"position\": 8,\n      \"time\": 51021,\n      \"score\": 51021,\n      \"filename\": \"Replays\\\\Downloaded\\\\93799ac2-63c0-46cb-8891-b7d9ebd56e8e_d8d836fa-6cc1-4d06-869c-efa0d25ca5a2_(0'51''2).replay.gbx\",\n      \"timestamp\": \"2024-09-15T22:02:53+00:00\",\n      \"url\": \"/api/download/ghost/ddc64be1-5a55-4adc-963c-8f3676e6a1f7\"\n    },\n    {\n      \"player\": {\n        \"name\": \"matrix.nc\",\n        \"tag\": \"$3F6Y$3F9E$3FCP\",\n        \"id\": \"41acf6f2-c9a7-442e-84ae-77a553354170\",\n        \"zone\": {\n          \"id\": \"3022e7ba-7e13-11e8-8060-e284abfd2bc4\",\n          \"name\": \"North Carolina\",\n          \"flag\": \"North_Carolina\",\n          \"parent\": {\n            \"id\": \"3022ab53-7e13-11e8-8060-e284abfd2bc4\",\n            \"name\": \"United States\",\n            \"flag\": \"USA\",\n            \"parent\": {\n              \"id\": \"301e2274-7e13-11e8-8060-e284abfd2bc4\",\n              \"name\": \"North America\",\n              \"flag\": \"namerica\",\n              \"parent\": {\n                \"id\": \"301e1b69-7e13-11e8-8060-e284abfd2bc4\",\n                \"name\": \"World\",\n                \"flag\": \"WOR\"\n              }\n            }\n          }\n        },\n        \"meta\": {\n          \"twitch\": \"mtrx\",\n          \"twitter\": \"mstrmatrix\"\n        }\n      },\n      \"position\": 9,\n      \"time\": 51085,\n      \"score\": 51085,\n      \"filename\": \"Replays\\\\Downloaded\\\\93799ac2-63c0-46cb-8891-b7d9ebd56e8e_41acf6f2-c9a7-442e-84ae-77a553354170_(0'51''8).replay.gbx\",\n      \"timestamp\": \"2024-09-15T23:39:03+00:00\",\n      \"url\": \"/api/download/ghost/911a9985-5b81-46bd-9b12-c1df350008a3\"\n    },\n    {\n      \"player\": {\n        \"name\": \"jampee15\",\n        \"tag\": \"$O$6CFNC$F00TM\",\n        \"id\": \"6d30a1a2-f179-44db-8a93-2e0fa85b09ca\",\n        \"zone\": {\n          \"id\": \"3022e7ba-7e13-11e8-8060-e284abfd2bc4\",\n          \"name\": \"North Carolina\",\n          \"flag\": \"North_Carolina\",\n          \"parent\": {\n            \"id\": \"3022ab53-7e13-11e8-8060-e284abfd2bc4\",\n            \"name\": \"United States\",\n            \"flag\": \"USA\",\n            \"parent\": {\n              \"id\": \"301e2274-7e13-11e8-8060-e284abfd2bc4\",\n              \"name\": \"North America\",\n              \"flag\": \"namerica\",\n              \"parent\": {\n                \"id\": \"301e1b69-7e13-11e8-8060-e284abfd2bc4\",\n                \"name\": \"World\",\n                \"flag\": \"WOR\"\n              }\n            }\n          }\n        },\n        \"meta\": {}\n      },\n      \"position\": 10,\n      \"time\": 51128,\n      \"score\": 51128,\n      \"filename\": \"Replays\\\\Downloaded\\\\93799ac2-63c0-46cb-8891-b7d9ebd56e8e_6d30a1a2-f179-44db-8a93-2e0fa85b09ca_(0'51''12).replay.gbx\",\n      \"timestamp\": \"2024-09-15T22:58:25+00:00\",\n      \"url\": \"/api/download/ghost/b6e266cd-bab6-46ef-b4f0-b77698d75e97\"\n    },\n    {\n      \"player\": {\n        \"name\": \"Sambertooth\",\n        \"tag\": \"$00FKY\",\n        \"id\": \"421db8c7-7208-4e30-b89d-464c93a37847\",\n        \"zone\": {\n          \"id\": \"3022c725-7e13-11e8-8060-e284abfd2bc4\",\n          \"name\": \"Kentucky\",\n          \"flag\": \"Kentucky\",\n          \"parent\": {\n            \"id\": \"3022ab53-7e13-11e8-8060-e284abfd2bc4\",\n            \"name\": \"United States\",\n            \"flag\": \"USA\",\n            \"parent\": {\n              \"id\": \"301e2274-7e13-11e8-8060-e284abfd2bc4\",\n              \"name\": \"North America\",\n              \"flag\": \"namerica\",\n              \"parent\": {\n                \"id\": \"301e1b69-7e13-11e8-8060-e284abfd2bc4\",\n                \"name\": \"World\",\n                \"flag\": \"WOR\"\n              }\n            }\n          }\n        }\n      },\n      \"position\": 11,\n      \"time\": 51204,\n      \"score\": 51204,\n      \"filename\": \"Replays\\\\Downloaded\\\\93799ac2-63c0-46cb-8891-b7d9ebd56e8e_421db8c7-7208-4e30-b89d-464c93a37847_(0'51''20).replay.gbx\",\n      \"timestamp\": \"2024-09-12T01:45:02+00:00\",\n      \"url\": \"/api/download/ghost/70ca8f6c-d636-4e87-886a-a51e4f8459ce\"\n    },\n    {\n      \"player\": {\n        \"name\": \"catcurlyfries13\",\n        \"tag\": \"$S$O$08BH$FC3LCY$08BN\",\n        \"id\": \"d0c472a0-3435-42c0-8c05-e88bc652d1c1\",\n        \"zone\": {\n          \"id\": \"3022eac6-7e13-11e8-8060-e284abfd2bc4\",\n          \"name\": \"Pennsylvania\",\n          \"flag\": \"Pennsylvania\",\n          \"parent\": {\n            \"id\": \"3022ab53-7e13-11e8-8060-e284abfd2bc4\",\n            \"name\": \"United States\",\n            \"flag\": \"USA\",\n            \"parent\": {\n              \"id\": \"301e2274-7e13-11e8-8060-e284abfd2bc4\",\n              \"name\": \"North America\",\n              \"flag\": \"namerica\",\n              \"parent\": {\n                \"id\": \"301e1b69-7e13-11e8-8060-e284abfd2bc4\",\n                \"name\": \"World\",\n                \"flag\": \"WOR\"\n              }\n            }\n          }\n        },\n        \"meta\": {}\n      },\n      \"position\": 12,\n      \"time\": 51289,\n      \"score\": 51289,\n      \"filename\": \"Replays\\\\Downloaded\\\\93799ac2-63c0-46cb-8891-b7d9ebd56e8e_d0c472a0-3435-42c0-8c05-e88bc652d1c1_(0'51''28).replay.gbx\",\n      \"timestamp\": \"2024-09-12T23:30:58+00:00\",\n      \"url\": \"/api/download/ghost/bf26d7a4-4c06-4750-bfb7-977cf63949c9\"\n    },\n    {\n      \"player\": {\n        \"name\": \"XO_TM\",\n        \"tag\": \"$00FKY\",\n        \"id\": \"a1accb5b-a4f1-43a7-ada7-119a890b12f1\",\n        \"zone\": {\n          \"id\": \"3022c725-7e13-11e8-8060-e284abfd2bc4\",\n          \"name\": \"Kentucky\",\n          \"flag\": \"Kentucky\",\n          \"parent\": {\n            \"id\": \"3022ab53-7e13-11e8-8060-e284abfd2bc4\",\n            \"name\": \"United States\",\n            \"flag\": \"USA\",\n            \"parent\": {\n              \"id\": \"301e2274-7e13-11e8-8060-e284abfd2bc4\",\n              \"name\": \"North America\",\n              \"flag\": \"namerica\",\n              \"parent\": {\n                \"id\": \"301e1b69-7e13-11e8-8060-e284abfd2bc4\",\n                \"name\": \"World\",\n                \"flag\": \"WOR\"\n              }\n            }\n          }\n        },\n        \"meta\": {}\n      },\n      \"position\": 13,\n      \"time\": 51330,\n      \"score\": 51330,\n      \"filename\": \"Replays\\\\Downloaded\\\\93799ac2-63c0-46cb-8891-b7d9ebd56e8e_a1accb5b-a4f1-43a7-ada7-119a890b12f1_(0'51''33).replay.gbx\",\n      \"timestamp\": \"2024-09-15T21:20:11+00:00\",\n      \"url\": \"/api/download/ghost/7a32321b-549a-4ca7-8810-4c4b42d50e43\"\n    },\n    {\n      \"player\": {\n        \"name\": \"Utshimass\",\n        \"tag\": \"$S$O$08BH$FC3LCY$08BN\",\n        \"id\": \"3dd42878-8a67-4cc9-9d91-cdb90a228476\",\n        \"zone\": {\n          \"id\": \"301e73a7-7e13-11e8-8060-e284abfd2bc4\",\n          \"name\": \"Quebec\",\n          \"flag\": \"Quebec\",\n          \"parent\": {\n            \"id\": \"301e6dd7-7e13-11e8-8060-e284abfd2bc4\",\n            \"name\": \"Canada\",\n            \"flag\": \"CAN\",\n            \"parent\": {\n              \"id\": \"301e2274-7e13-11e8-8060-e284abfd2bc4\",\n              \"name\": \"North America\",\n              \"flag\": \"namerica\",\n              \"parent\": {\n                \"id\": \"301e1b69-7e13-11e8-8060-e284abfd2bc4\",\n                \"name\": \"World\",\n                \"flag\": \"WOR\"\n              }\n            }\n          }\n        },\n        \"meta\": {}\n      },\n      \"position\": 14,\n      \"time\": 51345,\n      \"score\": 51345,\n      \"filename\": \"Replays\\\\Downloaded\\\\93799ac2-63c0-46cb-8891-b7d9ebd56e8e_3dd42878-8a67-4cc9-9d91-cdb90a228476_(0'51''34).replay.gbx\",\n      \"timestamp\": \"2024-09-15T04:16:22+00:00\",\n      \"url\": \"/api/download/ghost/a584d832-b845-4fb1-b823-dc6c7f879f36\"\n    },\n    {\n      \"player\": {\n        \"name\": \"goopsTM\",\n        \"tag\": \"$W$06FGRU$CF0<3\",\n        \"id\": \"5bf6f9f4-5d27-4bf2-8f89-6e1c00115ba4\",\n        \"zone\": {\n          \"id\": \"3022e90b-7e13-11e8-8060-e284abfd2bc4\",\n          \"name\": \"Ohio\",\n          \"flag\": \"Ohio\",\n          \"parent\": {\n            \"id\": \"3022ab53-7e13-11e8-8060-e284abfd2bc4\",\n            \"name\": \"United States\",\n            \"flag\": \"USA\",\n            \"parent\": {\n              \"id\": \"301e2274-7e13-11e8-8060-e284abfd2bc4\",\n              \"name\": \"North America\",\n              \"flag\": \"namerica\",\n              \"parent\": {\n                \"id\": \"301e1b69-7e13-11e8-8060-e284abfd2bc4\",\n                \"name\": \"World\",\n                \"flag\": \"WOR\"\n              }\n            }\n          }\n        },\n        \"meta\": {\n          \"twitch\": \"gooperman_\",\n          \"twitter\": \"gooperman_\"\n        }\n      },\n      \"position\": 15,\n      \"time\": 51392,\n      \"score\": 51392,\n      \"filename\": \"Replays\\\\Downloaded\\\\93799ac2-63c0-46cb-8891-b7d9ebd56e8e_5bf6f9f4-5d27-4bf2-8f89-6e1c00115ba4_(0'51''39).replay.gbx\",\n      \"timestamp\": \"2024-09-13T06:37:24+00:00\",\n      \"url\": \"/api/download/ghost/fb812f43-f0c6-43f1-88f6-0977a8eaebd9\"\n    }\n  ],\n  \"playercount\": 65\n}",
+          "latency": 0,
+          "statusCode": 200,
+          "label": "With Tops",
+          "headers": [],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [],
+          "rulesOperator": "AND",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": true,
+          "crudKey": "id",
+          "callbacks": []
+        },
+        {
+          "uuid": "565d669a-1cf3-4430-9097-d46047109659",
+          "body": "{\"tops\":null,\"playercount\":66}",
+          "latency": 0,
+          "statusCode": 200,
+          "label": "No tops",
+          "headers": [],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [
+            {
+              "target": "query",
+              "modifier": "offset",
+              "value": "2..+",
+              "invert": false,
+              "operator": "regex"
+            }
+          ],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": false,
+          "crudKey": "id",
+          "callbacks": []
+        }
+      ],
+      "responseMode": null,
+      "streamingMode": null,
+      "streamingInterval": 0
+    }
+  ],
+  "rootChildren": [
+    {
+      "type": "route",
+      "uuid": "83e8197c-c3ca-4910-b0d8-413e6fa761ed"
+    },
+    {
+      "type": "route",
+      "uuid": "82027271-1261-47a2-b601-0aacde61b623"
+    },
+    {
+      "type": "route",
+      "uuid": "a2e6794e-c6ef-419b-8abe-fa8053203f1e"
+    },
+    {
+      "type": "route",
+      "uuid": "29562f94-455b-463f-80b8-155f64d1a4af"
+    }
+  ],
+  "proxyMode": false,
+  "proxyHost": "",
+  "proxyRemovePrefix": false,
+  "tlsOptions": {
+    "enabled": false,
+    "type": "CERT",
+    "pfxPath": "",
+    "certPath": "",
+    "keyPath": "",
+    "caPath": "",
+    "passphrase": ""
+  },
+  "cors": false,
+  "headers": [
+    {
+      "key": "Content-Type",
+      "value": "application/json"
+    }
+  ],
+  "proxyReqHeaders": [
+    {
+      "key": "",
+      "value": ""
+    }
+  ],
+  "proxyResHeaders": [
+    {
+      "key": "",
+      "value": ""
+    }
+  ],
+  "data": [],
+  "callbacks": []
+}
