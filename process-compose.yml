@@ -4,6 +4,7 @@ processes:
   hds-tm-events-app:
     working_dir: apps/hds-tm-events
     command: yarn start
+
   hds-tm-events-api:
     working_dir: apis/hds-tm-events
     command: bun run watch
@@ -13,11 +14,44 @@ processes:
       - "HOST=localhost"
       - "DEBUG=true"
       - "TMIO_URL=http://localhost:8100"
+
+  openplanet-snake-api:
+    working_dir: apis/openplanet-snake
+    command: bun run watch
+    environment:
+      - "DATABASE_CONNSTR=postgres://openplanetsnake:Passw0rd!@localhost:5432/openplanetsnake?pool_max_conns=10"
+      - "ADMIN_KEY=developer-test-key"
+      - "HOST=localhost"
+      - "PORT=8082"
+      - "DEBUG=true"
+
+  tm-api:
+    working_dir: apis/tm-api
+    command: bun run watch
+    environment:
+      - "DATABASE_CONNSTR=postgres://tmapi:Passw0rd!@localhost:5432/tmapi?pool_max_conns=10"
+      - "ADMIN_KEY=developer-test-key"
+      - "HOST=localhost"
+      - "PORT=8083"
+      - "DEBUG=true"
+      - "TMIO_URL=http://localhost:8100"
+
+  tm-medals-api:
+    working_dir: apis/tm-medals
+    command: bun run watch
+    environment:
+      - "DATABASE_CONNSTR=postgres://tmmedals:Passw0rd!@localhost:5432/tmmedals?pool_max_conns=10"
+      - "ADMIN_KEY=developer-test-key"
+      - "HOST=localhost"
+      - "PORT=8084"
+      - "DEBUG=true"
+
   dbs:
     working_dir: .
     command: docker compose up dbs
     shutdown:
       command: docker compose stop dbs
+
   tmiosim:
     working_dir: .
     command: docker compose up tmiosim

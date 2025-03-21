@@ -2,15 +2,15 @@ import { faker } from "@faker-js/faker";
 import type { Pool } from "pg";
 
 export const mapGet = (_: Pool, mapUid: string) => {
-  return fetch(`http://localhost:8081/maps?mapUid=${mapUid}`);
+  return fetch(`http://localhost:8084/maps?mapUid=${mapUid}`);
 };
 
 export const mapGetCampaign = (campaign: string) => {
-  return fetch(`http://localhost:8081/maps?campaign=${campaign}`);
+  return fetch(`http://localhost:8084/maps?campaign=${campaign}`);
 };
 
 export const mapGetAll = () => {
-  return fetch(`http://localhost:8081/maps`);
+  return fetch(`http://localhost:8084/maps`);
 };
 
 export const mapCreate = ({
@@ -32,7 +32,7 @@ export const mapCreate = ({
   headers?: any;
   apikey?: string;
 } = {}) => {
-  return fetch("http://localhost:8081/maps", {
+  return fetch("http://localhost:8084/maps", {
     body: JSON.stringify(body ?? { mapUid, authorTime, name }),
     method,
     headers: apikey ? { "x-api-key": apikey } : headers,
@@ -40,11 +40,11 @@ export const mapCreate = ({
 };
 
 export const playerGet = (_: Pool, accountId: string) => {
-  return fetch(`http://localhost:8081/players?accountId=${accountId}`);
+  return fetch(`http://localhost:8084/players?accountId=${accountId}`);
 };
 
 export const playerGetAll = () => {
-  return fetch(`http://localhost:8081/players`);
+  return fetch(`http://localhost:8084/players`);
 };
 
 export const playerCreate = ({
@@ -68,7 +68,7 @@ export const playerCreate = ({
   headers?: any;
   apikey?: string;
 } = {}) => {
-  return fetch("http://localhost:8081/players", {
+  return fetch("http://localhost:8084/players", {
     body: JSON.stringify(body ?? { accountId, name, color, displayName }),
     method,
     headers: apikey ? { "x-api-key": apikey } : headers,
@@ -77,7 +77,7 @@ export const playerCreate = ({
 
 export const medalTimesGet = (accountId: string, mapUid: string) => {
   return fetch(
-    `http://localhost:8081/medaltimes?accountId=${accountId}&mapUid=${mapUid}`
+    `http://localhost:8084/medaltimes?accountId=${accountId}&mapUid=${mapUid}`
   );
 };
 
@@ -100,7 +100,7 @@ export const medalTimesCreate = ({
   headers?: any;
   apikey?: string;
 } = {}) => {
-  return fetch("http://localhost:8081/medaltimes", {
+  return fetch("http://localhost:8084/medaltimes", {
     body: JSON.stringify(body ?? { accountId, mapUid, medalTime }),
     method,
     headers: apikey ? { "x-api-key": apikey } : headers,

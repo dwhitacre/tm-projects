@@ -2,11 +2,11 @@ import { faker } from "@faker-js/faker";
 import type { Pool } from "pg";
 
 export const playerGet = (_: Pool, accountId: string) => {
-  return fetch(`http://localhost:8081/players?accountId=${accountId}`);
+  return fetch(`http://localhost:8082/players?accountId=${accountId}`);
 };
 
 export const playerGetAll = () => {
-  return fetch(`http://localhost:8081/players`);
+  return fetch(`http://localhost:8082/players`);
 };
 
 export const playerCreate = ({
@@ -30,7 +30,7 @@ export const playerCreate = ({
   headers?: any;
   apikey?: string;
 } = {}) => {
-  return fetch("http://localhost:8081/players", {
+  return fetch("http://localhost:8082/players", {
     body: JSON.stringify(body ?? { accountId, name, color, displayName }),
     method,
     headers: apikey ? { "x-api-key": apikey } : headers,

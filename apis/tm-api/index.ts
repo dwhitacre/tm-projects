@@ -3,7 +3,7 @@ import ApiRequest from "./domain/apirequest";
 import handle from "./routes";
 
 const server = Bun.serve({
-  port: 8081,
+  port: process.env.PORT ?? 8081,
   hostname: process.env.HOST ?? "localhost",
   async fetch(req) {
     const request = new ApiRequest(req, services);

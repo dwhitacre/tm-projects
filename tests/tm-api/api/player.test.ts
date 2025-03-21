@@ -9,7 +9,7 @@ test("get player dne", async () => {
 
 test("create player no adminkey", async () => {
   const accountId = faker.string.uuid().replace(/^.{4}/, "2000");
-  const response = await fetch("http://localhost:8081/api/player", {
+  const response = await fetch("http://localhost:8083/api/player", {
     body: JSON.stringify({ accountId }),
     method: "PUT",
   });

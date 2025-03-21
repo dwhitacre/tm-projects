@@ -25,7 +25,7 @@ afterAll(async () => {
 });
 
 test("returns 200", async () => {
-  const response = await fetch("http://localhost:8081/me");
+  const response = await fetch("http://localhost:8082/me");
   expect(response.status).toEqual(200);
 
   const json = await response.json();
@@ -42,7 +42,7 @@ test("returns 200 when bad apikey", async () => {
   const apikey = faker.string.uuid();
   await apikeyCreate(pool, accountId, apikey);
 
-  const response = await fetch(`http://localhost:8081/me?api-key=garbage`);
+  const response = await fetch(`http://localhost:8082/me?api-key=garbage`);
   expect(response.status).toEqual(200);
 
   const json = await response.json();
@@ -59,7 +59,7 @@ test("returns 200 and me with query param", async () => {
   const apikey = faker.string.uuid();
   await apikeyCreate(pool, accountId, apikey);
 
-  const response = await fetch(`http://localhost:8081/me?api-key=${apikey}`);
+  const response = await fetch(`http://localhost:8082/me?api-key=${apikey}`);
   expect(response.status).toEqual(200);
 
   const json = await response.json();
@@ -77,7 +77,7 @@ test("returns 200 and me with header", async () => {
   const apikey = faker.string.uuid();
   await apikeyCreate(pool, accountId, apikey);
 
-  const response = await fetch(`http://localhost:8081/me`, {
+  const response = await fetch(`http://localhost:8082/me`, {
     headers: {
       "x-api-key": apikey,
     },
@@ -110,7 +110,7 @@ test("returns 200 and me with permissions", async () => {
     await playerPermissionsCreate(pool, accountId, permissions[i]);
   }
 
-  const response = await fetch(`http://localhost:8081/me?api-key=${apikey}`);
+  const response = await fetch(`http://localhost:8082/me?api-key=${apikey}`);
   expect(response.status).toEqual(200);
 
   const json = await response.json();
@@ -146,11 +146,11 @@ test("returns 200 and me with permissions after delete", async () => {
     await playerPermissionsCreate(pool, accountId, permissions[i]);
   }
 
-  await fetch(`http://localhost:8081/me?api-key=${apikey}`);
+  await fetch(`http://localhost:8082/me?api-key=${apikey}`);
 
   await playerPermissionsDelete(pool, accountId, "admin");
 
-  const response = await fetch(`http://localhost:8081/me?api-key=${apikey}`);
+  const response = await fetch(`http://localhost:8082/me?api-key=${apikey}`);
   expect(response.status).toEqual(200);
 
   const json = await response.json();

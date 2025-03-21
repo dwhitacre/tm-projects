@@ -90,7 +90,7 @@ test("get medaltimes no accountid", async () => {
   });
 
   const response = await fetch(
-    `http://localhost:8081/medaltimes?mapUid=${mapUid}`
+    `http://localhost:8084/medaltimes?mapUid=${mapUid}`
   );
   expect(response.status).toEqual(400);
 });
@@ -102,7 +102,7 @@ test("get medaltimes no mapUid", async () => {
   });
 
   const response = await fetch(
-    `http://localhost:8081/medaltimes?accountId=${accountId}`
+    `http://localhost:8084/medaltimes?accountId=${accountId}`
   );
   expect(response.status).toEqual(200);
 
@@ -412,7 +412,7 @@ test("create medaltimes multiple maps all maps request", async () => {
   expect(response2.status).toEqual(200);
 
   const getResponse = await fetch(
-    `http://localhost:8081/medaltimes?accountId=${accountId}`
+    `http://localhost:8084/medaltimes?accountId=${accountId}`
   );
   const json = await getResponse.json();
 

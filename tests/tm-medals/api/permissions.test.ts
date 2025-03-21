@@ -51,7 +51,7 @@ test("apikey:manage", async () => {
 
 test("medaltimes:manage", async () => {
   const apikey = await playerWithPermissionCreate(pool, "medaltimes:manage");
-  let response = await fetch(`http://localhost:8081/me?api-key=${apikey}`);
+  let response = await fetch(`http://localhost:8084/me?api-key=${apikey}`);
   const accountId = (await response.json()).me.accountId;
 
   response = await mapCreate({ apikey });
@@ -168,7 +168,7 @@ test("multiple - map:manage, player:manage, medaltimes:manage", async () => {
     "medaltimes:manage",
     "player:manage",
   ]);
-  let response = await fetch(`http://localhost:8081/me?api-key=${apikey}`);
+  let response = await fetch(`http://localhost:8084/me?api-key=${apikey}`);
   const accountId = (await response.json()).me.accountId;
 
   response = await mapCreate({ apikey });

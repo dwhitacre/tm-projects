@@ -15,7 +15,7 @@ test("get leaderboard dne", async () => {
 
 test("create leaderboard no adminkey", async () => {
   const name = faker.word.words(3);
-  const response = await fetch("http://localhost:8081/api/leaderboard", {
+  const response = await fetch("http://localhost:8083/api/leaderboard", {
     body: JSON.stringify({ name }),
     method: "PUT",
   });
@@ -145,7 +145,7 @@ test("create leaderboard score no admin key", async () => {
   });
 
   const response = await fetch(
-    `http://localhost:8081/api/leaderboard/${leaderboardId}/score`,
+    `http://localhost:8083/api/leaderboard/${leaderboardId}/score`,
     {
       body: JSON.stringify({ accountId }),
       method: "PUT",

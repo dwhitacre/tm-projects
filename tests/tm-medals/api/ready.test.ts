@@ -1,7 +1,7 @@
 import { expect, test } from "bun:test";
 
 test("returns 200 on ready route", async () => {
-  const response = await fetch("http://localhost:8081/ready");
+  const response = await fetch("http://localhost:8084/ready");
   expect(response.status).toEqual(200);
 
   const json = await response.json();

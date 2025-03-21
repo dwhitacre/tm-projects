@@ -1,7 +1,7 @@
 import { faker } from "@faker-js/faker";
 
 export const playerGet = (accountId: string) => {
-  return fetch(`http://localhost:8081/api/player/${accountId}`);
+  return fetch(`http://localhost:8083/api/player/${accountId}`);
 };
 
 export const playerCreate = ({
@@ -13,7 +13,7 @@ export const playerCreate = ({
   body?: any;
   method?: string;
 } = {}) => {
-  return fetch("http://localhost:8081/api/player", {
+  return fetch("http://localhost:8083/api/player", {
     body: JSON.stringify(body ?? { accountId }),
     method,
     headers: {
@@ -33,7 +33,7 @@ export const playerOverride = ({
   method?: string;
   overrides?: any;
 } = {}) => {
-  return fetch("http://localhost:8081/api/player", {
+  return fetch("http://localhost:8083/api/player", {
     body: JSON.stringify(body ?? { accountId, ...overrides }),
     method,
     headers: {
@@ -43,7 +43,7 @@ export const playerOverride = ({
 };
 
 export const leaderboardGet = (leaderboardId: string) => {
-  return fetch(`http://localhost:8081/api/leaderboard/${leaderboardId}`);
+  return fetch(`http://localhost:8083/api/leaderboard/${leaderboardId}`);
 };
 
 export const leaderboardCreate = ({
@@ -53,7 +53,7 @@ export const leaderboardCreate = ({
   body?: any;
   method?: string;
 } = {}) => {
-  return fetch("http://localhost:8081/api/leaderboard", {
+  return fetch("http://localhost:8083/api/leaderboard", {
     body: JSON.stringify(body),
     method,
     headers: {
@@ -72,7 +72,7 @@ export const leaderboardScoreGet = ({
   method?: string;
 } = {}) => {
   return fetch(
-    `http://localhost:8081/api/leaderboard/${leaderboardId}/score/${accountId}`
+    `http://localhost:8083/api/leaderboard/${leaderboardId}/score/${accountId}`
   );
 };
 
@@ -81,7 +81,7 @@ export const leaderboardScoreCreate = ({
   body,
   method = "PUT",
 }: { leaderboardId?: number; body?: any; method?: string } = {}) => {
-  return fetch(`http://localhost:8081/api/leaderboard/${leaderboardId}/score`, {
+  return fetch(`http://localhost:8083/api/leaderboard/${leaderboardId}/score`, {
     body: JSON.stringify(body),
     method,
     headers: {
