@@ -6,7 +6,7 @@ source "$SCRIPT_DIR/watch_fs.sh"
 
 log "lgrey" "Loaded scripts from the directory $SCRIPT_DIR"
 
-ROOT_DIR="$(git rev-parse --show-toplevel)/plugin"
+ROOT_DIR="$(git rev-parse --show-toplevel)/plugins/player-medals"
 SRC_DIR="$ROOT_DIR/src"
 INFO_TOML="$ROOT_DIR/info.toml"
 PLUGINS_DIR=${PLUGINS_DIR:-$HOME/OpenplanetNext/Plugins}

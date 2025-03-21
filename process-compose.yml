@@ -46,6 +46,18 @@ processes:
       - "PORT=8084"
       - "DEBUG=true"
 
+  hds-bounty-plugin:
+    working_dir: plugins/hds-bounty
+    command: bash .bin/build.sh -w
+
+  player-medals-plugin:
+    working_dir: plugins/player-medals
+    command: bash .bin/build.sh -w
+
+  snake-plugin:
+    working_dir: plugins/snake
+    command: bash .bin/build.sh -w
+
   dbs:
     working_dir: .
     command: docker compose up dbs
