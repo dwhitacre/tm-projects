@@ -1,22 +1,6 @@
 replicaCount: 2
 maxUnavailable: 1
 
-app:
-  image:
-    repository: danonthemoon/tm-medals-app
-    pullPolicy: Always
-    tag: latest
-  resources:
-    limits:
-      cpu: 250m
-      memory: 256Mi
-    requests:
-      cpu: 100m
-      memory: 128Mi
-  service:
-    port: 80
-  securityContext: {}
-
 api:
   image:
     repository: danonthemoon/tm-medals-api
