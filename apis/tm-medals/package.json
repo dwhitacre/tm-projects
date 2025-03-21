@@ -2,7 +2,7 @@
   "name": "api",
   "module": "index.ts",
   "devDependencies": {
-    "@types/bun": "^1.2.1",
+    "@types/bun": "^1.2.5",
     "@types/pg": "^8.11.11"
   },
   "peerDependencies": {
@@ -14,6 +14,6 @@
   },
   "type": "module",
   "dependencies": {
-    "pg": "^8.13.1"
+    "pg": "^8.14.1"
   }
 }

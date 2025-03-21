@@ -2,11 +2,11 @@
   "name": "api",
   "module": "index.ts",
   "devDependencies": {
-    "@types/bun": "^1.1.7",
-    "@types/pg": "^8.11.6"
+    "@types/bun": "^1.2.5",
+    "@types/pg": "^8.11.11"
   },
   "peerDependencies": {
-    "typescript": "^5.0.0"
+    "typescript": "^5.5.4"
   },
   "scripts": {
     "start": "bun run index.ts",
@@ -16,6 +16,6 @@
   },
   "type": "module",
   "dependencies": {
-    "pg": "^8.12.0"
+    "pg": "^8.14.1"
   }
 }
