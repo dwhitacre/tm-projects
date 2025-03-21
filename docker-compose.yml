@@ -1,6 +1,18 @@
 name: tm-projects
 
 services:
+  hds-tm-events-app:
+    build:
+      context: apps/hds-tm-events
+    image: hdstmevents/app:latest
+    restart: unless-stopped
+    ports:
+      - 8000:80
+    networks:
+      - server-network
+    depends_on:
+      - hds-tm-events-api
+
   hds-tm-events-api:
     build:
       context: apis/hds-tm-events

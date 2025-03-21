@@ -1,1 +1,25 @@
 version: "0.5"
+
+processes:
+  hds-tm-events-app:
+    working_dir: apps/hds-tm-events
+    command: yarn start
+  hds-tm-events-api:
+    working_dir: apis/hds-tm-events
+    command: bun run watch
+    environment:
+      - "DATABASE_CONNSTR=postgres://hdstmevents:Passw0rd!@localhost:5432/hdstmevents?pool_max_conns=10"
+      - "ADMIN_KEY=developer-test-key"
+      - "HOST=localhost"
+      - "DEBUG=true"
+      - "TMIO_URL=http://localhost:8100"
+  dbs:
+    working_dir: .
+    command: docker compose up dbs
+    shutdown:
+      command: docker compose stop dbs
+  tmiosim:
+    working_dir: .
+    command: docker compose up tmiosim
+    shutdown:
+      command: docker compose stop tmiosim
