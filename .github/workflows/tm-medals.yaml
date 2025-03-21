@@ -1,6 +1,13 @@
 name: TM Medals
 on:
   push:
+    paths:
+      - apis/tm-medals/**
+      - charts/tm-medals/**
+      - dbs/tmmedals/**
+      - plugins/player-medals/**
+      - tests/tm-medals/**
+      - .github/workflows/tm-medals.yaml
   workflow_dispatch:
 
 concurrency:
