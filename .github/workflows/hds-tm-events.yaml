@@ -1,6 +1,16 @@
 name: HDs TM Events
 on:
   push:
+    paths:
+      - .github/workflows/hds-tm-events.yaml
+      - apis/hds-tm-events/**
+      - apps/hds-tm-events/**
+      - charts/hds-tm-events/**
+      - dbs/hsdtmevents/**
+      - plugins/hds-bounty/**
+      - sims/**
+      - tests/hds-tm-events/**
+  workflow_dispatch:
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}

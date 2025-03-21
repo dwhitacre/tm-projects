@@ -1,6 +1,14 @@
 name: Openplanet Snake
 on:
   push:
+    paths:
+      - .github/workflows/openplanet-snake.yaml
+      - apis/openplanet-snake/**
+      - charts/openplanet-snake/**
+      - dbs/openplanetsnake/**
+      - plugins/snake/**
+      - sims/**
+      - tests/openplanet-snake/**
   workflow_dispatch:
 
 concurrency:
