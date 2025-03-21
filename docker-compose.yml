@@ -1,13 +1,15 @@
 name: tm-projects
 
 services:
-  tm-medals-api:
+  hds-tm-events-api:
     build:
-      context: apis/tm-medals
-    image: danonthemoon/tm-medals-api:latest
+      context: apis/hds-tm-events
+    image: hdstmevents/api:latest
     restart: unless-stopped
     environment:
-      DATABASE_CONNSTR: postgres://admin:Passw0rd!@dbs:5432/tmmedals?pool_max_conns=10
+      DATABASE_CONNSTR: postgres://hdstmevents:Passw0rd!@db:5432/hdstmevents?pool_max_conns=10
+      ADMIN_KEY: developer-test-key
+      TMIO_URL: http://tmiosim:8100
       HOST: 0.0.0.0
     ports:
       - 8081:8081
@@ -15,6 +17,52 @@ services:
       - server-network
     depends_on:
       - dbs
+      - tmiosim
+
+  openplanet-snake-api:
+    build:
+      context: apis/openplanet-snake
+    image: danonthemoon/openplanet-snake-api:latest
+    restart: unless-stopped
+    environment:
+      DATABASE_CONNSTR: postgres://openplanetsnake:Passw0rd!@db:5432/openplanetsnake?pool_max_conns=10
+      HOST: 0.0.0.0
+    ports:
+      - 8082:8081
+    networks:
+      - server-network
+    depends_on:
+      - dbs
+
+  tm-api:
+    build:
+      context: apis/tm-api
+    image: tmapi/api:latest
+    restart: unless-stopped
+    environment:
+      DATABASE_CONNSTR: postgres://tmapi:Passw0rd!@db:5432/tmapi?pool_max_conns=10
+      TMIO_URL: http://tmiosim:8100
+      HOST: 0.0.0.0
+    ports:
+      - 8083:8081
+    networks:
+      - server-network
+
+  tm-medals-api:
+    build:
+      context: apis/tm-medals
+    image: danonthemoon/tm-medals-api:latest
+    restart: unless-stopped
+    environment:
+      DATABASE_CONNSTR: postgres://tmmedals:Passw0rd!@dbs:5432/tmmedals?pool_max_conns=10
+      HOST: 0.0.0.0
+    ports:
+      - 8084:8081
+    networks:
+      - server-network
+    depends_on:
+      - dbs
+
   dbs:
     image: postgres:16
     restart: unless-stopped
@@ -28,7 +76,18 @@ services:
     ports:
       - 5432:5432
     volumes:
-      - ./dbs/init-user-db.sh:/docker-entrypoint-initdb.d/init-user-db.sh
+      - ./dbs/init-user-db.sh:/docker-entrypoint-initdb.d/init-user-db.sh:ro
+
+  tmiosim:
+    image: mockoon/cli:9
+    command: ["-d", "/data/mockoon.json", "-p", "8100"]
+    restart: unless-stopped
+    networks:
+      - server-network
+    ports:
+      - 8100:8100
+    volumes:
+      - ./sims/tmiosim/:/data:ro
 
 networks:
   server-network:
