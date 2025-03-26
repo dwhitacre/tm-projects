@@ -1,12 +1,11 @@
 import { afterAll, beforeAll, expect, test } from "bun:test";
 import { Pool } from "pg";
 import {
-  mapCreate,
-  medalTimesCreate,
+  adminClient,
   playerAdminCreate,
-  playerCreate,
   playerWithPermissionCreate,
 } from "./api";
+import { faker } from "@faker-js/faker";
 
 let pool: Pool;
 
@@ -24,125 +23,229 @@ afterAll(async () => {
 test("admin", async () => {
   const apikey = await playerWithPermissionCreate(pool, "admin");
 
-  let response = await mapCreate({ apikey });
+  const response = await adminClient(apikey).createMap(
+    faker.string.uuid(),
+    1000,
+    faker.word.words(3)
+  );
   expect(response.status).toBe(200);
-  const mapUid = (await response.json()).map.mapUid;
+  const mapUid = (await response.json()).map!.mapUid;
 
-  response = await playerCreate({ apikey });
-  expect(response.status).toBe(200);
-  const accountId = (await response.json()).player.accountId;
+  const playerResponse = await adminClient(apikey).createPlayer(
+    faker.string.uuid(),
+    faker.internet.username(),
+    "3F3"
+  );
+  expect(playerResponse.status).toBe(200);
+  const accountId = (await playerResponse.json()).player!.accountId;
 
-  response = await medalTimesCreate({ apikey, accountId, mapUid });
-  expect(response.status).toBe(200);
+  const medalTimeResponse = await adminClient(apikey).createMedalTime(
+    mapUid,
+    accountId,
+    1000
+  );
+  expect(medalTimeResponse.status).toBe(200);
 });
 
 test("apikey:manage", async () => {
   const apikey = await playerWithPermissionCreate(pool, "apikey:manage");
 
-  let response = await mapCreate({ apikey });
+  const response = await adminClient(apikey).createMap(
+    faker.string.uuid(),
+    1000,
+    faker.word.words(3)
+  );
   expect(response.status).toBe(401);
 
-  response = await playerCreate({ apikey });
-  expect(response.status).toBe(401);
+  const playerResponse = await adminClient(apikey).createPlayer(
+    faker.string.uuid(),
+    faker.internet.username(),
+    "3F3"
+  );
+  expect(playerResponse.status).toBe(401);
 
-  response = await medalTimesCreate({ apikey });
-  expect(response.status).toBe(401);
+  const medalTimeResponse = await adminClient(apikey).createMedalTime(
+    faker.string.uuid(),
+    faker.string.uuid(),
+    1000
+  );
+  expect(medalTimeResponse.status).toBe(401);
 });
 
 test("medaltimes:manage", async () => {
   const apikey = await playerWithPermissionCreate(pool, "medaltimes:manage");
-  let response = await fetch(`http://localhost:8084/me?api-key=${apikey}`);
-  const accountId = (await response.json()).me.accountId;
+  const response = await adminClient(apikey).getMe();
+  const accountId = (await response.json()).me!.accountId;
 
-  response = await mapCreate({ apikey });
-  expect(response.status).toBe(401);
+  const mapResponse = await adminClient(apikey).createMap(
+    faker.string.uuid(),
+    1000,
+    faker.word.words(3)
+  );
+  expect(mapResponse.status).toBe(401);
 
-  response = await playerCreate({ apikey });
-  expect(response.status).toBe(401);
+  const playerResponse = await adminClient(apikey).createPlayer(
+    faker.string.uuid(),
+    faker.internet.username(),
+    "3F3"
+  );
+  expect(playerResponse.status).toBe(401);
 
   const adminApiKey = await playerAdminCreate(pool);
-  response = await mapCreate({ apikey: adminApiKey });
-  const mapUid = (await response.json()).map.mapUid;
+  const mapResponse2 = await adminClient(adminApiKey).createMap(
+    faker.string.uuid(),
+    1000,
+    faker.word.words(3)
+  );
+  const mapUid = (await mapResponse2.json()).map!.mapUid;
 
-  response = await playerCreate({ apikey: adminApiKey });
-  const otherAccountId = (await response.json()).player.accountId;
+  const playerResponse2 = await adminClient(adminApiKey).createPlayer(
+    faker.string.uuid(),
+    faker.internet.username(),
+    "3F3"
+  );
+  const otherAccountId = (await playerResponse2.json()).player!.accountId;
 
-  response = await medalTimesCreate({
-    apikey,
-    accountId: otherAccountId,
+  const medalTimeResponse = await adminClient(apikey).createMedalTime(
     mapUid,
-  });
-  expect(response.status).toBe(401);
+    otherAccountId,
+    1000
+  );
+  expect(medalTimeResponse.status).toBe(401);
 
-  response = await medalTimesCreate({ apikey, mapUid, accountId });
-  expect(response.status).toBe(200);
+  const medalTimeResponse2 = await adminClient(apikey).createMedalTime(
+    mapUid,
+    accountId,
+    1000
+  );
+  expect(medalTimeResponse2.status).toBe(200);
 });
 
 test("map:manage", async () => {
   const apikey = await playerWithPermissionCreate(pool, "map:manage");
 
-  let response = await mapCreate({ apikey });
+  const response = await adminClient(apikey).createMap(
+    faker.string.uuid(),
+    1000,
+    faker.word.words(3)
+  );
   expect(response.status).toBe(200);
 
-  response = await playerCreate({ apikey });
-  expect(response.status).toBe(401);
+  const playerResponse = await adminClient(apikey).createPlayer(
+    faker.string.uuid(),
+    faker.internet.username(),
+    "3F3"
+  );
+  expect(playerResponse.status).toBe(401);
 
-  response = await medalTimesCreate({ apikey });
-  expect(response.status).toBe(401);
+  const medalTimeResponse = await adminClient(apikey).createMedalTime(
+    faker.string.uuid(),
+    faker.string.uuid(),
+    1000
+  );
+  expect(medalTimeResponse.status).toBe(401);
 });
 
 test("zone:manage", async () => {
   const apikey = await playerWithPermissionCreate(pool, "zone:manage");
 
-  let response = await mapCreate({ apikey });
+  const response = await adminClient(apikey).createMap(
+    faker.string.uuid(),
+    1000,
+    faker.word.words(3)
+  );
   expect(response.status).toBe(401);
 
-  response = await playerCreate({ apikey });
-  expect(response.status).toBe(401);
+  const playerResponse = await adminClient(apikey).createPlayer(
+    faker.string.uuid(),
+    faker.internet.username(),
+    "3F3"
+  );
+  expect(playerResponse.status).toBe(401);
 
-  response = await medalTimesCreate({ apikey });
-  expect(response.status).toBe(401);
+  const medalTimeResponse = await adminClient(apikey).createMedalTime(
+    faker.string.uuid(),
+    faker.string.uuid(),
+    1000
+  );
+  expect(medalTimeResponse.status).toBe(401);
 });
 
 test("player:manage", async () => {
   const apikey = await playerWithPermissionCreate(pool, "player:manage");
 
-  let response = await mapCreate({ apikey });
+  const response = await adminClient(apikey).createMap(
+    faker.string.uuid(),
+    1000,
+    faker.word.words(3)
+  );
   expect(response.status).toBe(401);
 
-  response = await playerCreate({ apikey });
-  expect(response.status).toBe(200);
+  const playerResponse = await adminClient(apikey).createPlayer(
+    faker.string.uuid(),
+    faker.internet.username(),
+    "3F3"
+  );
+  expect(playerResponse.status).toBe(200);
 
-  response = await medalTimesCreate({ apikey });
-  expect(response.status).toBe(401);
+  const medalTimeResponse = await adminClient(apikey).createMedalTime(
+    faker.string.uuid(),
+    faker.string.uuid(),
+    1000
+  );
+  expect(medalTimeResponse.status).toBe(401);
 });
 
 test("view", async () => {
   const apikey = await playerWithPermissionCreate(pool, "view");
 
-  let response = await mapCreate({ apikey });
+  const response = await adminClient(apikey).createMap(
+    faker.string.uuid(),
+    1000,
+    faker.word.words(3)
+  );
   expect(response.status).toBe(401);
 
-  response = await playerCreate({ apikey });
-  expect(response.status).toBe(401);
+  const playerResponse = await adminClient(apikey).createPlayer(
+    faker.string.uuid(),
+    faker.internet.username(),
+    "3F3"
+  );
+  expect(playerResponse.status).toBe(401);
 
-  response = await medalTimesCreate({ apikey });
-  expect(response.status).toBe(401);
+  const medalTimeResponse = await adminClient(apikey).createMedalTime(
+    faker.string.uuid(),
+    faker.string.uuid(),
+    1000
+  );
+  expect(medalTimeResponse.status).toBe(401);
 });
 
 test("multiple - admin, view", async () => {
   const apikey = await playerWithPermissionCreate(pool, ["admin", "view"]);
 
-  let response = await mapCreate({ apikey });
+  const response = await adminClient(apikey).createMap(
+    faker.string.uuid(),
+    1000,
+    faker.word.words(3)
+  );
   expect(response.status).toBe(200);
-  const mapUid = (await response.json()).map.mapUid;
+  const mapUid = (await response.json()).map!.mapUid;
 
-  response = await playerCreate({ apikey });
-  expect(response.status).toBe(200);
-  const accountId = (await response.json()).player.accountId;
+  const playerResponse = await adminClient(apikey).createPlayer(
+    faker.string.uuid(),
+    faker.internet.username(),
+    "3F3"
+  );
+  expect(playerResponse.status).toBe(200);
+  const accountId = (await playerResponse.json()).player!.accountId;
 
-  response = await medalTimesCreate({ apikey, accountId, mapUid });
-  expect(response.status).toBe(200);
+  const medalTimeResponse = await adminClient(apikey).createMedalTime(
+    mapUid,
+    accountId,
+    1000
+  );
+  expect(medalTimeResponse.status).toBe(200);
 });
 
 test("multiple - apikey:manage, zone:manage, view", async () => {
@@ -152,14 +255,26 @@ test("multiple - apikey:manage, zone:manage, view", async () => {
     "view",
   ]);
 
-  let response = await mapCreate({ apikey });
+  const response = await adminClient(apikey).createMap(
+    faker.string.uuid(),
+    1000,
+    faker.word.words(3)
+  );
   expect(response.status).toBe(401);
 
-  response = await playerCreate({ apikey });
-  expect(response.status).toBe(401);
+  const playerResponse = await adminClient(apikey).createPlayer(
+    faker.string.uuid(),
+    faker.internet.username(),
+    "3F3"
+  );
+  expect(playerResponse.status).toBe(401);
 
-  response = await medalTimesCreate({ apikey });
-  expect(response.status).toBe(401);
+  const medalTimeResponse = await adminClient(apikey).createMedalTime(
+    faker.string.uuid(),
+    faker.string.uuid(),
+    1000
+  );
+  expect(medalTimeResponse.status).toBe(401);
 });
 
 test("multiple - map:manage, player:manage, medaltimes:manage", async () => {
@@ -168,18 +283,30 @@ test("multiple - map:manage, player:manage, medaltimes:manage", async () => {
     "medaltimes:manage",
     "player:manage",
   ]);
-  let response = await fetch(`http://localhost:8084/me?api-key=${apikey}`);
-  const accountId = (await response.json()).me.accountId;
+  const response = await adminClient(apikey).getMe();
+  const accountId = (await response.json()).me!.accountId;
 
-  response = await mapCreate({ apikey });
-  expect(response.status).toBe(200);
-  const mapUid = (await response.json()).map.mapUid;
+  const mapResponse = await adminClient(apikey).createMap(
+    faker.string.uuid(),
+    1000,
+    faker.word.words(3)
+  );
+  expect(mapResponse.status).toBe(200);
+  const mapUid = (await mapResponse.json()).map!.mapUid;
 
-  response = await playerCreate({ apikey });
-  expect(response.status).toBe(200);
+  const playerResponse = await adminClient(apikey).createPlayer(
+    faker.string.uuid(),
+    faker.internet.username(),
+    "3F3"
+  );
+  expect(playerResponse.status).toBe(200);
 
-  response = await medalTimesCreate({ apikey, accountId, mapUid });
-  expect(response.status).toBe(200);
+  const medalTimeResponse = await adminClient(apikey).createMedalTime(
+    mapUid,
+    accountId,
+    1000
+  );
+  expect(medalTimeResponse.status).toBe(200);
 });
 
 test("multiple - map:manage, player:manage", async () => {
@@ -188,14 +315,26 @@ test("multiple - map:manage, player:manage", async () => {
     "player:manage",
   ]);
 
-  let response = await mapCreate({ apikey });
+  const response = await adminClient(apikey).createMap(
+    faker.string.uuid(),
+    1000,
+    faker.word.words(3)
+  );
   expect(response.status).toBe(200);
-  const mapUid = (await response.json()).map.mapUid;
+  const mapUid = (await response.json()).map!.mapUid;
 
-  response = await playerCreate({ apikey });
-  expect(response.status).toBe(200);
-  const accountId = (await response.json()).player.accountId;
+  const playerResponse = await adminClient(apikey).createPlayer(
+    faker.string.uuid(),
+    faker.internet.username(),
+    "3F3"
+  );
+  expect(playerResponse.status).toBe(200);
+  const accountId = (await playerResponse.json()).player!.accountId;
 
-  response = await medalTimesCreate({ apikey, accountId, mapUid });
-  expect(response.status).toBe(401);
+  const medalTimeResponse = await adminClient(apikey).createMedalTime(
+    mapUid,
+    accountId,
+    1000
+  );
+  expect(medalTimeResponse.status).toBe(401);
 });

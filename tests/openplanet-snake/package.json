@@ -1,5 +1,5 @@
 {
-  "name": "test",
+  "name": "openplanet-snake-tests",
   "module": "index.ts",
   "private": true,
   "type": "module",

@@ -1,5 +1,5 @@
 {
-  "name": "test",
+  "name": "tm-medals-tests",
   "module": "index.ts",
   "private": true,
   "type": "module",
@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@faker-js/faker": "^9.6.0",
-    "pg": "^8.14.1"
+    "pg": "^8.14.1",
+    "shared": "link:shared"
   }
 }

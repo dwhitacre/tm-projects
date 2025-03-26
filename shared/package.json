@@ -1,15 +1,12 @@
 {
-  "name": "tm-api-tests",
+  "name": "shared",
   "module": "index.ts",
-  "private": true,
   "type": "module",
+  "private": true,
   "devDependencies": {
     "@types/bun": "latest"
   },
   "peerDependencies": {
-    "typescript": "^5.7.2"
-  },
-  "dependencies": {
-    "@faker-js/faker": "^9.6.0"
+    "typescript": "^5"
   }
 }

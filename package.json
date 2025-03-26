@@ -1,0 +1,22 @@
+{
+  "name": "tm-projects",
+  "type": "module",
+  "private": true,
+  "workspaces": [
+    "shared",
+    "tests/*"
+  ],
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  },
+  "scripts": {
+    "test:shared": "bun test shared",
+    "test:hds-tm-events": "bun test tests/hds-tm-events",
+    "test:openplanet-snake": "bun test tests/openplanet-snake",
+    "test:tm-api": "bun test tests/tm-api",
+    "test:tm-medals": "bun test tests/tm-medals"
+  }
+}

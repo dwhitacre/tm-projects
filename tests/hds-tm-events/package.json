@@ -1,5 +1,5 @@
 {
-  "name": "e2e",
+  "name": "hds-tm-events-tests",
   "version": "1.0.0",
   "author": "Dan Whitacre <dan@whitacre.dev>",
   "license": "MIT",

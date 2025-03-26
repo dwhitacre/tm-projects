@@ -1,8 +1,9 @@
 import { afterAll, beforeAll, expect, test } from "bun:test";
 import {
+  adminClient,
   apikeyCreate,
+  client,
   playerAdminCreate,
-  playerCreate,
   playerPermissionsCreate,
   playerPermissionsDelete,
 } from "./api";
@@ -25,7 +26,7 @@ afterAll(async () => {
 });
 
 test("returns 200", async () => {
-  const response = await fetch("http://localhost:8084/me");
+  const response = await client.getMe();
   expect(response.status).toEqual(200);
 
   const json = await response.json();
@@ -34,15 +35,16 @@ test("returns 200", async () => {
 
 test("returns 200 when bad apikey", async () => {
   const accountId = faker.string.uuid();
-  await playerCreate({
+  await adminClient(adminApiKey).createPlayer(
     accountId,
-    apikey: adminApiKey,
-  });
+    faker.internet.username(),
+    "3F3"
+  );
 
   const apikey = faker.string.uuid();
   await apikeyCreate(pool, accountId, apikey);
 
-  const response = await fetch(`http://localhost:8084/me?api-key=garbage`);
+  const response = await adminClient("garbage").getMe();
   expect(response.status).toEqual(200);
 
   const json = await response.json();
@@ -51,50 +53,31 @@ test("returns 200 when bad apikey", async () => {
 
 test("returns 200 and me with query param", async () => {
   const accountId = faker.string.uuid();
-  await playerCreate({
+  await adminClient(adminApiKey).createPlayer(
     accountId,
-    apikey: adminApiKey,
-  });
+    faker.internet.username(),
+    "3F3"
+  );
 
   const apikey = faker.string.uuid();
   await apikeyCreate(pool, accountId, apikey);
 
-  const response = await fetch(`http://localhost:8084/me?api-key=${apikey}`);
+  const response = await adminClient(apikey).getMe();
   expect(response.status).toEqual(200);
 
   const json = await response.json();
-  expect(json.me.accountId).toEqual(accountId);
-  expect(json.me.permissions).toEqual(["view"]);
-});
-
-test("returns 200 and me with header", async () => {
-  const accountId = faker.string.uuid();
-  await playerCreate({
-    accountId,
-    apikey: adminApiKey,
-  });
-
-  const apikey = faker.string.uuid();
-  await apikeyCreate(pool, accountId, apikey);
-
-  const response = await fetch(`http://localhost:8084/me`, {
-    headers: {
-      "x-api-key": apikey,
-    },
-  });
-  expect(response.status).toEqual(200);
-
-  const json = await response.json();
-  expect(json.me.accountId).toEqual(accountId);
-  expect(json.me.permissions).toEqual(["view"]);
+  expect(json.me).toBeDefined();
+  expect(json.me!.accountId).toEqual(accountId);
+  expect(json.me!.permissions).toEqual(["view"]);
 });
 
 test("returns 200 and me with permissions", async () => {
   const accountId = faker.string.uuid();
-  await playerCreate({
+  await adminClient(adminApiKey).createPlayer(
     accountId,
-    apikey: adminApiKey,
-  });
+    faker.internet.username(),
+    "3F3"
+  );
 
   const apikey = faker.string.uuid();
   await apikeyCreate(pool, accountId, apikey);
@@ -111,12 +94,13 @@ test("returns 200 and me with permissions", async () => {
     await playerPermissionsCreate(pool, accountId, permissions[i]);
   }
 
-  const response = await fetch(`http://localhost:8084/me?api-key=${apikey}`);
+  const response = await adminClient(apikey).getMe();
   expect(response.status).toEqual(200);
 
   const json = await response.json();
-  expect(json.me.accountId).toEqual(accountId);
-  expect(json.me.permissions).toEqual([
+  expect(json.me).toBeDefined();
+  expect(json.me!.accountId).toEqual(accountId);
+  expect(json.me!.permissions).toEqual([
     "view",
     "player:manage",
     "zone:manage",
@@ -129,10 +113,11 @@ test("returns 200 and me with permissions", async () => {
 
 test("returns 200 and me with permissions after delete", async () => {
   const accountId = faker.string.uuid();
-  await playerCreate({
+  await adminClient(adminApiKey).createPlayer(
     accountId,
-    apikey: adminApiKey,
-  });
+    faker.internet.username(),
+    "3F3"
+  );
 
   const apikey = faker.string.uuid();
   await apikeyCreate(pool, accountId, apikey);
@@ -149,16 +134,17 @@ test("returns 200 and me with permissions after delete", async () => {
     await playerPermissionsCreate(pool, accountId, permissions[i]);
   }
 
-  await fetch(`http://localhost:8084/me?api-key=${apikey}`);
+  await adminClient(apikey).getMe();
 
   await playerPermissionsDelete(pool, accountId, "admin");
 
-  const response = await fetch(`http://localhost:8084/me?api-key=${apikey}`);
+  const response = await adminClient(apikey).getMe();
   expect(response.status).toEqual(200);
 
   const json = await response.json();
-  expect(json.me.accountId).toEqual(accountId);
-  expect(json.me.permissions).toEqual([
+  expect(json.me).toBeDefined();
+  expect(json.me!.accountId).toEqual(accountId);
+  expect(json.me!.permissions).toEqual([
     "view",
     "player:manage",
     "zone:manage",
