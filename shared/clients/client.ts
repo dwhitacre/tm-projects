@@ -3,16 +3,19 @@ import { Json, type JsonAny } from "../domain/json";
 
 export interface ClientOptions {
   baseUrl: string;
-  source?: string;
-  apikey?: string;
-  debug?: boolean;
-  latency?: number;
+  source: string;
+  apikey: string;
+  debug: boolean;
+  latency: number;
 }
 
 export class Client {
   options: ClientOptions;
 
-  constructor(options: ClientOptions) {
+  constructor(options: Partial<ClientOptions>) {
+    if (typeof options.baseUrl === "undefined")
+      throw new Error("options.baseUrl is required.");
+
     this.options = Json.merge(
       {
         source: "unknown",
@@ -61,12 +64,16 @@ export class Client {
     return data;
   }
 
-  handleRequest<T>(
+  async handleRequest<T>(
     path: string,
     method = "GET",
     json?: JsonAny
   ): Promise<ClientResponse<T>> {
     const start = performance.now();
+
+    if (this.options.latency > 0) {
+      await Bun.sleep(this.options.latency);
+    }
 
     const url = this.url(path);
     const req = fetch(url, {

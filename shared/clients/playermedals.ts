@@ -12,7 +12,7 @@ import type { ReadyResponse } from "../domain/ready";
 import { Client, type ClientOptions } from "./client";
 
 export class PlayerMedalsClient extends Client {
-  constructor(options: ClientOptions) {
+  constructor(options: Partial<ClientOptions>) {
     super(options);
   }
 
