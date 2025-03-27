@@ -19,7 +19,8 @@ api:
 
 tmioUrl: https://trackmania.io
 
-imagePullSecrets: []
+imagePullSecrets:
+  - name: danonthemoon-ips
 nameOverride: ""
 fullnameOverride: ""
 

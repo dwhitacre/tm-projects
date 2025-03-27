@@ -35,7 +35,8 @@ api:
 
 tmioUrl: https://trackmania.io
 
-imagePullSecrets: []
+imagePullSecrets:
+  - name: hdstmevents-ips
 nameOverride: ""
 fullnameOverride: ""
 

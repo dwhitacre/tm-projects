@@ -33,7 +33,8 @@ api:
     port: 8081
   securityContext: {}
 
-imagePullSecrets: []
+imagePullSecrets:
+  - name: danonthemoon-ips
 nameOverride: ""
 fullnameOverride: ""
 
