@@ -3,11 +3,11 @@ import type { Map } from "./map";
 import type { Player } from "./player";
 
 export interface MedalTime {
-  mapUid: string;
+  mapUid: Map["mapUid"];
   medalTime: number;
   customMedalTime: number;
   reason: string;
-  accountId: string;
+  accountId: Player["accountId"];
   dateModified?: Date;
 
   map?: Map;

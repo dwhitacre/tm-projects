@@ -1,12 +1,25 @@
-import type { ClientOptions } from "../clients";
-import { Json, type JsonAny, type JsonObject } from "./json";
+import type { ClientOptions } from "../clients/client";
+import { Json, type JsonAny } from "./json";
 
 export interface ClientErrorResponse {
   error: string;
   raw: string;
 }
 
-export class ClientResponse<T = JsonAny> {
+export interface IClientResponse<T = JsonAny> {
+  path: string;
+  start: number;
+  end: number;
+  totalMs: number;
+  baseUrl: string;
+  hasApikey: boolean;
+  request?: unknown;
+  status: number;
+  statusText: string;
+  response: T | ClientErrorResponse;
+}
+
+export class ClientResponse<T = JsonAny> implements IClientResponse<T> {
   path: string;
   start: number;
   end: number;
@@ -50,7 +63,7 @@ export class ClientResponse<T = JsonAny> {
     }) as T | ClientErrorResponse;
   }
 
-  toJson(): JsonObject {
+  toJson(): IClientResponse<T> {
     return {
       start: this.start,
       end: this.end,

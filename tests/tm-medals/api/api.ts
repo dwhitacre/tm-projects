@@ -1,6 +1,9 @@
 import { faker } from "@faker-js/faker";
 import type { Pool } from "pg";
 import { PlayerMedalsClient } from "shared/clients/playermedals";
+import { Apikey } from "shared/domain/apikey";
+import { Db } from "shared/domain/db";
+import { ApikeyRepository } from "shared/repositories/apikey";
 
 export const client = new PlayerMedalsClient({
   baseUrl: "http://localhost:8084",
@@ -11,18 +14,9 @@ export const adminClient = (apikey: string) =>
     apikey,
   });
 
-export const apikeyCreate = (
-  pool: Pool,
-  accountId: string,
-  apikey = faker.string.uuid()
-) => {
-  return pool.query(
-    `
-      insert into ApiKeys(AccountId, Key)
-      values ($1, $2)
-    `,
-    [accountId, apikey]
-  );
+export const apikeyCreate = (pool: Pool, accountId: string, key?: string) => {
+  const apikey = new Apikey(accountId, key);
+  return new ApikeyRepository({ db: new Db({ pool }) }).insert(apikey);
 };
 
 export const playerPermissionsCreate = async (
