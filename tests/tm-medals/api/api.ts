@@ -4,6 +4,7 @@ import { PlayerMedalsClient } from "shared/clients/playermedals";
 import { Apikey } from "shared/domain/apikey";
 import { Db } from "shared/domain/db";
 import { ApikeyRepository } from "shared/repositories/apikey";
+import { PlayerPermissionRepository } from "shared/repositories/playerpermission";
 
 export const client = new PlayerMedalsClient({
   baseUrl: "http://localhost:8084",
@@ -24,21 +25,9 @@ export const playerPermissionsCreate = async (
   accountId: string,
   permissionName: string
 ) => {
-  const result = await pool.query(
-    `
-      select Id
-      from Permissions
-      where Name = $1
-    `,
-    [permissionName]
-  );
-
-  return pool.query(
-    `
-      insert into PlayerPermissions(AccountId, PermissionId)
-      values ($1, $2)
-    `,
-    [accountId, result.rows[0].id]
+  return new PlayerPermissionRepository({ db: new Db({ pool }) }).insert(
+    accountId,
+    permissionName
   );
 };
 
@@ -47,21 +36,9 @@ export const playerPermissionsDelete = async (
   accountId: string,
   permissionName: string
 ) => {
-  const result = await pool.query(
-    `
-      select Id
-      from Permissions
-      where Name = $1
-    `,
-    [permissionName]
-  );
-
-  return pool.query(
-    `
-      delete from PlayerPermissions
-      where AccountId = $1 and PermissionId = $2
-    `,
-    [accountId, result.rows[0].id]
+  return new PlayerPermissionRepository({ db: new Db({ pool }) }).delete(
+    accountId,
+    permissionName
   );
 };
 
