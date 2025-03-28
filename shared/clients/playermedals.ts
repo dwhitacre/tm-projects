@@ -4,7 +4,7 @@ import type { Map, MapResponse, MapsResponse } from "../domain/map";
 import type { MedalTimesResponse, MedalTime } from "../domain/medaltime";
 import type {
   MeResponse,
-  Player,
+  IPlayer,
   PlayerResponse,
   PlayersResponse,
 } from "../domain/player";
@@ -64,7 +64,7 @@ export class PlayerMedalsClient extends Client {
     return this.httpGet<MeResponse>(`/me`);
   }
 
-  getPlayer(accountId: Player["accountId"]) {
+  getPlayer(accountId: IPlayer["accountId"]) {
     return this.httpGet<PlayerResponse>(`/players?accountId=${accountId}`);
   }
 
@@ -73,10 +73,10 @@ export class PlayerMedalsClient extends Client {
   }
 
   createPlayer(
-    accountId: Player["accountId"],
-    name: Player["name"],
-    color: Player["color"],
-    displayName?: Player["displayName"]
+    accountId: IPlayer["accountId"],
+    name: IPlayer["name"],
+    color: IPlayer["color"],
+    displayName?: IPlayer["displayName"]
   ) {
     return this.httpPost<PlayerResponse>(`/players`, {
       accountId,

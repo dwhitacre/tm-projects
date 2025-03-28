@@ -1,19 +1,19 @@
 import { randomUUIDv7 } from "bun";
 import type { JsonObject } from "./json";
-import type { Player } from "./player";
+import type { IPlayer } from "./player";
 
 export interface IApikey {
   key: string;
-  accountId: Player["accountId"];
+  accountId: IPlayer["accountId"];
   dateModified?: Date;
 }
 
 export class Apikey implements IApikey {
   key: string;
-  accountId: Player["accountId"];
+  accountId: IPlayer["accountId"];
   dateModified?: Date;
 
-  constructor(accountId: Player["accountId"], key: string = randomUUIDv7()) {
+  constructor(accountId: IPlayer["accountId"], key: string = randomUUIDv7()) {
     if (key.length <= 0) throw new Error("key cannot be empty string.");
 
     this.accountId = accountId;

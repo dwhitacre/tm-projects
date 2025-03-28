@@ -1,4 +1,4 @@
-import type { Permissions, Player } from "../domain/player";
+import type { Permissions, IPlayer } from "../domain/player";
 import { Repository, type RepositoryOptions } from "./repository";
 
 export class PlayerPermissionRepository extends Repository {
@@ -6,7 +6,7 @@ export class PlayerPermissionRepository extends Repository {
     super(options);
   }
 
-  insert(accountId: Player["accountId"], permissionName: Permissions) {
+  insert(accountId: IPlayer["accountId"], permissionName: Permissions) {
     return this.db.insert(
       `
         insert into PlayerPermissions(AccountId, PermissionId)
@@ -16,7 +16,7 @@ export class PlayerPermissionRepository extends Repository {
     );
   }
 
-  delete(accountId: Player["accountId"], permissionName: Permissions) {
+  delete(accountId: IPlayer["accountId"], permissionName: Permissions) {
     return this.db.delete(
       `
         delete from PlayerPermissions

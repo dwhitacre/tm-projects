@@ -2,11 +2,14 @@ export type JsonObject = { [_: string]: any };
 export type JsonArray = Array<JsonObject>;
 export type JsonAny = JsonObject | JsonArray;
 export type JsonGroupedArray = { [_: string]: JsonArray };
+export type LowercaseJsonObject = { [_: Lowercase<string>]: any };
+export type LowercaseJsonArray = Array<LowercaseJsonObject>;
+export type LowercaseJsonAny = LowercaseJsonObject | LowercaseJsonArray;
 
 export class Json {
-  static lowercaseKeys(json: JsonArray): JsonArray;
-  static lowercaseKeys(json: JsonObject): JsonObject;
-  static lowercaseKeys(json: JsonAny): JsonAny {
+  static lowercaseKeys(json: JsonArray): LowercaseJsonArray;
+  static lowercaseKeys(json: JsonObject): LowercaseJsonObject;
+  static lowercaseKeys(json: JsonAny): LowercaseJsonAny {
     if (Array.isArray(json)) return json.map<JsonObject>(Json.lowercaseKeys);
     if (typeof json !== "object") return json;
     if (json == undefined) return json;

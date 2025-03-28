@@ -23,6 +23,7 @@ test.each([
     { KEY_1: [{ KEY_2: { KEY_3: "value3" } }] },
     { key_1: [{ key_2: { key_3: "value3" } }] },
   ],
+  [{ KEY_1: [{ KEY_2: ["value3"] }] }, { key_1: [{ key_2: ["value3"] }] }],
 ])("should be able to lowercaseKeys: %j", (json, expected) => {
   expect(Json.lowercaseKeys(json)).toEqual(expected);
 });

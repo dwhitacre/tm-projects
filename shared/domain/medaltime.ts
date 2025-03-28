@@ -1,17 +1,17 @@
 import type { ApiResponse } from "./apiresponse";
 import type { Map } from "./map";
-import type { Player } from "./player";
+import type { IPlayer } from "./player";
 
 export interface MedalTime {
   mapUid: Map["mapUid"];
   medalTime: number;
   customMedalTime: number;
   reason: string;
-  accountId: Player["accountId"];
+  accountId: IPlayer["accountId"];
   dateModified?: Date;
 
   map?: Map;
-  player?: Player;
+  player?: IPlayer;
 }
 
 export interface MedalTimesResponse extends ApiResponse {

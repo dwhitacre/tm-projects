@@ -3,8 +3,10 @@ import type { Pool } from "pg";
 import { PlayerMedalsClient } from "shared/clients/playermedals";
 import { Apikey } from "shared/domain/apikey";
 import { Db } from "shared/domain/db";
+import { Player } from "shared/domain/player";
 import { ApikeyRepository } from "shared/repositories/apikey";
 import { PlayerPermissionRepository } from "shared/repositories/playerpermission";
+import { PlayerRepository } from "shared/repositories/player";
 
 export const client = new PlayerMedalsClient({
   baseUrl: "http://localhost:8084",
@@ -49,12 +51,8 @@ export const playerWithPermissionCreate = async (
 ) => {
   permission = permission instanceof Array ? permission : [permission];
 
-  await pool.query(
-    `
-      insert into Players(AccountId, Name)
-      values ($1, $2)
-    `,
-    [accountId, faker.internet.username()]
+  await new PlayerRepository({ db: new Db({ pool }) }).insert(
+    new Player(accountId, faker.internet.username())
   );
 
   for (let i = 0; i < permission.length; i++) {
