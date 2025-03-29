@@ -1,22 +1,34 @@
 import { afterAll, beforeAll, expect, test } from "bun:test";
 import { faker } from "@faker-js/faker";
-import { Pool } from "pg";
-import { adminClient, client, playerAdminCreate } from "./api";
 import type { JsonAny } from "shared/domain/json";
+import { PlayerMedalsClient } from "shared/clients/playermedals";
+import { Db } from "shared/domain/db";
+import { Player } from "shared/domain/player";
+import { PlayerService } from "shared/services/player";
 
-let pool: Pool;
-let apikey: string;
+let db: Db;
+let playerService: PlayerService;
+const client = new PlayerMedalsClient({
+  baseUrl: "http://localhost:8084",
+});
+const adminClient = new PlayerMedalsClient({
+  baseUrl: "http://localhost:8084",
+});
 
 beforeAll(async () => {
-  pool = new Pool({
+  db = new Db({
     connectionString:
       "postgres://tmmedals:Passw0rd!@localhost:5432/tmmedals?pool_max_conns=10",
   });
-  apikey = await playerAdminCreate(pool);
+  playerService = PlayerService.getInstance({ db });
+  const apikey = await playerService.createAdmin(
+    new Player(faker.string.uuid(), faker.internet.username())
+  );
+  adminClient.setApikey(apikey);
 });
 
 afterAll(async () => {
-  await pool.end();
+  await db.close();
 });
 
 test("get medaltimes player dne and map dne", async () => {
@@ -31,11 +43,7 @@ test("get medaltimes player dne and map dne", async () => {
 
 test("get medaltimes player exists and map dne", async () => {
   const accountId = faker.string.uuid();
-  await adminClient(apikey).createPlayer(
-    accountId,
-    faker.internet.username(),
-    "3F3"
-  );
+  await adminClient.createPlayer(accountId, faker.internet.username(), "3F3");
 
   const response = await client.getMedalTime(accountId, "001");
   expect(response.status).toEqual(200);
@@ -48,7 +56,7 @@ test("get medaltimes player exists and map dne", async () => {
 
 test("get medaltimes player dne and map exists", async () => {
   const mapUid = faker.string.uuid();
-  await adminClient(apikey).createMap(mapUid, 1000, faker.word.words(3));
+  await adminClient.createMap(mapUid, 1000, faker.word.words(3));
 
   const response = await client.getMedalTime("000", mapUid);
   expect(response.status).toEqual(200);
@@ -61,13 +69,9 @@ test("get medaltimes player dne and map exists", async () => {
 
 test("get medaltimes no medal times", async () => {
   const accountId = faker.string.uuid();
-  await adminClient(apikey).createPlayer(
-    accountId,
-    faker.internet.username(),
-    "3F3"
-  );
+  await adminClient.createPlayer(accountId, faker.internet.username(), "3F3");
   const mapUid = faker.string.uuid();
-  await adminClient(apikey).createMap(mapUid, 1000, faker.word.words(3));
+  await adminClient.createMap(mapUid, 1000, faker.word.words(3));
 
   const response = await client.getMedalTime(accountId, mapUid);
   expect(response.status).toEqual(200);
@@ -80,7 +84,7 @@ test("get medaltimes no medal times", async () => {
 
 test("get medaltimes no accountid", async () => {
   const mapUid = faker.string.uuid();
-  await adminClient(apikey).createMap(mapUid, 1000, faker.word.words(3));
+  await adminClient.createMap(mapUid, 1000, faker.word.words(3));
 
   const response = await fetch(
     `http://localhost:8084/medaltimes?mapUid=${mapUid}`
@@ -90,11 +94,7 @@ test("get medaltimes no accountid", async () => {
 
 test("get medaltimes no mapUid", async () => {
   const accountId = faker.string.uuid();
-  await adminClient(apikey).createPlayer(
-    accountId,
-    faker.internet.username(),
-    "3F3"
-  );
+  await adminClient.createPlayer(accountId, faker.internet.username(), "3F3");
 
   const response = await client.getMedalTime(accountId, "");
   expect(response.status).toEqual(200);
@@ -114,12 +114,12 @@ test("create medaltimes no adminkey", async () => {
 });
 
 test("create medaltimes bad method", async () => {
-  const response = await adminClient(apikey).httpDelete("/medaltimes");
+  const response = await adminClient.httpDelete("/medaltimes");
   expect(response.status).toEqual(400);
 });
 
 test("create medaltimes bad body", async () => {
-  const response = await adminClient(apikey).httpPost(
+  const response = await adminClient.httpPost(
     "/medaltimes",
     "bad" as unknown as JsonAny
   );
@@ -127,7 +127,7 @@ test("create medaltimes bad body", async () => {
 });
 
 test("create medaltimes no mapUid", async () => {
-  const response = await adminClient(apikey).httpPost("/medaltimes", {
+  const response = await adminClient.httpPost("/medaltimes", {
     medalTime: faker.number.int({ min: 1, max: 20000 }),
     accountId: faker.string.uuid(),
   });
@@ -135,7 +135,7 @@ test("create medaltimes no mapUid", async () => {
 });
 
 test("create medaltimes no medalTime", async () => {
-  const response = await adminClient(apikey).httpPost("/medaltimes", {
+  const response = await adminClient.httpPost("/medaltimes", {
     accountId: faker.string.uuid(),
     mapUid: faker.string.uuid(),
   });
@@ -143,7 +143,7 @@ test("create medaltimes no medalTime", async () => {
 });
 
 test("create medaltimes no accountId", async () => {
-  const response = await adminClient(apikey).httpPost("/medaltimes", {
+  const response = await adminClient.httpPost("/medaltimes", {
     medalTime: faker.number.int({ min: 1, max: 20000 }),
     mapUid: faker.string.uuid(),
   });
@@ -153,16 +153,16 @@ test("create medaltimes no accountId", async () => {
 test("create medaltimes", async () => {
   const accountId = faker.string.uuid();
   const playerName = faker.internet.username();
-  await adminClient(apikey).createPlayer(accountId, playerName, "3F3");
+  await adminClient.createPlayer(accountId, playerName, "3F3");
 
   const mapUid = faker.string.uuid();
   const authorTime = faker.number.int({ min: 1, max: 20000 });
   const mapName = faker.word.words(3);
-  await adminClient(apikey).createMap(mapUid, authorTime, mapName);
+  await adminClient.createMap(mapUid, authorTime, mapName);
 
   const medalTime = faker.number.int({ min: 1, max: 20000 });
 
-  const response = await adminClient(apikey).createMedalTime(
+  const response = await adminClient.createMedalTime(
     mapUid,
     accountId,
     medalTime
@@ -195,11 +195,11 @@ test("create medaltimes player dne", async () => {
   const mapUid = faker.string.uuid();
   const authorTime = faker.number.int({ min: 1, max: 20000 });
   const mapName = faker.word.words(3);
-  await adminClient(apikey).createMap(mapUid, authorTime, mapName);
+  await adminClient.createMap(mapUid, authorTime, mapName);
 
   const medalTime = faker.number.int({ min: 1, max: 20000 });
 
-  const response = await adminClient(apikey).createMedalTime(
+  const response = await adminClient.createMedalTime(
     mapUid,
     accountId,
     medalTime
@@ -210,13 +210,13 @@ test("create medaltimes player dne", async () => {
 test("create medaltimes map dne", async () => {
   const accountId = faker.string.uuid();
   const playerName = faker.internet.username();
-  await adminClient(apikey).createPlayer(accountId, playerName, "3F3");
+  await adminClient.createPlayer(accountId, playerName, "3F3");
 
   const mapUid = faker.string.uuid();
 
   const medalTime = faker.number.int({ min: 1, max: 20000 });
 
-  const response = await adminClient(apikey).createMedalTime(
+  const response = await adminClient.createMedalTime(
     mapUid,
     accountId,
     medalTime
@@ -227,27 +227,27 @@ test("create medaltimes map dne", async () => {
 test("create medaltimes multiple players", async () => {
   const accountId = faker.string.uuid();
   const playerName = faker.internet.username();
-  await adminClient(apikey).createPlayer(accountId, playerName, "3F3");
+  await adminClient.createPlayer(accountId, playerName, "3F3");
 
   const accountId2 = faker.string.uuid();
   const playerName2 = faker.internet.username();
-  await adminClient(apikey).createPlayer(accountId2, playerName2, "3F3");
+  await adminClient.createPlayer(accountId2, playerName2, "3F3");
 
   const mapUid = faker.string.uuid();
   const authorTime = faker.number.int({ min: 1, max: 20000 });
   const mapName = faker.word.words(3);
-  await adminClient(apikey).createMap(mapUid, authorTime, mapName);
+  await adminClient.createMap(mapUid, authorTime, mapName);
 
   const medalTime = faker.number.int({ min: 1, max: 20000 });
 
-  const response = await adminClient(apikey).createMedalTime(
+  const response = await adminClient.createMedalTime(
     mapUid,
     accountId,
     medalTime
   );
   expect(response.status).toEqual(200);
 
-  const response2 = await adminClient(apikey).createMedalTime(
+  const response2 = await adminClient.createMedalTime(
     mapUid,
     accountId2,
     medalTime
@@ -266,26 +266,26 @@ test("create medaltimes multiple players", async () => {
 test("create medaltimes multiple maps single map request", async () => {
   const accountId = faker.string.uuid();
   const playerName = faker.internet.username();
-  await adminClient(apikey).createPlayer(accountId, playerName, "3F3");
+  await adminClient.createPlayer(accountId, playerName, "3F3");
 
   const mapUid = faker.string.uuid();
   const authorTime = faker.number.int({ min: 1, max: 20000 });
   const mapName = faker.word.words(3);
-  await adminClient(apikey).createMap(mapUid, authorTime, mapName);
+  await adminClient.createMap(mapUid, authorTime, mapName);
 
   const mapUid2 = faker.string.uuid();
-  await adminClient(apikey).createMap(mapUid2, authorTime, mapName);
+  await adminClient.createMap(mapUid2, authorTime, mapName);
 
   const medalTime = faker.number.int({ min: 1, max: 20000 });
 
-  const response = await adminClient(apikey).createMedalTime(
+  const response = await adminClient.createMedalTime(
     mapUid,
     accountId,
     medalTime
   );
   expect(response.status).toEqual(200);
 
-  const response2 = await adminClient(apikey).createMedalTime(
+  const response2 = await adminClient.createMedalTime(
     mapUid2,
     accountId,
     medalTime
@@ -305,26 +305,26 @@ test("create medaltimes multiple maps single map request", async () => {
 test("create medaltimes multiple maps all maps request", async () => {
   const accountId = faker.string.uuid();
   const playerName = faker.internet.username();
-  await adminClient(apikey).createPlayer(accountId, playerName, "3F3");
+  await adminClient.createPlayer(accountId, playerName, "3F3");
 
   const mapUid = faker.string.uuid();
   const authorTime = faker.number.int({ min: 1, max: 20000 });
   const mapName = faker.word.words(3);
-  await adminClient(apikey).createMap(mapUid, authorTime, mapName);
+  await adminClient.createMap(mapUid, authorTime, mapName);
 
   const mapUid2 = faker.string.uuid();
-  await adminClient(apikey).createMap(mapUid2, authorTime, mapName);
+  await adminClient.createMap(mapUid2, authorTime, mapName);
 
   const medalTime = faker.number.int({ min: 1, max: 20000 });
 
-  const response = await adminClient(apikey).createMedalTime(
+  const response = await adminClient.createMedalTime(
     mapUid,
     accountId,
     medalTime
   );
   expect(response.status).toEqual(200);
 
-  const response2 = await adminClient(apikey).createMedalTime(
+  const response2 = await adminClient.createMedalTime(
     mapUid2,
     accountId,
     medalTime
@@ -346,7 +346,7 @@ test("create medaltimes multiple maps all maps request", async () => {
 test("create medaltimes with map properties", async () => {
   const accountId = faker.string.uuid();
   const playerName = faker.internet.username();
-  await adminClient(apikey).createPlayer(accountId, playerName, "3F3");
+  await adminClient.createPlayer(accountId, playerName, "3F3");
 
   const mapUid = faker.string.uuid();
   const authorTime = faker.number.int({ min: 1, max: 20000 });
@@ -355,7 +355,7 @@ test("create medaltimes with map properties", async () => {
   const campaignIndex = 3;
   const totdDate = "2024-01-01";
   const nadeo = true;
-  await adminClient(apikey).createMap(
+  await adminClient.createMap(
     mapUid,
     authorTime,
     mapName,
@@ -366,7 +366,7 @@ test("create medaltimes with map properties", async () => {
   );
   const medalTime = faker.number.int({ min: 1, max: 20000 });
 
-  const response = await adminClient(apikey).createMedalTime(
+  const response = await adminClient.createMedalTime(
     mapUid,
     accountId,
     medalTime
@@ -399,17 +399,17 @@ test("create medaltimes with map properties", async () => {
 test("create medaltimes with properties", async () => {
   const accountId = faker.string.uuid();
   const playerName = faker.internet.username();
-  await adminClient(apikey).createPlayer(accountId, playerName, "3F3");
+  await adminClient.createPlayer(accountId, playerName, "3F3");
 
   const mapUid = faker.string.uuid();
   const authorTime = faker.number.int({ min: 1, max: 20000 });
   const mapName = faker.word.words(3);
-  await adminClient(apikey).createMap(mapUid, authorTime, mapName);
+  await adminClient.createMap(mapUid, authorTime, mapName);
 
   const medalTime = faker.number.int({ min: 1, max: 20000 });
   const customMedalTime = faker.number.int({ min: 1, max: 20000 });
   const reason = faker.word.words(3);
-  const response = await adminClient(apikey).createMedalTime(
+  const response = await adminClient.createMedalTime(
     mapUid,
     accountId,
     medalTime,
@@ -441,22 +441,22 @@ test("create medaltimes with properties", async () => {
 test("create medaltimes repeat is an update", async () => {
   const accountId = faker.string.uuid();
   const playerName = faker.internet.username();
-  await adminClient(apikey).createPlayer(accountId, playerName, "3F3");
+  await adminClient.createPlayer(accountId, playerName, "3F3");
 
   const mapUid = faker.string.uuid();
   const authorTime = faker.number.int({ min: 1, max: 20000 });
   const mapName = faker.word.words(3);
-  await adminClient(apikey).createMap(mapUid, authorTime, mapName);
+  await adminClient.createMap(mapUid, authorTime, mapName);
 
   const medalTime = faker.number.int({ min: 1, max: 20000 });
 
-  await adminClient(apikey).createMedalTime(
+  await adminClient.createMedalTime(
     mapUid,
     accountId,
     faker.number.int({ min: 1, max: 20000 })
   );
 
-  const response = await adminClient(apikey).createMedalTime(
+  const response = await adminClient.createMedalTime(
     mapUid,
     accountId,
     medalTime
@@ -485,14 +485,14 @@ test("create medaltimes repeat is an update", async () => {
 test("create medaltimes with properties is an update", async () => {
   const accountId = faker.string.uuid();
   const playerName = faker.internet.username();
-  await adminClient(apikey).createPlayer(accountId, playerName, "3F3");
+  await adminClient.createPlayer(accountId, playerName, "3F3");
 
   const mapUid = faker.string.uuid();
   const authorTime = faker.number.int({ min: 1, max: 20000 });
   const mapName = faker.word.words(3);
-  await adminClient(apikey).createMap(mapUid, authorTime, mapName);
+  await adminClient.createMap(mapUid, authorTime, mapName);
 
-  await adminClient(apikey).createMedalTime(
+  await adminClient.createMedalTime(
     mapUid,
     accountId,
     faker.number.int({ min: 1, max: 20000 }),
@@ -503,7 +503,7 @@ test("create medaltimes with properties is an update", async () => {
   const medalTime = faker.number.int({ min: 1, max: 20000 });
   const customMedalTime = faker.number.int({ min: 1, max: 20000 });
   const reason = faker.word.words(3);
-  const response = await adminClient(apikey).createMedalTime(
+  const response = await adminClient.createMedalTime(
     mapUid,
     accountId,
     medalTime,

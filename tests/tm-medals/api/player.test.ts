@@ -1,20 +1,34 @@
 import { afterAll, beforeAll, expect, test } from "bun:test";
 import { faker } from "@faker-js/faker";
-import { Pool } from "pg";
-import { adminClient, client, playerAdminCreate } from "./api";
 import type { JsonAny } from "shared/domain/json";
+import { Db } from "shared/domain/db";
+import { PlayerService } from "shared/services/player";
+import { Player } from "shared/domain/player";
+import { PlayerMedalsClient } from "shared/clients/playermedals";
 
-let pool: Pool;
+let db: Db;
+let playerService: PlayerService;
+const client = new PlayerMedalsClient({
+  baseUrl: "http://localhost:8084",
+});
+const adminClient = new PlayerMedalsClient({
+  baseUrl: "http://localhost:8084",
+});
 
-beforeAll(() => {
-  pool = new Pool({
+beforeAll(async () => {
+  db = new Db({
     connectionString:
       "postgres://tmmedals:Passw0rd!@localhost:5432/tmmedals?pool_max_conns=10",
   });
+  playerService = PlayerService.getInstance({ db });
+  const apikey = await playerService.createAdmin(
+    new Player(faker.string.uuid(), faker.internet.username())
+  );
+  adminClient.setApikey(apikey);
 });
 
 afterAll(async () => {
-  await pool.end();
+  await db.close();
 });
 
 test("get player dne", async () => {
@@ -32,14 +46,12 @@ test("create player no adminkey", async () => {
 });
 
 test("create player bad method", async () => {
-  const apikey = await playerAdminCreate(pool);
-  const response = await adminClient(apikey).httpDelete("/players");
+  const response = await adminClient.httpDelete("/players");
   expect(response.status).toEqual(400);
 });
 
 test("create player bad body", async () => {
-  const apikey = await playerAdminCreate(pool);
-  const response = await adminClient(apikey).httpPost(
+  const response = await adminClient.httpPost(
     "/players",
     faker.string.uuid() as unknown as JsonAny
   );
@@ -47,29 +59,22 @@ test("create player bad body", async () => {
 });
 
 test("create player no account id", async () => {
-  const apikey = await playerAdminCreate(pool);
-  const response = await adminClient(apikey).httpPost("/players", {});
+  const response = await adminClient.httpPost("/players", {});
   expect(response.status).toEqual(400);
 });
 
 test("create player no name", async () => {
-  const apikey = await playerAdminCreate(pool);
-  const response = await adminClient(apikey).httpPost("/players", {
+  const response = await adminClient.httpPost("/players", {
     accountId: faker.string.uuid(),
   });
   expect(response.status).toEqual(400);
 });
 
 test("create player", async () => {
-  const apikey = await playerAdminCreate(pool);
   const accountId = faker.string.uuid();
   const name = faker.internet.username();
   const color = "3D0";
-  const response = await adminClient(apikey).createPlayer(
-    accountId,
-    name,
-    color
-  );
+  const response = await adminClient.createPlayer(accountId, name, color);
 
   expect(response.status).toEqual(200);
 
@@ -84,12 +89,11 @@ test("create player", async () => {
 });
 
 test("create player with optional", async () => {
-  const apikey = await playerAdminCreate(pool);
   const accountId = faker.string.uuid();
   const name = faker.internet.username();
   const color = "3D0";
   const displayName = faker.internet.username();
-  const response = await adminClient(apikey).createPlayer(
+  const response = await adminClient.createPlayer(
     accountId,
     name,
     color,
@@ -109,23 +113,14 @@ test("create player with optional", async () => {
 });
 
 test("create player repeat is an update", async () => {
-  const apikey = await playerAdminCreate(pool);
   const accountId = faker.string.uuid();
   const name = faker.internet.username();
-  const response = await adminClient(apikey).createPlayer(
-    accountId,
-    name,
-    "3F3"
-  );
+  const response = await adminClient.createPlayer(accountId, name, "3F3");
 
   expect(response.status).toEqual(200);
 
   const name2 = faker.internet.username();
-  const response2 = await adminClient(apikey).createPlayer(
-    accountId,
-    name2,
-    "3D0"
-  );
+  const response2 = await adminClient.createPlayer(accountId, name2, "3D0");
 
   expect(response2.status).toEqual(200);
 
@@ -139,14 +134,9 @@ test("create player repeat is an update", async () => {
 });
 
 test("get all", async () => {
-  const apikey = await playerAdminCreate(pool);
   const accountId = faker.string.uuid();
   const name = faker.internet.username();
-  const response = await adminClient(apikey).createPlayer(
-    accountId,
-    name,
-    "3F3"
-  );
+  const response = await adminClient.createPlayer(accountId, name, "3F3");
 
   expect(response.status).toEqual(200);
 

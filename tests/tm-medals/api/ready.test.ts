@@ -1,5 +1,9 @@
 import { expect, test } from "bun:test";
-import { client } from "./api";
+import { PlayerMedalsClient } from "shared/clients/playermedals";
+
+const client = new PlayerMedalsClient({
+  baseUrl: "http://localhost:8084",
+});
 
 test("returns 200 on ready route", async () => {
   const response = await client.ready();
