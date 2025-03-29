@@ -21,6 +21,7 @@ export class Db {
         connectionString: options.connectionString,
         ssl: options.ssl ? { rejectUnauthorized: false } : undefined,
       });
+      return;
     }
 
     throw new Error("connectionString or pool is required.");

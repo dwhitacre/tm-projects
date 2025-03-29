@@ -26,4 +26,14 @@ export class ApikeyRepository extends Repository {
       [apikey.key, apikey.accountId]
     );
   }
+
+  delete(accountId: Apikey["accountId"]) {
+    return this.db.delete(
+      `
+        delete from ApiKeys
+        where AccountId = $1
+      `,
+      [accountId]
+    );
+  }
 }
