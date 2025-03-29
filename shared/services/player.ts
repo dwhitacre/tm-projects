@@ -1,8 +1,8 @@
 import { Apikey } from "../domain/apikey";
 import { Permissions, type IPlayer } from "../domain/player";
-import type { ApikeyRepository } from "../repositories/apikey";
-import type { PlayerRepository } from "../repositories/player";
-import type { PlayerPermissionRepository } from "../repositories/playerpermission";
+import { ApikeyRepository } from "../repositories/apikey";
+import { PlayerRepository } from "../repositories/player";
+import { PlayerPermissionRepository } from "../repositories/playerpermission";
 import { Service, type ServiceOptions } from "./service";
 
 export class PlayerService extends Service {
@@ -20,6 +20,15 @@ export class PlayerService extends Service {
     this.playerRepository = playerRepository;
     this.playerPermissionRepository = playerPermissionRepository;
     this.apikeyRepository = apikeyRepository;
+  }
+
+  static getInstance(options: Partial<ServiceOptions>) {
+    return new PlayerService(
+      options,
+      new PlayerRepository(options),
+      new PlayerPermissionRepository(options),
+      new ApikeyRepository(options)
+    );
   }
 
   async create(player: IPlayer, permissions: Array<Permissions> = []) {

@@ -104,4 +104,8 @@ export class Client {
   updateClientOptions(options: ClientOptions) {
     this.options = Json.merge(this.options, options) as ClientOptions;
   }
+
+  setApikey(apikey: ClientOptions["apikey"] = "") {
+    this.options.apikey = apikey;
+  }
 }

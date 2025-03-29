@@ -1,6 +1,10 @@
 import { expect, test } from "bun:test";
-import { client } from "./api";
+import { PlayerMedalsClient } from "shared/clients/playermedals";
 import type { CampaignIndicesResponse } from "shared/domain/campaignindices";
+
+const client = new PlayerMedalsClient({
+  baseUrl: "http://localhost:8084",
+});
 
 test("returns 200 on campaign-indices route", async () => {
   const response = await client.getCampaignIndices();

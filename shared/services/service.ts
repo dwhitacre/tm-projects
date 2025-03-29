@@ -1,8 +1,7 @@
 import { Json } from "../domain/json";
+import type { RepositoryOptions } from "../repositories/repository";
 
-export interface ServiceOptions {
-  debug: boolean;
-}
+export interface ServiceOptions extends RepositoryOptions {}
 
 export class Service {
   options: ServiceOptions;

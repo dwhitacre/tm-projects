@@ -1,31 +1,30 @@
 import { afterAll, beforeAll, expect, test } from "bun:test";
 import { faker } from "@faker-js/faker";
-import { client, adminClient } from "./api";
 import type { JsonAny } from "shared/domain/json";
 import { PlayerService } from "shared/services/player";
-import { PlayerRepository } from "shared/repositories/player";
 import { Db } from "shared/domain/db";
-import { PlayerPermissionRepository } from "shared/repositories/playerpermission";
-import { ApikeyRepository } from "shared/repositories/apikey";
 import { Player } from "shared/domain/player";
+import { PlayerMedalsClient } from "shared/clients/playermedals";
 
 let db: Db;
 let playerService: PlayerService;
+const client = new PlayerMedalsClient({
+  baseUrl: "http://localhost:8084",
+});
+const adminClient = new PlayerMedalsClient({
+  baseUrl: "http://localhost:8084",
+});
 
-beforeAll(() => {
+beforeAll(async () => {
   db = new Db({
     connectionString:
       "postgres://tmmedals:Passw0rd!@localhost:5432/tmmedals?pool_max_conns=10",
   });
-  const playerRepository = new PlayerRepository({ db });
-  const playerPermissionRepository = new PlayerPermissionRepository({ db });
-  const apikeyRepository = new ApikeyRepository({ db });
-  playerService = new PlayerService(
-    {},
-    playerRepository,
-    playerPermissionRepository,
-    apikeyRepository
+  playerService = PlayerService.getInstance({ db });
+  const apikey = await playerService.createAdmin(
+    new Player(faker.string.uuid(), faker.internet.username())
   );
+  adminClient.setApikey(apikey);
 });
 
 afterAll(async () => {
@@ -47,18 +46,12 @@ test("create map no adminkey", async () => {
 });
 
 test("create map bad method", async () => {
-  const apikey = await playerService.createAdmin(
-    new Player(faker.string.uuid(), faker.internet.username())
-  );
-  const response = await adminClient(apikey).httpDelete("/maps");
+  const response = await adminClient.httpDelete("/maps");
   expect(response.status).toEqual(400);
 });
 
 test("create map bad body", async () => {
-  const apikey = await playerService.createAdmin(
-    new Player(faker.string.uuid(), faker.internet.username())
-  );
-  const response = await adminClient(apikey).httpPost(
+  const response = await adminClient.httpPost(
     "/maps",
     faker.string.uuid() as unknown as JsonAny
   );
@@ -66,18 +59,12 @@ test("create map bad body", async () => {
 });
 
 test("create map no mapUid", async () => {
-  const apikey = await playerService.createAdmin(
-    new Player(faker.string.uuid(), faker.internet.username())
-  );
-  const response = await adminClient(apikey).httpPost("/maps", {});
+  const response = await adminClient.httpPost("/maps", {});
   expect(response.status).toEqual(400);
 });
 
 test("create map no name", async () => {
-  const apikey = await playerService.createAdmin(
-    new Player(faker.string.uuid(), faker.internet.username())
-  );
-  const response = await adminClient(apikey).httpPost("/maps", {
+  const response = await adminClient.httpPost("/maps", {
     mapUid: faker.string.uuid(),
     authorTime: 20000,
   });
@@ -85,10 +72,7 @@ test("create map no name", async () => {
 });
 
 test("create map no authorTime", async () => {
-  const apikey = await playerService.createAdmin(
-    new Player(faker.string.uuid(), faker.internet.username())
-  );
-  const response = await adminClient(apikey).httpPost("/maps", {
+  const response = await adminClient.httpPost("/maps", {
     mapUid: faker.string.uuid(),
     name: faker.word.words(3),
   });
@@ -96,18 +80,11 @@ test("create map no authorTime", async () => {
 });
 
 test("create map", async () => {
-  const apikey = await playerService.createAdmin(
-    new Player(faker.string.uuid(), faker.internet.username())
-  );
   const mapUid = faker.string.uuid();
   const name = faker.word.words(3);
   const authorTime = faker.number.int({ min: 1, max: 20000 });
 
-  const response = await adminClient(apikey).createMap(
-    mapUid,
-    authorTime,
-    name
-  );
+  const response = await adminClient.createMap(mapUid, authorTime, name);
   expect(response.status).toEqual(200);
 
   const mapResponse = await client.getMap(mapUid);
@@ -124,9 +101,6 @@ test("create map", async () => {
 });
 
 test("create map with properties", async () => {
-  const apikey = await playerService.createAdmin(
-    new Player(faker.string.uuid(), faker.internet.username())
-  );
   const mapUid = faker.string.uuid();
   const name = faker.word.words(3);
   const authorTime = faker.number.int({ min: 1, max: 20000 });
@@ -135,7 +109,7 @@ test("create map with properties", async () => {
   const totdDate = "2024-01-01";
   const nadeo = true;
 
-  const response = await adminClient(apikey).createMap(
+  const response = await adminClient.createMap(
     mapUid,
     authorTime,
     name,
@@ -161,29 +135,18 @@ test("create map with properties", async () => {
 });
 
 test("create map repeat is an update", async () => {
-  const apikey = await playerService.createAdmin(
-    new Player(faker.string.uuid(), faker.internet.username())
-  );
   const mapUid = faker.string.uuid();
   const name = faker.word.words(3);
   const authorTime = faker.number.int({ min: 1, max: 20000 });
 
-  const response = await adminClient(apikey).createMap(
-    mapUid,
-    authorTime,
-    name
-  );
+  const response = await adminClient.createMap(mapUid, authorTime, name);
 
   expect(response.status).toEqual(200);
 
   const name2 = faker.word.words(3);
   const authorTime2 = faker.number.int({ min: 1, max: 20000 });
 
-  const response2 = await adminClient(apikey).createMap(
-    mapUid,
-    authorTime2,
-    name2
-  );
+  const response2 = await adminClient.createMap(mapUid, authorTime2, name2);
 
   expect(response2.status).toEqual(200);
 
@@ -201,9 +164,6 @@ test("create map repeat is an update", async () => {
 });
 
 test("create map with properties repeat is an update", async () => {
-  const apikey = await playerService.createAdmin(
-    new Player(faker.string.uuid(), faker.internet.username())
-  );
   const mapUid = faker.string.uuid();
   const name = faker.word.words(3);
   const authorTime = faker.number.int({ min: 1, max: 20000 });
@@ -212,7 +172,7 @@ test("create map with properties repeat is an update", async () => {
   const totdDate = "2024-01-01";
   const nadeo = false;
 
-  const response = await adminClient(apikey).createMap(
+  const response = await adminClient.createMap(
     mapUid,
     authorTime,
     name,
@@ -231,7 +191,7 @@ test("create map with properties repeat is an update", async () => {
   const totdDate2 = "2024-02-01";
   const nadeo2 = true;
 
-  const response2 = await adminClient(apikey).createMap(
+  const response2 = await adminClient.createMap(
     mapUid,
     authorTime2,
     name2,
@@ -257,9 +217,6 @@ test("create map with properties repeat is an update", async () => {
 });
 
 test("create map with properties repeat without properties doesnt override optional parameters", async () => {
-  const apikey = await playerService.createAdmin(
-    new Player(faker.string.uuid(), faker.internet.username())
-  );
   const mapUid = faker.string.uuid();
   const name = faker.word.words(3);
   const authorTime = faker.number.int({ min: 1, max: 20000 });
@@ -268,7 +225,7 @@ test("create map with properties repeat without properties doesnt override optio
   const totdDate = "2024-01-01";
   const nadeo = true;
 
-  const response = await adminClient(apikey).createMap(
+  const response = await adminClient.createMap(
     mapUid,
     authorTime,
     name,
@@ -283,11 +240,7 @@ test("create map with properties repeat without properties doesnt override optio
   const name2 = faker.word.words(3);
   const authorTime2 = faker.number.int({ min: 1, max: 20000 });
 
-  const response2 = await adminClient(apikey).createMap(
-    mapUid,
-    authorTime2,
-    name2
-  );
+  const response2 = await adminClient.createMap(mapUid, authorTime2, name2);
 
   expect(response2.status).toEqual(200);
 
@@ -305,9 +258,6 @@ test("create map with properties repeat without properties doesnt override optio
 });
 
 test("create map with properties repeat with properties does override falsy optional parameters", async () => {
-  const apikey = await playerService.createAdmin(
-    new Player(faker.string.uuid(), faker.internet.username())
-  );
   const mapUid = faker.string.uuid();
   const name = faker.word.words(3);
   const authorTime = faker.number.int({ min: 1, max: 20000 });
@@ -316,7 +266,7 @@ test("create map with properties repeat with properties does override falsy opti
   const totdDate = "2024-01-01";
   const nadeo = true;
 
-  const response = await adminClient(apikey).createMap(
+  const response = await adminClient.createMap(
     mapUid,
     authorTime,
     name,
@@ -331,7 +281,7 @@ test("create map with properties repeat with properties does override falsy opti
   const name2 = faker.word.words(3);
   const authorTime2 = faker.number.int({ min: 1, max: 20000 });
 
-  const response2 = await adminClient(apikey).createMap(
+  const response2 = await adminClient.createMap(
     mapUid,
     authorTime2,
     name2,
@@ -357,9 +307,6 @@ test("create map with properties repeat with properties does override falsy opti
 });
 
 test("get campaign, campaign dne", async () => {
-  const apikey = await playerService.createAdmin(
-    new Player(faker.string.uuid(), faker.internet.username())
-  );
   const mapUid = faker.string.uuid();
   const name = faker.word.words(3);
   const authorTime = faker.number.int({ min: 1, max: 20000 });
@@ -368,7 +315,7 @@ test("get campaign, campaign dne", async () => {
   const totdDate = "2024-01-01";
   const nadeo = true;
 
-  const response = await adminClient(apikey).createMap(
+  const response = await adminClient.createMap(
     mapUid,
     authorTime,
     name,
@@ -388,9 +335,6 @@ test("get campaign, campaign dne", async () => {
 });
 
 test("get campaign", async () => {
-  const apikey = await playerService.createAdmin(
-    new Player(faker.string.uuid(), faker.internet.username())
-  );
   const mapUid = faker.string.uuid();
   const name = faker.word.words(3);
   const authorTime = faker.number.int({ min: 1, max: 20000 });
@@ -399,7 +343,7 @@ test("get campaign", async () => {
   const totdDate = "2024-01-01";
   const nadeo = true;
 
-  const response = await adminClient(apikey).createMap(
+  const response = await adminClient.createMap(
     mapUid,
     authorTime,
     name,
@@ -426,9 +370,6 @@ test("get campaign", async () => {
 });
 
 test("get all", async () => {
-  const apikey = await playerService.createAdmin(
-    new Player(faker.string.uuid(), faker.internet.username())
-  );
   const mapUid = faker.string.uuid();
   const name = faker.word.words(3);
   const authorTime = faker.number.int({ min: 1, max: 20000 });
@@ -437,7 +378,7 @@ test("get all", async () => {
   const totdDate = "2024-01-01";
   const nadeo = true;
 
-  const response = await adminClient(apikey).createMap(
+  const response = await adminClient.createMap(
     mapUid,
     authorTime,
     name,
