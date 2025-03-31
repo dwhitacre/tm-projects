@@ -1,47 +1,5 @@
 import { faker } from "@faker-js/faker";
 
-export const playerGet = (accountId: string) => {
-  return fetch(`http://localhost:8083/api/player/${accountId}`);
-};
-
-export const playerCreate = ({
-  accountId = faker.string.uuid(),
-  body,
-  method = "PUT",
-}: {
-  accountId?: string;
-  body?: any;
-  method?: string;
-} = {}) => {
-  return fetch("http://localhost:8083/api/player", {
-    body: JSON.stringify(body ?? { accountId }),
-    method,
-    headers: {
-      "x-api-key": "developer-test-key",
-    },
-  });
-};
-
-export const playerOverride = ({
-  accountId = faker.string.uuid(),
-  body,
-  method = "POST",
-  overrides = {},
-}: {
-  accountId?: string;
-  body?: any;
-  method?: string;
-  overrides?: any;
-} = {}) => {
-  return fetch("http://localhost:8083/api/player", {
-    body: JSON.stringify(body ?? { accountId, ...overrides }),
-    method,
-    headers: {
-      "x-api-key": "developer-test-key",
-    },
-  });
-};
-
 export const leaderboardGet = (leaderboardId: string) => {
   return fetch(`http://localhost:8083/api/leaderboard/${leaderboardId}`);
 };

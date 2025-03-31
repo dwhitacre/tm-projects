@@ -5,8 +5,13 @@ import {
   leaderboardGet,
   leaderboardScoreCreate,
   leaderboardScoreGet,
-  playerCreate,
 } from "./api";
+import { TmApiClient } from "shared/clients/tmapi";
+
+const adminClient = new TmApiClient({
+  baseUrl: "http://localhost:8083",
+  apikey: "developer-test-key",
+});
 
 test("get leaderboard dne", async () => {
   const response = await leaderboardGet("000");
@@ -100,9 +105,7 @@ test("create leaderboard repeat is an update", async () => {
 
 test("get leaderboard score laederboard dne", async () => {
   const accountId = faker.string.uuid().replace(/^.{4}/, "2000");
-  await playerCreate({
-    accountId,
-  });
+  await adminClient.createPlayer(accountId);
 
   const response = await leaderboardScoreGet({ accountId });
   expect(response.status).toEqual(204);
@@ -120,9 +123,7 @@ test("get leaderboard score account id dne", async () => {
 
 test("get leaderboard score dne", async () => {
   const accountId = faker.string.uuid().replace(/^.{4}/, "2000");
-  await playerCreate({
-    accountId,
-  });
+  await adminClient.createPlayer(accountId);
 
   const lbResponse = await leaderboardCreate();
   const lbJson = await lbResponse.json();
@@ -140,9 +141,7 @@ test("create leaderboard score no admin key", async () => {
   const leaderboardId = lbJson.leaderboardId;
 
   const accountId = faker.string.uuid().replace(/^.{4}/, "2000");
-  await playerCreate({
-    accountId,
-  });
+  await adminClient.createPlayer(accountId);
 
   const response = await fetch(
     `http://localhost:8083/api/leaderboard/${leaderboardId}/score`,
@@ -160,9 +159,7 @@ test("create leaderboard score bad method", async () => {
   const leaderboardId = lbJson.leaderboardId;
 
   const accountId = faker.string.uuid().replace(/^.{4}/, "2000");
-  await playerCreate({
-    accountId,
-  });
+  await adminClient.createPlayer(accountId);
 
   const response = await leaderboardScoreCreate({
     leaderboardId,
@@ -178,9 +175,7 @@ test("create leaderboard score bad body", async () => {
   const leaderboardId = lbJson.leaderboardId;
 
   const accountId = faker.string.uuid().replace(/^.{4}/, "2000");
-  await playerCreate({
-    accountId,
-  });
+  await adminClient.createPlayer(accountId);
 
   const response = await leaderboardScoreCreate({
     leaderboardId,
@@ -191,9 +186,7 @@ test("create leaderboard score bad body", async () => {
 
 test("create leaderboard score leaderboard dne", async () => {
   const accountId = faker.string.uuid().replace(/^.{4}/, "2000");
-  await playerCreate({
-    accountId,
-  });
+  await adminClient.createPlayer(accountId);
 
   const response = await leaderboardScoreCreate({
     leaderboardId: 999999999,
@@ -232,9 +225,7 @@ test("create leaderboard score no score", async () => {
   const leaderboardId = lbJson.leaderboardId;
 
   const accountId = faker.string.uuid().replace(/^.{4}/, "2000");
-  await playerCreate({
-    accountId,
-  });
+  await adminClient.createPlayer(accountId);
 
   const response = await leaderboardScoreCreate({
     leaderboardId,
@@ -254,9 +245,7 @@ test("create leaderboard score with score", async () => {
   const leaderboardId = lbJson.leaderboardId;
 
   const accountId = faker.string.uuid().replace(/^.{4}/, "2000");
-  await playerCreate({
-    accountId,
-  });
+  await adminClient.createPlayer(accountId);
 
   const score = 12345;
   const response = await leaderboardScoreCreate({
@@ -277,9 +266,7 @@ test("create leaderboard score repeat is update", async () => {
   const leaderboardId = lbJson.leaderboardId;
 
   const accountId = faker.string.uuid().replace(/^.{4}/, "2000");
-  await playerCreate({
-    accountId,
-  });
+  await adminClient.createPlayer(accountId);
 
   await leaderboardScoreCreate({
     leaderboardId,

@@ -27,6 +27,9 @@ export interface IPlayer {
   color: string;
   displayName: string;
   permissions: Array<Permissions>;
+  image: string;
+  twitch: string;
+  discord: string;
   dateModified?: Date;
 }
 
@@ -36,6 +39,9 @@ export class Player implements IPlayer {
   color: string;
   displayName: string = "";
   permissions: Array<Permissions> = [Permissions.View];
+  image = "";
+  twitch = "";
+  discord = "";
   dateModified?: Date;
 
   constructor(

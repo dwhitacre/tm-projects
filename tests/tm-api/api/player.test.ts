@@ -1,9 +1,19 @@
 import { expect, test } from "bun:test";
 import { faker } from "@faker-js/faker";
-import { playerCreate, playerGet, playerOverride } from "./api";
+import { TmApiClient } from "shared/clients/tmapi";
+import type { JsonAny } from "shared/domain/json";
+import type { IPlayer } from "shared/domain/player";
+
+const client = new TmApiClient({
+  baseUrl: "http://localhost:8083",
+});
+const adminClient = new TmApiClient({
+  baseUrl: "http://localhost:8083",
+  apikey: "developer-test-key",
+});
 
 test("get player dne", async () => {
-  const response = await playerGet("000");
+  const response = await client.getPlayer("000");
   expect(response.status).toEqual(204);
 });
 
@@ -17,54 +27,47 @@ test("create player no adminkey", async () => {
 });
 
 test("create player bad method", async () => {
-  const response = await playerCreate({ method: "DELETE" });
+  const response = await adminClient.httpDelete(`/api/player`);
   expect(response.status).toEqual(405);
 });
 
 test("create player bad body", async () => {
-  const response = await playerCreate({
-    body: faker.string.uuid(),
-  });
+  const response = await adminClient.httpPut(
+    `/api/player`,
+    faker.string.uuid() as unknown as JsonAny
+  );
   expect(response.status).toEqual(400);
 });
 
 test("create player no account id", async () => {
-  const response = await playerCreate({
-    body: {},
-  });
+  const response = await adminClient.createPlayer(
+    undefined as unknown as IPlayer["accountId"]
+  );
   expect(response.status).toEqual(400);
 });
 
 test("create player tmio not found", async () => {
-  const response = await playerCreate({
-    body: { accountId: "404" },
-  });
+  const response = await adminClient.createPlayer("404");
   expect(response.status).toEqual(400);
 });
 
 test("create player tmio found no accountid", async () => {
-  const response = await playerCreate({
-    body: { accountId: "4000" },
-  });
+  const response = await adminClient.createPlayer("4000");
   expect(response.status).toEqual(400);
 });
 
 test("create player tmio found no displayname", async () => {
-  const response = await playerCreate({
-    body: { accountId: "4001" },
-  });
+  const response = await adminClient.createPlayer("4001");
   expect(response.status).toEqual(400);
 });
 
 test("create player top level flag", async () => {
   const accountId = faker.string.uuid().replace(/^.{4}/, "2000");
-  const response = await playerCreate({
-    accountId,
-  });
+  const response = await adminClient.createPlayer(accountId);
 
   expect(response.status).toEqual(201);
 
-  const getResponse = await playerGet(accountId);
+  const getResponse = await client.getPlayer(accountId);
   expect(getResponse).toBeDefined();
   expect(getResponse.status).toEqual(200);
 
@@ -78,13 +81,11 @@ test("create player top level flag", async () => {
 
 test("create player second level flag", async () => {
   const accountId = faker.string.uuid().replace(/^.{4}/, "2001");
-  const response = await playerCreate({
-    accountId,
-  });
+  const response = await adminClient.createPlayer(accountId);
 
   expect(response.status).toEqual(201);
 
-  const getResponse = await playerGet(accountId);
+  const getResponse = await client.getPlayer(accountId);
   expect(getResponse).toBeDefined();
   expect(getResponse.status).toEqual(200);
 
@@ -98,13 +99,11 @@ test("create player second level flag", async () => {
 
 test("create player third level flag", async () => {
   const accountId = faker.string.uuid().replace(/^.{4}/, "2002");
-  const response = await playerCreate({
-    accountId,
-  });
+  const response = await adminClient.createPlayer(accountId);
 
   expect(response.status).toEqual(201);
 
-  const getResponse = await playerGet(accountId);
+  const getResponse = await client.getPlayer(accountId);
   expect(getResponse).toBeDefined();
   expect(getResponse.status).toEqual(200);
 
@@ -118,13 +117,11 @@ test("create player third level flag", async () => {
 
 test("create player fourth level flag", async () => {
   const accountId = faker.string.uuid().replace(/^.{4}/, "2003");
-  const response = await playerCreate({
-    accountId,
-  });
+  const response = await adminClient.createPlayer(accountId);
 
   expect(response.status).toEqual(201);
 
-  const getResponse = await playerGet(accountId);
+  const getResponse = await client.getPlayer(accountId);
   expect(getResponse).toBeDefined();
   expect(getResponse.status).toEqual(200);
 
@@ -138,13 +135,11 @@ test("create player fourth level flag", async () => {
 
 test("create player repeat is an update", async () => {
   const accountId = faker.string.uuid().replace(/^.{4}/, "2000");
-  const response = await playerCreate({
-    accountId,
-  });
+  const response = await adminClient.createPlayer(accountId);
 
   expect(response.status).toEqual(201);
 
-  const getResponse = await playerGet(accountId);
+  const getResponse = await client.getPlayer(accountId);
   expect(getResponse).toBeDefined();
   expect(getResponse.status).toEqual(200);
 
@@ -152,13 +147,11 @@ test("create player repeat is an update", async () => {
   expect(getJson.accountId).toEqual(accountId);
   expect(getJson.name.length).toBeGreaterThan(0);
 
-  const response2 = await playerCreate({
-    accountId,
-  });
+  const response2 = await adminClient.createPlayer(accountId);
 
   expect(response2.status).toEqual(201);
 
-  const getResponse2 = await playerGet(accountId);
+  const getResponse2 = await client.getPlayer(accountId);
   expect(getResponse2).toBeDefined();
   expect(getResponse2.status).toEqual(200);
 
@@ -174,23 +167,19 @@ test("get player with overrides", async () => {
   const twitch = "override.tv";
   const discord = "override.discord";
 
-  await playerCreate({
-    accountId,
-  });
+  await adminClient.createPlayer(accountId);
 
-  const response = await playerOverride({
+  const response = await adminClient.createPlayerOverrides(
     accountId,
-    overrides: {
-      name,
-      image,
-      twitch,
-      discord,
-    },
-  });
+    name,
+    image,
+    twitch,
+    discord
+  );
 
   expect(response.status).toEqual(200);
 
-  const getResponse = await playerGet(accountId);
+  const getResponse = await client.getPlayer(accountId);
   expect(getResponse).toBeDefined();
   expect(getResponse.status).toEqual(200);
 
@@ -209,32 +198,26 @@ test("get player with overrides update", async () => {
   const twitch = "override.tv";
   const discord = "override.discord";
 
-  await playerCreate({
+  await adminClient.createPlayer(accountId);
+  await adminClient.createPlayerOverrides(
     accountId,
-  });
-  await playerOverride({
-    accountId,
-    overrides: {
-      name: "name",
-      image: "image",
-      twitch: "twitch",
-      discord: "discord",
-    },
-  });
+    "name",
+    "image",
+    "twitch",
+    "discord"
+  );
 
-  const response = await playerOverride({
+  const response = await adminClient.createPlayerOverrides(
     accountId,
-    overrides: {
-      name,
-      image,
-      twitch,
-      discord,
-    },
-  });
+    name,
+    image,
+    twitch,
+    discord
+  );
 
   expect(response.status).toEqual(200);
 
-  const getResponse = await playerGet(accountId);
+  const getResponse = await client.getPlayer(accountId);
   expect(getResponse).toBeDefined();
   expect(getResponse.status).toEqual(200);
 
