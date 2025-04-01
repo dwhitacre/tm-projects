@@ -1,7 +1,12 @@
 import { expect, test } from "bun:test";
+import { PlayerMedalsClient } from "shared/clients/playermedals";
+
+const client = new PlayerMedalsClient({
+  baseUrl: "http://localhost:8082",
+});
 
 test("returns 200 on config route", async () => {
-  const response = await fetch("http://localhost:8082/config");
+  const response = await client.getConfig();
   expect(response.status).toEqual(200);
 
   const json = await response.json();

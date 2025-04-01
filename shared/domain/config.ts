@@ -1,8 +1,8 @@
 import type { ApiResponse } from "./apiresponse";
 
 export interface Config {
-  pbLoopEnabled: boolean;
-  pbLoopInterval: number;
+  pbLoopEnabled?: boolean;
+  pbLoopInterval?: number;
   healthCheckEnabled: boolean;
   healthCheckMs: number;
 }

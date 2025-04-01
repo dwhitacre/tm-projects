@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@faker-js/faker": "^9.6.0",
-    "pg": "^8.14.1"
+    "pg": "^8.14.1",
+    "shared": "link:shared"
   }
 }

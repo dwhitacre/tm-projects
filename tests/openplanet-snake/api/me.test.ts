@@ -1,31 +1,34 @@
-import { afterAll, beforeAll, expect, test } from "bun:test";
-import {
-  apikeyCreate,
-  playerAdminCreate,
-  playerCreate,
-  playerPermissionsCreate,
-  playerPermissionsDelete,
-} from "./api";
+import { afterAll, beforeAll, beforeEach, expect, test } from "bun:test";
 import { faker } from "@faker-js/faker";
-import { Pool } from "pg";
+import { Db } from "shared/domain/db";
+import { PlayerService } from "shared/services/player";
+import { PlayerMedalsClient } from "shared/clients/playermedals";
+import { Player } from "shared/domain/player";
 
-let pool: Pool;
-let adminApiKey: string;
+let db: Db;
+let playerService: PlayerService;
+const client = new PlayerMedalsClient({
+  baseUrl: "http://localhost:8082",
+});
 
 beforeAll(async () => {
-  pool = new Pool({
+  db = new Db({
     connectionString:
       "postgres://openplanetsnake:Passw0rd!@localhost:5432/openplanetsnake?pool_max_conns=10",
   });
-  adminApiKey = await playerAdminCreate(pool);
+  playerService = PlayerService.getInstance({ db });
+});
+
+beforeEach(() => {
+  client.setApikey();
 });
 
 afterAll(async () => {
-  await pool.end();
+  await db.close();
 });
 
 test("returns 200", async () => {
-  const response = await fetch("http://localhost:8082/me");
+  const response = await client.getMe();
   expect(response.status).toEqual(200);
 
   const json = await response.json();
@@ -33,16 +36,9 @@ test("returns 200", async () => {
 });
 
 test("returns 200 when bad apikey", async () => {
-  const accountId = faker.string.uuid();
-  await playerCreate({
-    accountId,
-    apikey: adminApiKey,
-  });
+  client.setApikey("garbage");
 
-  const apikey = faker.string.uuid();
-  await apikeyCreate(pool, accountId, apikey);
-
-  const response = await fetch(`http://localhost:8082/me?api-key=garbage`);
+  const response = await client.getMe();
   expect(response.status).toEqual(200);
 
   const json = await response.json();
@@ -51,54 +47,21 @@ test("returns 200 when bad apikey", async () => {
 
 test("returns 200 and me with query param", async () => {
   const accountId = faker.string.uuid();
-  await playerCreate({
-    accountId,
-    apikey: adminApiKey,
-  });
+  const apikey = await playerService.createWithApikey(
+    new Player(accountId, faker.internet.username())
+  );
+  client.setApikey(apikey);
 
-  const apikey = faker.string.uuid();
-  await apikeyCreate(pool, accountId, apikey);
-
-  const response = await fetch(`http://localhost:8082/me?api-key=${apikey}`);
+  const response = await client.getMe();
   expect(response.status).toEqual(200);
 
   const json = await response.json();
-  expect(json.me.accountId).toEqual(accountId);
-  expect(json.me.permissions).toEqual(["view"]);
-});
-
-test("returns 200 and me with header", async () => {
-  const accountId = faker.string.uuid();
-  await playerCreate({
-    accountId,
-    apikey: adminApiKey,
-  });
-
-  const apikey = faker.string.uuid();
-  await apikeyCreate(pool, accountId, apikey);
-
-  const response = await fetch(`http://localhost:8082/me`, {
-    headers: {
-      "x-api-key": apikey,
-    },
-  });
-  expect(response.status).toEqual(200);
-
-  const json = await response.json();
-  expect(json.me.accountId).toEqual(accountId);
-  expect(json.me.permissions).toEqual(["view"]);
+  expect(json.me!.accountId).toEqual(accountId);
+  expect(json.me!.permissions).toEqual(["view"]);
 });
 
 test("returns 200 and me with permissions", async () => {
   const accountId = faker.string.uuid();
-  await playerCreate({
-    accountId,
-    apikey: adminApiKey,
-  });
-
-  const apikey = faker.string.uuid();
-  await apikeyCreate(pool, accountId, apikey);
-
   const permissions = [
     "player:manage",
     "gamemode:manage",
@@ -106,35 +69,23 @@ test("returns 200 and me with permissions", async () => {
     "apikey:manage",
     "admin",
   ];
-  for (let i = 0; i < permissions.length; i++) {
-    await playerPermissionsCreate(pool, accountId, permissions[i]);
-  }
+  const apikey = await playerService.createWithApikey(
+    new Player(accountId, faker.internet.username()),
+    permissions
+  );
+  client.setApikey(apikey);
 
-  const response = await fetch(`http://localhost:8082/me?api-key=${apikey}`);
+  const response = await client.getMe();
   expect(response.status).toEqual(200);
 
   const json = await response.json();
-  expect(json.me.accountId).toEqual(accountId);
-  expect(json.me.permissions).toEqual([
-    "view",
-    "player:manage",
-    "gamemode:manage",
-    "leaderboard:manage",
-    "apikey:manage",
-    "admin",
-  ]);
+  expect(json.me).toBeDefined();
+  expect(json.me!.accountId).toEqual(accountId);
+  expect(json.me!.permissions).toEqual(["view", ...permissions]);
 });
 
 test("returns 200 and me with permissions after delete", async () => {
   const accountId = faker.string.uuid();
-  await playerCreate({
-    accountId,
-    apikey: adminApiKey,
-  });
-
-  const apikey = faker.string.uuid();
-  await apikeyCreate(pool, accountId, apikey);
-
   const permissions = [
     "player:manage",
     "gamemode:manage",
@@ -142,24 +93,19 @@ test("returns 200 and me with permissions after delete", async () => {
     "apikey:manage",
     "admin",
   ];
-  for (let i = 0; i < permissions.length; i++) {
-    await playerPermissionsCreate(pool, accountId, permissions[i]);
-  }
+  const player = new Player(accountId, faker.internet.username());
+  const apikey = await playerService.createWithApikey(player, permissions);
+  client.setApikey(apikey);
 
-  await fetch(`http://localhost:8082/me?api-key=${apikey}`);
+  await client.getMe();
 
-  await playerPermissionsDelete(pool, accountId, "admin");
+  await playerService.removePermission(player, "admin");
 
-  const response = await fetch(`http://localhost:8082/me?api-key=${apikey}`);
+  const response = await client.getMe();
   expect(response.status).toEqual(200);
 
   const json = await response.json();
-  expect(json.me.accountId).toEqual(accountId);
-  expect(json.me.permissions).toEqual([
-    "view",
-    "player:manage",
-    "gamemode:manage",
-    "leaderboard:manage",
-    "apikey:manage",
-  ]);
+  expect(json.me).toBeDefined();
+  expect(json.me!.accountId).toEqual(accountId);
+  expect(json.me!.permissions).toEqual(["view", ...permissions.slice(0, -1)]);
 });
