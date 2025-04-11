@@ -2,23 +2,27 @@ import { Apikey } from "../domain/apikey";
 import { Permissions, type IPlayer } from "../domain/player";
 import { ApikeyRepository } from "../repositories/apikey";
 import { PlayerRepository } from "../repositories/player";
+import { PlayerOverridesRepository } from "../repositories/playeroverrides";
 import { PlayerPermissionRepository } from "../repositories/playerpermission";
 import { Service, type ServiceOptions } from "./service";
 
 export class PlayerService extends Service {
   playerRepository: PlayerRepository;
   playerPermissionRepository: PlayerPermissionRepository;
+  playerOverridesRepository: PlayerOverridesRepository;
   apikeyRepository: ApikeyRepository;
 
   constructor(
     options: Partial<ServiceOptions>,
     playerRepository: PlayerRepository,
     playerPermissionRepository: PlayerPermissionRepository,
+    playerOverridesRepository: PlayerOverridesRepository,
     apikeyRepository: ApikeyRepository
   ) {
     super(options);
     this.playerRepository = playerRepository;
     this.playerPermissionRepository = playerPermissionRepository;
+    this.playerOverridesRepository = playerOverridesRepository;
     this.apikeyRepository = apikeyRepository;
   }
 
@@ -27,6 +31,7 @@ export class PlayerService extends Service {
       options,
       new PlayerRepository(options),
       new PlayerPermissionRepository(options),
+      new PlayerOverridesRepository(options),
       new ApikeyRepository(options)
     );
   }
@@ -72,5 +77,21 @@ export class PlayerService extends Service {
 
   async removeApikey(player: IPlayer) {
     await this.apikeyRepository.delete(player.accountId);
+  }
+
+  async addPlayerOverrides(
+    accountId: IPlayer["accountId"],
+    name: IPlayer["name"],
+    image: IPlayer["image"],
+    twitch: IPlayer["twitch"],
+    discord: IPlayer["discord"]
+  ) {
+    return this.playerOverridesRepository.insert(
+      accountId,
+      name,
+      image,
+      twitch,
+      discord
+    );
   }
 }

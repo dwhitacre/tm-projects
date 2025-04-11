@@ -9,6 +9,7 @@ export interface Map {
   totdDate?: string;
   dateModified?: Date;
   nadeo?: boolean;
+  thumbnailUrl?: string;
 }
 
 export interface MapResponse extends ApiResponse {

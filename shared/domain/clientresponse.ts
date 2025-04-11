@@ -7,6 +7,7 @@ export interface ClientErrorResponse {
 }
 
 export interface IClientResponse<T = JsonAny> {
+  method: string;
   path: string;
   start: number;
   end: number;
@@ -20,6 +21,7 @@ export interface IClientResponse<T = JsonAny> {
 }
 
 export class ClientResponse<T = JsonAny> implements IClientResponse<T> {
+  method: string;
   path: string;
   start: number;
   end: number;
@@ -34,12 +36,14 @@ export class ClientResponse<T = JsonAny> implements IClientResponse<T> {
 
   constructor(
     options: ClientOptions,
+    method: string,
     path: string,
     start: number,
     res: Response,
     request?: unknown
   ) {
     this.end = performance.now();
+    this.method = method;
     this.path = path;
     this.start = start;
     this.totalMs = this.end - start;
@@ -68,6 +72,7 @@ export class ClientResponse<T = JsonAny> implements IClientResponse<T> {
       start: this.start,
       end: this.end,
       totalMs: this.totalMs,
+      method: this.method,
       path: this.path,
       baseUrl: this.baseUrl,
       hasApikey: this.hasApikey,

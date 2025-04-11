@@ -1,3 +1,4 @@
+import type { HeadersInit } from "bun";
 import { ClientResponse } from "../domain/clientresponse";
 import { Json, type JsonAny } from "../domain/json";
 
@@ -5,8 +6,11 @@ export interface ClientOptions {
   baseUrl: string;
   source: string;
   apikey: string;
+  apikeyHeader: string;
   debug: boolean;
   latency: number;
+  additionalHeaders: HeadersInit;
+  overrideRequestInit: RequestInit;
 }
 
 export class Client {
@@ -22,6 +26,9 @@ export class Client {
         apikey: "",
         debug: false,
         latency: 0,
+        apikeyHeader: "x-api-key",
+        additionalHeaders: new Headers(),
+        overrideRequestInit: {},
       },
       options
     ) as ClientOptions;
@@ -38,20 +45,29 @@ export class Client {
   }
 
   headers(): Headers {
-    const headers = new Headers();
+    const headers = new Headers(this.options.additionalHeaders);
     headers.append("Content-Type", "application/json");
-    if (this.options.apikey) headers.append("x-api-key", this.options.apikey);
+    if (this.options.apikey)
+      headers.append(this.options.apikeyHeader, this.options.apikey);
     return headers;
   }
 
   async handleResponse<T>(
     promiseRes: Promise<Response>,
+    method: string,
     path: string,
     start: number,
     request?: unknown
   ): Promise<ClientResponse<T>> {
     const res = await promiseRes;
-    const data = new ClientResponse<T>(this.options, path, start, res, request);
+    const data = new ClientResponse<T>(
+      this.options,
+      method,
+      path,
+      start,
+      res,
+      request
+    );
     await data.hydrateResponse();
 
     if (!res.ok) {
@@ -80,13 +96,18 @@ export class Client {
       method,
       headers: this.headers(),
       body: json ? JSON.stringify(json) : undefined,
+      ...this.options.overrideRequestInit,
     });
 
-    return this.handleResponse(req, path, start, json);
+    return this.handleResponse(req, method, path, start, json);
   }
 
   httpGet<T>(path: string) {
     return this.handleRequest<T>(path);
+  }
+
+  httpPatch<T>(path: string, json: JsonAny) {
+    return this.handleRequest<T>(path, "PATCH", json);
   }
 
   httpPost<T>(path: string, json: JsonAny) {
@@ -97,8 +118,8 @@ export class Client {
     return this.handleRequest<T>(path, "PUT", json);
   }
 
-  httpDelete<T>(path: string) {
-    return this.handleRequest<T>(path, "DELETE");
+  httpDelete<T>(path: string, json?: JsonAny) {
+    return this.handleRequest<T>(path, "DELETE", json);
   }
 
   updateClientOptions(options: ClientOptions) {
@@ -107,5 +128,17 @@ export class Client {
 
   setApikey(apikey: ClientOptions["apikey"] = "") {
     this.options.apikey = apikey;
+  }
+
+  setAdditionalHeaders(
+    additionalHeaders: ClientOptions["additionalHeaders"] = {}
+  ) {
+    this.options.additionalHeaders = additionalHeaders;
+  }
+
+  setOverrideRequestInit(
+    overrideRequestInit: ClientOptions["overrideRequestInit"] = {}
+  ) {
+    this.options.overrideRequestInit = overrideRequestInit;
   }
 }
