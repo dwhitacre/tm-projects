@@ -172,7 +172,7 @@ describe("/api/leaderboard", () => {
     expect(response.status).toEqual(204);
   });
 
-  test("add weekly to leaderboard skip weekly with no id", async () => {
+  test("add weekly to leaderboard weekly with no id", async () => {
     const leaderboardId = faker.string.uuid();
 
     const leaderboard: Leaderboard = {
@@ -184,11 +184,11 @@ describe("/api/leaderboard", () => {
     };
     await leaderboardService.create(leaderboard);
 
-    const response = await adminClient.httpPost("/api/leaderboard", {
+    const response = await adminClient.httpPatch("/api/leaderboard", {
       leaderboardId,
       weeklies: [{}],
     });
-    expect(response.status).toEqual(201);
+    expect(response.status).toEqual(204);
 
     const lbResponse = await client.getLeaderboard(leaderboardId);
     expect(lbResponse.status).toEqual(204);
@@ -263,7 +263,7 @@ describe("/api/leaderboard", () => {
 
     const lbJson = await lbResponse.json();
     expect(lbJson.leaderboardId).toEqual(leaderboardId);
-    expect(lbJson.tops).toBeNull();
+    expect(lbJson.tops).toBeUndefined();
     expect(lbJson.playercount).toEqual(0);
     // TODO need better handling of players w/o tmio data
     // expect(lbJson.players).toBeDefined();

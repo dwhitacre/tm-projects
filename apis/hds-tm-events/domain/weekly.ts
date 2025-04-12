@@ -79,7 +79,9 @@ export class Weekly {
   toJson(): JsonObject {
     return {
       weeklyId: this.weeklyId,
-      matches: this.matches.map((match) => match.toJson()),
+      matches: this.matches.map((match) => ({
+        match: match.toJson(),
+      })),
       maps: this.maps.map((map) => map.toJson()),
       results: this.results.map((result) => result.toJson()),
     };

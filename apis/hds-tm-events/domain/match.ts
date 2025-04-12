@@ -72,6 +72,7 @@ export class Match {
     json = Json.merge(json, Json.onlyPrefixedKeys(json, "matchresult"));
 
     json.forEach((jsonObject) => {
+      if (!jsonObject?.accountid) return;
       this.results.push(
         MatchResult.fromJson(jsonObject).hydratePlayer(jsonObject)
       );

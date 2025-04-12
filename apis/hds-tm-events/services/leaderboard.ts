@@ -38,8 +38,10 @@ export class LeaderboardService {
       `,
       [leaderboardId]
     );
+    if (result.length === 0) return undefined;
 
     const leaderboard = Leaderboard.fromJson(result[0]);
+    if (!result[0].weeklyid) return undefined;
 
     const weekliesJson = Json.groupBy(result, "weeklyid");
     leaderboard.hydrateWeeklies(weekliesJson);
@@ -47,20 +49,22 @@ export class LeaderboardService {
     return leaderboard;
   }
 
-  async insertWeekly(leaderboard: Leaderboard, weeklies: Array<Weekly>) {
+  async insertWeekly(
+    leaderboardId: Leaderboard["leaderboardId"],
+    weeklies: Array<Weekly["weeklyId"]>
+  ) {
     const values = weeklies
-      .map((_, idx) => `($1, \$${idx + 1}),`)
+      .map((_, idx) => `($1, \$${idx + 2}),`)
       .join(" ")
       .slice(0, -1);
-    const params = weeklies.flatMap((match) => [match.weeklyId]);
-    params.unshift(leaderboard.leaderboardId);
+    weeklies.unshift(leaderboardId);
 
     return this.db.insert(
       `
         insert into LeaderboardWeekly (LeaderboardId, WeeklyId)
         values ${values}
       `,
-      params
+      weeklies
     );
   }
 }
