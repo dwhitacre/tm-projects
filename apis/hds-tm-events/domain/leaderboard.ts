@@ -1,4 +1,5 @@
 import Json, { type JsonGroupedArray, type JsonObject } from "./json";
+import type Player from "./player";
 import Weekly from "./weekly";
 
 export class LeaderboardRequest {
@@ -24,6 +25,12 @@ export class LeaderboardRequest {
   }
 }
 
+export interface Top {
+  player: Player;
+  score: number;
+  position?: number;
+}
+
 export class Leaderboard {
   leaderboardId: string;
   lastModified?: string;
@@ -31,6 +38,7 @@ export class Leaderboard {
   clubId?: string;
   weeklies: Array<Weekly> = [];
   playercount = 0;
+  tops: Array<Top> = [];
 
   static fromJson(json: JsonObject): Leaderboard {
     json = Json.lowercaseKeys(json);
@@ -60,12 +68,44 @@ export class Leaderboard {
 
       const weekly = Weekly.fromJson(jsonArray[0]);
       weekly.hydrateMatches(Json.groupBy(jsonArray, "matchid"));
-      // TODO hydrate maps, results
+      weekly.hydrateResults();
 
       this.weeklies.push(weekly);
     });
 
     this.weeklies.sort(Weekly.compareFn);
+    return this;
+  }
+
+  hydrateTops() {
+    this.weeklies.forEach((weekly) => {
+      weekly.results.forEach((result) => {
+        let idx = this.tops.findIndex(
+          (top) => top.player.accountId === result.player?.accountId
+        );
+        if (idx === -1) {
+          const top = { player: result.player!, score: 0 };
+          idx = this.tops.length;
+          this.tops.push(top);
+        }
+        this.tops[idx].score += result.score;
+      });
+    });
+
+    this.tops.sort((a, b) => {
+      if (b.score === a.score)
+        return b.player.name.localeCompare(a.player.name);
+      return b.score - a.score;
+    });
+
+    this.tops.forEach((top, idx) => {
+      top.position =
+        idx > 0 && this.tops[idx].score === this.tops[idx - 1].score
+          ? this.tops[idx - 1].position
+          : idx + 1;
+      this.playercount++;
+    });
+
     return this;
   }
 
@@ -80,6 +120,7 @@ export class Leaderboard {
         published: true,
       })),
       playercount: this.playercount,
+      tops: this.tops,
     };
   }
 }

@@ -263,7 +263,8 @@ describe("/api/leaderboard", () => {
 
     const lbJson = await lbResponse.json();
     expect(lbJson.leaderboardId).toEqual(leaderboardId);
-    expect(lbJson.tops).toBeUndefined();
+    expect(lbJson.tops).toBeDefined();
+    expect(lbJson.tops!.length).toEqual(0);
     expect(lbJson.playercount).toEqual(0);
     // TODO need better handling of players w/o tmio data
     // expect(lbJson.players).toBeDefined();
@@ -552,6 +553,6 @@ describe("/api/leaderboard", () => {
     expect(lbJson.tops![9].score).toEqual(0);
     expect(lbJson.tops![9].position).toEqual(9);
     expect(lbJson.weeklies).toBeDefined();
-    expect(lbJson.weeklies!.length).toEqual(3);
+    expect(lbJson.weeklies!.length).toEqual(1);
   });
 });

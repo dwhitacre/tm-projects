@@ -66,13 +66,36 @@ export class Weekly {
     return this;
   }
 
-  hydrateMaps(maps: Array<Map>) {
-    // TODO
-    return this;
-  }
-
   hydrateResults() {
-    // TODO
+    this.matches.forEach((match) => {
+      match.pointsResults.forEach((pointsResult) => {
+        let idx = this.results.findIndex(
+          (weeklyResult) =>
+            weeklyResult.player?.accountId === pointsResult.player?.accountId
+        );
+
+        if (idx === -1) {
+          const weeklyResult = new WeeklyResult(
+            pointsResult.player?.accountId || ""
+          );
+          weeklyResult.player = pointsResult.player;
+          idx = this.results.length;
+          this.results.push(weeklyResult);
+        }
+
+        this.results[idx].score += pointsResult.score;
+      });
+    });
+
+    this.results.sort(WeeklyResult.compareFn);
+
+    this.results.forEach((result, idx) => {
+      result.position =
+        idx > 0 && result.score === this.results[idx - 1].score
+          ? this.results[idx - 1].position
+          : (result.position = idx + 1);
+    });
+
     return this;
   }
 
