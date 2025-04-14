@@ -5,7 +5,7 @@ on:
       - .github/workflows/hds-tm-events.yaml
       - apis/hds-tm-events/**
       - apps/hds-tm-events/**
-      - charts/hds-tm-events/**
+      - charts/holydynasty-events/**
       - dbs/hsdtmevents/**
       - plugins/hds-bounty/**
       - sims/**
@@ -41,39 +41,39 @@ jobs:
       - uses: oven-sh/setup-bun@v2
       - run: bun install
       - run: bun test
-  # deploy:
-  #   runs-on: ubuntu-latest
-  #   needs: [app, api]
-  #   if: ${{ (github.head_ref || github.ref_name) == 'main' }}
-  #   environment: hdweeklyleague.com
-  #   steps:
-  #     - uses: actions/checkout@v4
-  #     - name: Set up Docker Buildx
-  #       uses: docker/setup-buildx-action@v3
-  #     - name: Login to Docker Hub
-  #       uses: docker/login-action@v3
-  #       with:
-  #         username: ${{ secrets.DOCKER_USERNAME }}
-  #         password: ${{ secrets.DOCKER_TOKEN }}
-  #     - name: Build and push
-  #       uses: docker/build-push-action@v5
-  #       with:
-  #         context: apis/hds-tm-events
-  #         push: true
-  #         tags: hdstmevents/api:latest
-  #     - name: Build and push
-  #       uses: docker/build-push-action@v5
-  #       with:
-  #         context: apps/hds-tm-events
-  #         push: true
-  #         tags: hdstmevents/app:latest
-  #     - name: Install doctl
-  #       uses: digitalocean/action-doctl@v2
-  #       with:
-  #         token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
-  #     - name: Helm Upgrade
-  #       shell: bash
-  #       run: |
-  #         doctl kubernetes cluster kubeconfig save --expiry-seconds 240 ${{ secrets.DIGITALOCEAN_CLUSTER_NAME }}
-  #         helm dependency update ./charts/hds-tm-events
-  #         helm -n hds-tm-events upgrade --install --wait --timeout 60s --atomic hds-tm-events ./charts/hds-tm-events/
+  deploy:
+    runs-on: ubuntu-latest
+    needs: [app, api]
+    if: ${{ (github.head_ref || github.ref_name) == 'main' }}
+    environment: holydynasty.events
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_TOKEN }}
+      - name: Build and push
+        uses: docker/build-push-action@v5
+        with:
+          context: apis/hds-tm-events
+          push: true
+          tags: danonthemoon/holydynasty-events-api:latest
+      - name: Build and push
+        uses: docker/build-push-action@v5
+        with:
+          context: apps/hds-tm-events
+          push: true
+          tags: danonthemoon/holydynasty-events-app:latest
+      - name: Install doctl
+        uses: digitalocean/action-doctl@v2
+        with:
+          token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
+      - name: Helm Upgrade
+        shell: bash
+        run: |
+          doctl kubernetes cluster kubeconfig save --expiry-seconds 240 ${{ secrets.DIGITALOCEAN_CLUSTER_NAME }}
+          helm dependency update ./charts/holydynasty-events
+          helm -n holydynasty-events upgrade --install --wait --timeout 60s --atomic holydynasty-events ./charts/holydynasty-events/
