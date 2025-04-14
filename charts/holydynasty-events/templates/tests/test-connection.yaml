@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: "{{ include "holydynasty-events.fullname" . }}-test-connection"
+  labels:
+    {{- include "holydynasty-events.labels" . | nindent 4 }}
+  annotations:
+    "helm.sh/hook": test-success
+spec:
+  containers:
+    - name: wget-app
+      image: busybox
+      command: ['wget']
+      args: ['{{ include "holydynasty-events.fullname" . }}:{{ .Values.app.service.port }}']
+    - name: wget-api
+      image: busybox
+      command: ['wget']
+      args: ['{{ include "holydynasty-events.fullname" . }}:{{ .Values.api.service.port }}']
+  restartPolicy: Never

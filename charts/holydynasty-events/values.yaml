@@ -1,0 +1,74 @@
+replicaCount: 2
+maxUnavailable: 1
+
+app:
+  image:
+    repository: danonthemoon/holydynasty-events-app
+    pullPolicy: Always
+    tag: latest
+  resources:
+    limits:
+      cpu: 250m
+      memory: 256Mi
+    requests:
+      cpu: 100m
+      memory: 128Mi
+  service:
+    port: 80
+  securityContext: {}
+
+api:
+  image:
+    repository: danonthemoon/holydynasty-events-api
+    pullPolicy: Always
+    tag: latest
+  resources:
+    limits:
+      cpu: 250m
+      memory: 256Mi
+    requests:
+      cpu: 100m
+      memory: 128Mi
+  service:
+    port: 8081
+  securityContext: {}
+
+tmioUrl: https://trackmania.io
+
+imagePullSecrets:
+  - name: danonthemoon-ips
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  create: true
+  annotations: {}
+  name: ""
+
+podAnnotations: {}
+podSecurityContext: {}
+
+service:
+  type: ClusterIP
+
+ingress:
+  enabled: true
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    nginx.ingress.kubernetes.io/from-to-www-redirect: "true"
+  hosts:
+    - host: holydynasty.events
+    - host: www.holydynasty.events
+  tls:
+    - hosts:
+        - holydynasty.events
+        - www.holydynasty.events
+        - join.holydynasty.events
+      secretName: holydynasty-events-tls
+  directs:
+    - host: join.holydynasty.events
+
+nodeSelector: {}
+tolerations: []
+affinity: {}
