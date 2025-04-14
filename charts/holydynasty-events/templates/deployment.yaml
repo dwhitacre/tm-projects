@@ -62,6 +62,10 @@ spec:
                 secretKeyRef:
                   name: holydynasty-events-api
                   key: ADMIN_KEY
+            - name: DATABASE_SSL
+              value: "true"
+            - name: HOST
+              value: "0.0.0.0"
             - name: TMIO_URL
               value: {{ .Values.tmioUrl }}
           ports:
