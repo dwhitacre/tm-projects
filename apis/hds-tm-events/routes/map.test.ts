@@ -8,7 +8,11 @@ let services: Services;
 beforeEach(() => {
   services = {
     logger: new Logger(),
-    map: { get: mock(async () => []), upsert: mock(async () => {}) },
+    map: {
+      get: mock(async () => []),
+      getAll: mock(async () => []),
+      upsert: mock(async () => {}),
+    },
     tmio: { getMap: mock(async () => ({})) },
   } as unknown as Services;
 });

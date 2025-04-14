@@ -224,17 +224,19 @@ describe("match", () => {
     expect(match.pointsResults).toEqual(expected.pointsResults);
   });
 
-  test.each([[[{}]], [[{ accountId: "" }]]])(
-    "should throw hydrateResults: %j",
-    (json) => {
-      const match = Match.fromJson({ matchId: "matchId" });
-      expect(() => match.hydrateResults(json)).toThrowError();
-    }
-  );
-
   test.each([
     [
       [],
+      { matchId: "matchId", pointsAwarded: 0, playersAwarded: 0 },
+      { results: [] },
+    ],
+    [
+      [{}],
+      { matchId: "matchId", pointsAwarded: 0, playersAwarded: 0 },
+      { results: [] },
+    ],
+    [
+      [{ accountId: "" }],
       { matchId: "matchId", pointsAwarded: 0, playersAwarded: 0 },
       { results: [] },
     ],
