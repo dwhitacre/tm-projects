@@ -554,5 +554,7 @@ describe("/api/leaderboard", () => {
     expect(lbJson.tops![9].position).toEqual(9);
     expect(lbJson.weeklies).toBeDefined();
     expect(lbJson.weeklies!.length).toEqual(1);
+    expect(lbJson.players).toBeDefined();
+    expect(lbJson.players!.length).toEqual(10);
   });
 });

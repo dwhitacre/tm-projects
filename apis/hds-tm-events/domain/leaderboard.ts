@@ -39,6 +39,7 @@ export class Leaderboard {
   weeklies: Array<Weekly> = [];
   playercount = 0;
   tops: Array<Top> = [];
+  players: Array<Player> = [];
 
   static fromJson(json: JsonObject): Leaderboard {
     json = Json.lowercaseKeys(json);
@@ -109,6 +110,11 @@ export class Leaderboard {
     return this;
   }
 
+  hydratePlayers() {
+    this.players = this.tops.map((top) => top.player);
+    return this;
+  }
+
   toJson(): JsonObject {
     return {
       leaderboardId: this.leaderboardId,
@@ -121,6 +127,7 @@ export class Leaderboard {
       })),
       playercount: this.playercount,
       tops: this.tops,
+      players: this.players,
     };
   }
 }
