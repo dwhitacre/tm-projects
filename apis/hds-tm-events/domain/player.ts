@@ -34,6 +34,10 @@ export class Player {
     return player;
   }
 
+  static compareFn(a: Player, b: Player): number {
+    return a.name.localeCompare(b.name);
+  }
+
   constructor(accountId: string) {
     this.accountId = accountId;
   }

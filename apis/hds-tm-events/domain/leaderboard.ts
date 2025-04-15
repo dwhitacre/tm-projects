@@ -1,5 +1,5 @@
 import Json, { type JsonGroupedArray, type JsonObject } from "./json";
-import type Player from "./player";
+import Player from "./player";
 import Weekly from "./weekly";
 
 export class LeaderboardRequest {
@@ -94,8 +94,7 @@ export class Leaderboard {
     });
 
     this.tops.sort((a, b) => {
-      if (b.score === a.score)
-        return b.player.name.localeCompare(a.player.name);
+      if (b.score === a.score) return Player.compareFn(a.player, b.player);
       return b.score - a.score;
     });
 
