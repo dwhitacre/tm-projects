@@ -13,6 +13,9 @@ class LeaderboardRoute extends Route {
     const leaderboard = await req.services.leaderboard.get(leaderboardId);
     if (!leaderboard) return ApiResponse.noContent(req);
 
+    const players = await req.services.player.getAll();
+    leaderboard.hydratePlayers(players);
+
     return ApiResponse.ok(req, leaderboard.toJson());
   }
 

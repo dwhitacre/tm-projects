@@ -110,8 +110,8 @@ export class Leaderboard {
     return this;
   }
 
-  hydratePlayers() {
-    this.players = this.tops.map((top) => top.player);
+  hydratePlayers(players: Array<Player>) {
+    this.players = players;
     return this;
   }
 
@@ -127,7 +127,7 @@ export class Leaderboard {
       })),
       playercount: this.playercount,
       tops: this.tops,
-      players: this.players,
+      players: this.players.map((player) => player.toJson()),
     };
   }
 }

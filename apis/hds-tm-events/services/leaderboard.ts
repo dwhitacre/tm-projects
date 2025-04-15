@@ -44,7 +44,7 @@ export class LeaderboardService {
     if (!result[0].weeklyid) return undefined;
 
     const weekliesJson = Json.groupBy(result, "weeklyid");
-    leaderboard.hydrateWeeklies(weekliesJson).hydrateTops().hydratePlayers();
+    leaderboard.hydrateWeeklies(weekliesJson).hydrateTops();
 
     return leaderboard;
   }
