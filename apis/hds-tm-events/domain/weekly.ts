@@ -42,7 +42,7 @@ export class Weekly {
   }
 
   static compareFn(a: Weekly, b: Weekly): number {
-    return b.weeklyId.localeCompare(a.weeklyId);
+    return a.weeklyId.localeCompare(b.weeklyId);
   }
 
   constructor(weeklyId: string) {

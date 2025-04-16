@@ -25,6 +25,14 @@ const fakeWeeklyId = () =>
   `${
     faker.date.anytime().toISOString().split("T")[0]
   }-${faker.string.alphanumeric(10)}`;
+const fakeWeeklyIdPast = () =>
+  `${faker.date.past().toISOString().split("T")[0]}-${faker.string.alphanumeric(
+    10
+  )}`;
+const fakeWeeklyIdFuture = () =>
+  `${
+    faker.date.future().toISOString().split("T")[0]
+  }-${faker.string.alphanumeric(10)}`;
 
 let db: Db;
 let leaderboardService: LeaderboardService;
@@ -392,11 +400,11 @@ describe("/api/leaderboard", () => {
     });
   });
 
-  test("add weekly to leaderboard multiple", async () => {
+  test.only("add weekly to leaderboard multiple", async () => {
     const leaderboardId = faker.string.uuid();
-    const weeklyId1 = fakeWeeklyId();
+    const weeklyId1 = fakeWeeklyIdPast();
     const weeklyId2 = fakeWeeklyId();
-    const weeklyId3 = fakeWeeklyId();
+    const weeklyId3 = fakeWeeklyIdFuture();
 
     const leaderboard: Leaderboard = {
       leaderboardId,
@@ -424,6 +432,9 @@ describe("/api/leaderboard", () => {
     expect(lbJson.leaderboardId).toEqual(leaderboardId);
     expect(lbJson.weeklies).toBeDefined();
     expect(lbJson.weeklies!.length).toEqual(3);
+    expect(lbJson.weeklies![0].weekly.weeklyId).toEqual(weeklyId1);
+    expect(lbJson.weeklies![1].weekly.weeklyId).toEqual(weeklyId2);
+    expect(lbJson.weeklies![2].weekly.weeklyId).toEqual(weeklyId3);
   });
 
   test("add full week results", async () => {
