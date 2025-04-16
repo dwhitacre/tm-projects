@@ -111,6 +111,14 @@ export class Leaderboard {
 
   hydratePlayers(players: Array<Player>) {
     this.players = players;
+
+    this.tops.forEach((top) => {
+      const player = players.find(
+        (player) => player.accountId === top.player.accountId
+      );
+      if (player) top.player = player;
+    });
+
     return this;
   }
 
@@ -125,7 +133,11 @@ export class Leaderboard {
         published: true,
       })),
       playercount: this.playercount,
-      tops: this.tops,
+      tops: this.tops.map((top) => ({
+        player: top.player.toJson(),
+        score: top.score,
+        position: top.position,
+      })),
       players: this.players.map((player) => player.toJson()),
     };
   }

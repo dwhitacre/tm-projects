@@ -19,6 +19,7 @@ import {
   matchSemifinalB,
   matchSemifinalTiebreak,
 } from "shared/domain/match";
+import { PlayerService } from "shared/services/player";
 
 const fakeWeeklyId = () =>
   `${
@@ -27,6 +28,7 @@ const fakeWeeklyId = () =>
 
 let db: Db;
 let leaderboardService: LeaderboardService;
+let playerService: PlayerService;
 const client = new HdstmEventsClient({
   baseUrl: "http://localhost:8081",
   apikeyHeader: "x-hdstmevents-adminkey",
@@ -43,6 +45,7 @@ beforeAll(async () => {
       "postgres://hdstmevents:Passw0rd!@localhost:5432/hdstmevents?pool_max_conns=10",
   });
   leaderboardService = LeaderboardService.getInstance({ db });
+  playerService = PlayerService.getInstance({ db });
 });
 
 afterAll(async () => {
@@ -427,9 +430,17 @@ describe("/api/leaderboard", () => {
     const leaderboardId = faker.string.uuid();
     const weeklyId = fakeWeeklyId();
     const accountIds = "p"
-      .repeat(10)
+      .repeat(8)
       .split("")
       .map(() => faker.string.uuid());
+    accountIds.push(faker.string.uuid().replace(/^.{4}/, "2000"));
+
+    const accountId = faker.string.uuid().replace(/^.{4}/, "2000");
+    const name = faker.internet.username();
+    const image = "assets/images/override.jpg";
+    const twitch = "override.tv";
+    const discord = "override.discord";
+    accountIds.push(accountId);
 
     const leaderboard: Leaderboard = {
       leaderboardId,
@@ -447,6 +458,14 @@ describe("/api/leaderboard", () => {
     expect(response.status).toEqual(201);
 
     await adminClient.createPlayerBulk(accountIds);
+    await playerService.addPlayerOverrides(
+      accountId,
+      name,
+      image,
+      twitch,
+      discord
+    );
+
     await adminClient.createAndUpdateMatchResultBulk(
       matchQualifying(weeklyId),
       accountIds
@@ -517,6 +536,10 @@ describe("/api/leaderboard", () => {
     expect(lbJson.tops).toBeDefined();
     expect(lbJson.tops!.length).toEqual(10);
     expect(lbJson.tops![0].player.accountId).toEqual(accountIds[9]);
+    expect(lbJson.tops![0].player.name).toEqual(name);
+    expect(lbJson.tops![0].player.image).toEqual(image);
+    expect(lbJson.tops![0].player.twitch).toEqual(twitch);
+    expect(lbJson.tops![0].player.discord).toEqual(discord);
     expect(lbJson.tops![0].score).toEqual(15);
     expect(lbJson.tops![0].position).toEqual(1);
     expect(lbJson.tops![1].player.accountId).toEqual(accountIds[5]);
@@ -529,6 +552,10 @@ describe("/api/leaderboard", () => {
     expect(lbJson.tops![3].score).toEqual(6);
     expect(lbJson.tops![3].position).toEqual(4);
     expect(lbJson.tops![4].player.accountId).toEqual(accountIds[8]);
+    expect(lbJson.tops![4].player.name.length).toBeGreaterThan(0);
+    expect(lbJson.tops![4].player.image).toMatch(/assets\/images\/.{3}\..{3}/);
+    expect(lbJson.tops![4].player.twitch.length).toEqual(0);
+    expect(lbJson.tops![4].player.discord.length).toEqual(0);
     expect(lbJson.tops![4].score).toEqual(4);
     expect(lbJson.tops![4].position).toEqual(5);
     expect(lbJson.tops![5].player.accountId).toEqual(accountIds[6]);

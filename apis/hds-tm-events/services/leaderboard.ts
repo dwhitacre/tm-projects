@@ -26,7 +26,11 @@ export class LeaderboardService {
           Match.PointsAwarded,
           MatchResult.Score,
           Player.AccountId,
-          Player.TmioData as Player_TmioData
+          Player.TmioData as Player_TmioData,
+          PlayerOverrides.Name as PlayerOverrides_Name,
+          PlayerOverrides.Image as PlayerOverrides_Image,
+          PlayerOverrides.Twitch as PlayerOverrides_Twitch,
+          PlayerOverrides.Discord as PlayerOverrides_Discord
         from Leaderboard
         left join LeaderboardWeekly on Leaderboard.LeaderboardId = LeaderboardWeekly.LeaderboardId
         left join Weekly on LeaderboardWeekly.WeeklyId = Weekly.WeeklyId
@@ -34,6 +38,7 @@ export class LeaderboardService {
         left join Match on WeeklyMatch.MatchId = Match.MatchId
         left join MatchResult on Match.MatchId = MatchResult.MatchId
         left join Player on MatchResult.AccountId = Player.AccountId
+        left join PlayerOverrides on Player.AccountId = PlayerOverrides.AccountId
         where Leaderboard.LeaderboardId = $1
       `,
       [leaderboardId]
