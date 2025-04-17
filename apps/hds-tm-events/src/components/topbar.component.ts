@@ -337,7 +337,7 @@ export class TopBarComponent {
   discordItem: MenuItem = {
     label: 'Join',
     icon: 'pi pi-discord',
-    command: () => window.open('https://join.hdweeklyleague.com'),
+    command: () => window.open('https://join.holydynasty.events'),
     visible: true,
     styleClass: 'layout-topbar-menu-menuitem-discord',
   }
@@ -351,7 +351,7 @@ export class TopBarComponent {
   githubItem: MenuItem = {
     label: 'Github',
     icon: 'pi pi-github',
-    command: () => window.open('https://github.com/dwhitacre/hds-tm-events'),
+    command: () => window.open('https://github.com/dwhitacre/tm-projects'),
     visible: true,
     styleClass: 'layout-topbar-menu-menuitem-github',
   }
