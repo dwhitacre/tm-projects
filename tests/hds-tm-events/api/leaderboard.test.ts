@@ -407,7 +407,7 @@ describe("/api/leaderboard", () => {
   test("add weekly to leaderboard multiple", async () => {
     const leaderboardId = faker.string.uuid();
     const weeklyId1 = fakeWeeklyIdPast();
-    const weeklyId2 = fakeWeeklyId();
+    const weeklyId2 = fakeWeeklyIdRecent();
     const weeklyId3 = fakeWeeklyIdFuture();
 
     const leaderboard: Leaderboard = {
