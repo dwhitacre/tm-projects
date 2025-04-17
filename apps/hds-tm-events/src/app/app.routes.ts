@@ -6,23 +6,39 @@ import { RulesComponent } from './rules.component'
 
 export const appRoutes: Route[] = [
   {
-    path: 'standings',
+    path: 'weeklyleague/standings',
     component: StandingsComponent,
   },
   {
-    path: 'stats',
+    path: 'weeklyleague/stats',
     component: StatsComponent,
   },
   {
-    path: 'weekly',
+    path: 'weeklyleague/weekly',
     component: WeeklyComponent,
   },
   {
-    path: 'rules',
+    path: 'weeklyleague/rules',
     component: RulesComponent,
   },
   {
+    path: 'standings',
+    redirectTo: 'weeklyleague/standings',
+  },
+  {
+    path: 'stats',
+    redirectTo: 'weeklyleague/stats',
+  },
+  {
+    path: 'weekly',
+    redirectTo: 'weeklyleague/weekly',
+  },
+  {
+    path: 'rules',
+    redirectTo: 'weeklyleague/rules',
+  },
+  {
     path: '**',
-    redirectTo: 'standings',
+    redirectTo: 'weeklyleague/standings',
   },
 ]

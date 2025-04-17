@@ -29,6 +29,10 @@ const fakeWeeklyIdPast = () =>
   `${faker.date.past().toISOString().split("T")[0]}-${faker.string.alphanumeric(
     10
   )}`;
+const fakeWeeklyIdRecent = () =>
+  `${
+    faker.date.recent().toISOString().split("T")[0]
+  }-${faker.string.alphanumeric(10)}`;
 const fakeWeeklyIdFuture = () =>
   `${
     faker.date.future().toISOString().split("T")[0]
@@ -400,7 +404,7 @@ describe("/api/leaderboard", () => {
     });
   });
 
-  test.only("add weekly to leaderboard multiple", async () => {
+  test("add weekly to leaderboard multiple", async () => {
     const leaderboardId = faker.string.uuid();
     const weeklyId1 = fakeWeeklyIdPast();
     const weeklyId2 = fakeWeeklyId();
