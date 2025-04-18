@@ -5,6 +5,7 @@ export interface MatchResult {
   matchId: Match["matchId"];
   accountId: IPlayer["accountId"];
   score: number;
+  player?: IPlayer;
 }
 
 export interface Match {

@@ -594,8 +594,417 @@ describe("/api/leaderboard", () => {
     ]);
     expect(lbJson.tops![9].score).toEqual(0);
     expect(lbJson.tops![9].position).toEqual(9);
+
     expect(lbJson.weeklies).toBeDefined();
     expect(lbJson.weeklies!.length).toEqual(1);
+    expect(lbJson.weeklies![0].weekly).toBeDefined();
+    expect(lbJson.weeklies![0].weekly.weeklyId).toEqual(weeklyId);
+    expect(lbJson.weeklies![0].weekly.matches).toBeDefined();
+    expect(lbJson.weeklies![0].weekly.matches.length).toEqual(12);
+
+    const matchFinal = lbJson.weeklies![0].weekly.matches.find(
+      (match) => match.match.matchId === matchFinals(weeklyId)
+    );
+    expect(matchFinal).toBeDefined();
+    expect(matchFinal!.match).toBeDefined();
+    expect(matchFinal!.match.matchId).toEqual(matchFinals(weeklyId));
+    expect(matchFinal!.match.results).toBeDefined();
+    expect(matchFinal!.match.results.length).toEqual(2);
+    expect(matchFinal!.match.results[0].player!.accountId).toEqual(
+      accountIds[9]
+    );
+    expect(matchFinal!.match.results[0].score).toEqual(100);
+    expect(matchFinal!.match.results[1].player!.accountId).toEqual(
+      accountIds[5]
+    );
+    expect(matchFinal!.match.results[1].score).toEqual(0);
+    expect(matchFinal!.match.playersAwarded).toEqual(1);
+    expect(matchFinal!.match.pointsAwarded).toEqual(4);
+    expect(matchFinal!.match.pointsResults).toBeDefined();
+    expect(matchFinal!.match.pointsResults.length).toEqual(2);
+    expect(matchFinal!.match.pointsResults[0].player!.accountId).toEqual(
+      accountIds[9]
+    );
+    expect(matchFinal!.match.pointsResults[0].score).toEqual(4);
+    expect(matchFinal!.match.pointsResults[1].player!.accountId).toEqual(
+      accountIds[5]
+    );
+    expect(matchFinal!.match.pointsResults[1].score).toEqual(0);
+
+    let matchSemifinal = lbJson.weeklies![0].weekly.matches.find(
+      (match) => match.match.matchId === matchSemifinalA(weeklyId)
+    );
+    expect(matchSemifinal).toBeDefined();
+    expect(matchSemifinal!.match).toBeDefined();
+    expect(matchSemifinal!.match.matchId).toEqual(matchSemifinalA(weeklyId));
+    expect(matchSemifinal!.match.results).toBeDefined();
+    expect(matchSemifinal!.match.results.length).toEqual(2);
+    expect(matchSemifinal!.match.results[0].player!.accountId).toEqual(
+      accountIds[5]
+    );
+    expect(matchSemifinal!.match.results[0].score).toEqual(100);
+    expect(matchSemifinal!.match.results[1].player!.accountId).toEqual(
+      accountIds[3]
+    );
+    expect(matchSemifinal!.match.results[1].score).toEqual(0);
+    expect(matchSemifinal!.match.playersAwarded).toEqual(1);
+    expect(matchSemifinal!.match.pointsAwarded).toEqual(5);
+    expect(matchSemifinal!.match.pointsResults).toBeDefined();
+    expect(matchSemifinal!.match.pointsResults.length).toEqual(2);
+    expect(matchSemifinal!.match.pointsResults[0].player!.accountId).toEqual(
+      accountIds[5]
+    );
+    expect(matchSemifinal!.match.pointsResults[0].score).toEqual(5);
+    expect(matchSemifinal!.match.pointsResults[1].player!.accountId).toEqual(
+      accountIds[3]
+    );
+    expect(matchSemifinal!.match.pointsResults[1].score).toEqual(0);
+
+    matchSemifinal = lbJson.weeklies![0].weekly.matches.find(
+      (match) => match.match.matchId === matchSemifinalB(weeklyId)
+    );
+    expect(matchSemifinal).toBeDefined();
+    expect(matchSemifinal!.match).toBeDefined();
+    expect(matchSemifinal!.match.matchId).toEqual(matchSemifinalB(weeklyId));
+    expect(matchSemifinal!.match.results).toBeDefined();
+    expect(matchSemifinal!.match.results.length).toEqual(2);
+    expect(matchSemifinal!.match.results[0].player!.accountId).toEqual(
+      accountIds[9]
+    );
+    expect(matchSemifinal!.match.results[0].score).toEqual(100);
+    expect(matchSemifinal!.match.results[1].player!.accountId).toEqual(
+      accountIds[7]
+    );
+    expect(matchSemifinal!.match.results[1].score).toEqual(0);
+    expect(matchSemifinal!.match.playersAwarded).toEqual(1);
+    expect(matchSemifinal!.match.pointsAwarded).toEqual(5);
+    expect(matchSemifinal!.match.pointsResults).toBeDefined();
+    expect(matchSemifinal!.match.pointsResults.length).toEqual(2);
+    expect(matchSemifinal!.match.pointsResults[0].player!.accountId).toEqual(
+      accountIds[9]
+    );
+    expect(matchSemifinal!.match.pointsResults[0].score).toEqual(5);
+    expect(matchSemifinal!.match.pointsResults[1].player!.accountId).toEqual(
+      accountIds[7]
+    );
+    expect(matchSemifinal!.match.pointsResults[1].score).toEqual(0);
+
+    matchSemifinal = lbJson.weeklies![0].weekly.matches.find(
+      (match) => match.match.matchId === matchSemifinalTiebreak(weeklyId)
+    );
+    expect(matchSemifinal).toBeDefined();
+    expect(matchSemifinal!.match).toBeDefined();
+    expect(matchSemifinal!.match.matchId).toEqual(
+      matchSemifinalTiebreak(weeklyId)
+    );
+    expect(matchSemifinal!.match.results).toBeDefined();
+    expect(matchSemifinal!.match.results.length).toEqual(1);
+    expect(matchSemifinal!.match.results[0].player!.accountId).toEqual(
+      accountIds[7]
+    );
+    expect(matchSemifinal!.match.results[0].score).toEqual(1);
+    expect(matchSemifinal!.match.playersAwarded).toEqual(1);
+    expect(matchSemifinal!.match.pointsAwarded).toEqual(2);
+    expect(matchSemifinal!.match.pointsResults).toBeDefined();
+    expect(matchSemifinal!.match.pointsResults.length).toEqual(1);
+    expect(matchSemifinal!.match.pointsResults[0].player!.accountId).toEqual(
+      accountIds[7]
+    );
+    expect(matchSemifinal!.match.pointsResults[0].score).toEqual(2);
+
+    let matchQuarterFinal = lbJson.weeklies![0].weekly.matches.find(
+      (match) => match.match.matchId === matchQuarterFinalA(weeklyId)
+    );
+    expect(matchQuarterFinal).toBeDefined();
+    expect(matchQuarterFinal!.match).toBeDefined();
+    expect(matchQuarterFinal!.match.matchId).toEqual(
+      matchQuarterFinalA(weeklyId)
+    );
+    expect(matchQuarterFinal!.match.results).toBeDefined();
+    expect(matchQuarterFinal!.match.results.length).toEqual(2);
+    expect(matchQuarterFinal!.match.results[0].player!.accountId).toEqual(
+      accountIds[3]
+    );
+    expect(matchQuarterFinal!.match.results[0].score).toEqual(100);
+    expect(matchQuarterFinal!.match.results[1].player!.accountId).toEqual(
+      accountIds[2]
+    );
+    expect(matchQuarterFinal!.match.results[1].score).toEqual(0);
+    expect(matchQuarterFinal!.match.playersAwarded).toEqual(1);
+    expect(matchQuarterFinal!.match.pointsAwarded).toEqual(5);
+    expect(matchQuarterFinal!.match.pointsResults).toBeDefined();
+    expect(matchQuarterFinal!.match.pointsResults.length).toEqual(2);
+    expect(matchQuarterFinal!.match.pointsResults[0].player!.accountId).toEqual(
+      accountIds[3]
+    );
+    expect(matchQuarterFinal!.match.pointsResults[0].score).toEqual(5);
+    expect(matchQuarterFinal!.match.pointsResults[1].player!.accountId).toEqual(
+      accountIds[2]
+    );
+    expect(matchQuarterFinal!.match.pointsResults[1].score).toEqual(0);
+
+    matchQuarterFinal = lbJson.weeklies![0].weekly.matches.find(
+      (match) => match.match.matchId === matchQuarterFinalB(weeklyId)
+    );
+    expect(matchQuarterFinal).toBeDefined();
+    expect(matchQuarterFinal!.match).toBeDefined();
+    expect(matchQuarterFinal!.match.matchId).toEqual(
+      matchQuarterFinalB(weeklyId)
+    );
+    expect(matchQuarterFinal!.match.results).toBeDefined();
+    expect(matchQuarterFinal!.match.results.length).toEqual(2);
+    expect(matchQuarterFinal!.match.results[0].player!.accountId).toEqual(
+      accountIds[5]
+    );
+    expect(matchQuarterFinal!.match.results[0].score).toEqual(100);
+    expect(matchQuarterFinal!.match.results[1].player!.accountId).toEqual(
+      accountIds[4]
+    );
+    expect(matchQuarterFinal!.match.results[1].score).toEqual(0);
+    expect(matchQuarterFinal!.match.playersAwarded).toEqual(1);
+    expect(matchQuarterFinal!.match.pointsAwarded).toEqual(5);
+    expect(matchQuarterFinal!.match.pointsResults).toBeDefined();
+    expect(matchQuarterFinal!.match.pointsResults.length).toEqual(2);
+    expect(matchQuarterFinal!.match.pointsResults[0].player!.accountId).toEqual(
+      accountIds[5]
+    );
+    expect(matchQuarterFinal!.match.pointsResults[0].score).toEqual(5);
+    expect(matchQuarterFinal!.match.pointsResults[1].player!.accountId).toEqual(
+      accountIds[4]
+    );
+    expect(matchQuarterFinal!.match.pointsResults[1].score).toEqual(0);
+
+    matchQuarterFinal = lbJson.weeklies![0].weekly.matches.find(
+      (match) => match.match.matchId === matchQuarterFinalC(weeklyId)
+    );
+    expect(matchQuarterFinal).toBeDefined();
+    expect(matchQuarterFinal!.match).toBeDefined();
+    expect(matchQuarterFinal!.match.matchId).toEqual(
+      matchQuarterFinalC(weeklyId)
+    );
+    expect(matchQuarterFinal!.match.results).toBeDefined();
+    expect(matchQuarterFinal!.match.results.length).toEqual(2);
+    expect(matchQuarterFinal!.match.results[0].player!.accountId).toEqual(
+      accountIds[7]
+    );
+    expect(matchQuarterFinal!.match.results[0].score).toEqual(100);
+    expect(matchQuarterFinal!.match.results[1].player!.accountId).toEqual(
+      accountIds[6]
+    );
+    expect(matchQuarterFinal!.match.results[1].score).toEqual(0);
+    expect(matchQuarterFinal!.match.playersAwarded).toEqual(1);
+    expect(matchQuarterFinal!.match.pointsAwarded).toEqual(5);
+    expect(matchQuarterFinal!.match.pointsResults).toBeDefined();
+    expect(matchQuarterFinal!.match.pointsResults.length).toEqual(2);
+    expect(matchQuarterFinal!.match.pointsResults[0].player!.accountId).toEqual(
+      accountIds[7]
+    );
+    expect(matchQuarterFinal!.match.pointsResults[0].score).toEqual(5);
+    expect(matchQuarterFinal!.match.pointsResults[1].player!.accountId).toEqual(
+      accountIds[6]
+    );
+    expect(matchQuarterFinal!.match.pointsResults[1].score).toEqual(0);
+
+    matchQuarterFinal = lbJson.weeklies![0].weekly.matches.find(
+      (match) => match.match.matchId === matchQuarterFinalD(weeklyId)
+    );
+    expect(matchQuarterFinal).toBeDefined();
+    expect(matchQuarterFinal!.match).toBeDefined();
+    expect(matchQuarterFinal!.match.matchId).toEqual(
+      matchQuarterFinalD(weeklyId)
+    );
+    expect(matchQuarterFinal!.match.results).toBeDefined();
+    expect(matchQuarterFinal!.match.results.length).toEqual(2);
+    expect(matchQuarterFinal!.match.results[0].player!.accountId).toEqual(
+      accountIds[9]
+    );
+    expect(matchQuarterFinal!.match.results[0].score).toEqual(100);
+    expect(matchQuarterFinal!.match.results[1].player!.accountId).toEqual(
+      accountIds[8]
+    );
+    expect(matchQuarterFinal!.match.results[1].score).toEqual(0);
+    expect(matchQuarterFinal!.match.playersAwarded).toEqual(1);
+    expect(matchQuarterFinal!.match.pointsAwarded).toEqual(5);
+    expect(matchQuarterFinal!.match.pointsResults).toBeDefined();
+    expect(matchQuarterFinal!.match.pointsResults.length).toEqual(2);
+    expect(matchQuarterFinal!.match.pointsResults[0].player!.accountId).toEqual(
+      accountIds[9]
+    );
+    expect(matchQuarterFinal!.match.pointsResults[0].score).toEqual(5);
+    expect(matchQuarterFinal!.match.pointsResults[1].player!.accountId).toEqual(
+      accountIds[8]
+    );
+    expect(matchQuarterFinal!.match.pointsResults[1].score).toEqual(0);
+
+    let matchQuarterFinalTiebreak = lbJson.weeklies![0].weekly.matches.find(
+      (match) => match.match.matchId === matchQuarterFinalTiebreakA(weeklyId)
+    );
+    expect(matchQuarterFinalTiebreak).toBeDefined();
+    expect(matchQuarterFinalTiebreak!.match).toBeDefined();
+    expect(matchQuarterFinalTiebreak!.match.matchId).toEqual(
+      matchQuarterFinalTiebreakA(weeklyId)
+    );
+    expect(matchQuarterFinalTiebreak!.match.results).toBeDefined();
+    expect(matchQuarterFinalTiebreak!.match.results.length).toEqual(1);
+    expect(
+      matchQuarterFinalTiebreak!.match.results[0].player!.accountId
+    ).toEqual(accountIds[8]);
+    expect(matchQuarterFinalTiebreak!.match.results[0].score).toEqual(1);
+    expect(matchQuarterFinalTiebreak!.match.playersAwarded).toEqual(1);
+    expect(matchQuarterFinalTiebreak!.match.pointsAwarded).toEqual(3);
+    expect(matchQuarterFinalTiebreak!.match.pointsResults).toBeDefined();
+    expect(matchQuarterFinalTiebreak!.match.pointsResults.length).toEqual(1);
+    expect(
+      matchQuarterFinalTiebreak!.match.pointsResults[0].player!.accountId
+    ).toEqual(accountIds[8]);
+    expect(matchQuarterFinalTiebreak!.match.pointsResults[0].score).toEqual(3);
+
+    matchQuarterFinalTiebreak = lbJson.weeklies![0].weekly.matches.find(
+      (match) => match.match.matchId === matchQuarterFinalTiebreakB(weeklyId)
+    );
+    expect(matchQuarterFinalTiebreak).toBeDefined();
+    expect(matchQuarterFinalTiebreak!.match).toBeDefined();
+    expect(matchQuarterFinalTiebreak!.match.matchId).toEqual(
+      matchQuarterFinalTiebreakB(weeklyId)
+    );
+    expect(matchQuarterFinalTiebreak!.match.results).toBeDefined();
+    expect(matchQuarterFinalTiebreak!.match.results.length).toEqual(1);
+    expect(
+      matchQuarterFinalTiebreak!.match.results[0].player!.accountId
+    ).toEqual(accountIds[6]);
+    expect(matchQuarterFinalTiebreak!.match.results[0].score).toEqual(1);
+    expect(matchQuarterFinalTiebreak!.match.playersAwarded).toEqual(1);
+    expect(matchQuarterFinalTiebreak!.match.pointsAwarded).toEqual(2);
+    expect(matchQuarterFinalTiebreak!.match.pointsResults).toBeDefined();
+    expect(matchQuarterFinalTiebreak!.match.pointsResults.length).toEqual(1);
+    expect(
+      matchQuarterFinalTiebreak!.match.pointsResults[0].player!.accountId
+    ).toEqual(accountIds[6]);
+    expect(matchQuarterFinalTiebreak!.match.pointsResults[0].score).toEqual(2);
+
+    matchQuarterFinalTiebreak = lbJson.weeklies![0].weekly.matches.find(
+      (match) => match.match.matchId === matchQuarterFinalTiebreakC(weeklyId)
+    );
+    expect(matchQuarterFinalTiebreak).toBeDefined();
+    expect(matchQuarterFinalTiebreak!.match).toBeDefined();
+    expect(matchQuarterFinalTiebreak!.match.matchId).toEqual(
+      matchQuarterFinalTiebreakC(weeklyId)
+    );
+    expect(matchQuarterFinalTiebreak!.match.results).toBeDefined();
+    expect(matchQuarterFinalTiebreak!.match.results.length).toEqual(1);
+    expect(
+      matchQuarterFinalTiebreak!.match.results[0].player!.accountId
+    ).toEqual(accountIds[4]);
+    expect(matchQuarterFinalTiebreak!.match.results[0].score).toEqual(1);
+    expect(matchQuarterFinalTiebreak!.match.playersAwarded).toEqual(1);
+    expect(matchQuarterFinalTiebreak!.match.pointsAwarded).toEqual(1);
+    expect(matchQuarterFinalTiebreak!.match.pointsResults).toBeDefined();
+    expect(matchQuarterFinalTiebreak!.match.pointsResults.length).toEqual(1);
+    expect(
+      matchQuarterFinalTiebreak!.match.pointsResults[0].player!.accountId
+    ).toEqual(accountIds[4]);
+    expect(matchQuarterFinalTiebreak!.match.pointsResults[0].score).toEqual(1);
+
+    const matchQualifyingResults = lbJson.weeklies![0].weekly.matches.find(
+      (match) => match.match.matchId === matchQualifying(weeklyId)
+    );
+    expect(matchQualifyingResults).toBeDefined();
+    expect(matchQualifyingResults!.match).toBeDefined();
+    expect(matchQualifyingResults!.match.matchId).toEqual(
+      matchQualifying(weeklyId)
+    );
+    expect(matchQualifyingResults!.match.results).toBeDefined();
+    expect(matchQualifyingResults!.match.results.length).toEqual(
+      accountIds.length
+    );
+
+    expect(matchQualifyingResults!.match.results[0].player!.accountId).toEqual(
+      accountIds[9]
+    );
+    expect(matchQualifyingResults!.match.results[0].score).toEqual(1000);
+    expect(matchQualifyingResults!.match.results[1].player!.accountId).toEqual(
+      accountIds[8]
+    );
+    expect(matchQualifyingResults!.match.results[1].score).toEqual(900);
+    expect(matchQualifyingResults!.match.results[2].player!.accountId).toEqual(
+      accountIds[7]
+    );
+    expect(matchQualifyingResults!.match.results[2].score).toEqual(800);
+    expect(matchQualifyingResults!.match.results[3].player!.accountId).toEqual(
+      accountIds[6]
+    );
+    expect(matchQualifyingResults!.match.results[3].score).toEqual(700);
+    expect(matchQualifyingResults!.match.results[4].player!.accountId).toEqual(
+      accountIds[5]
+    );
+    expect(matchQualifyingResults!.match.results[4].score).toEqual(600);
+    expect(matchQualifyingResults!.match.results[5].player!.accountId).toEqual(
+      accountIds[4]
+    );
+    expect(matchQualifyingResults!.match.results[5].score).toEqual(500);
+    expect(matchQualifyingResults!.match.results[6].player!.accountId).toEqual(
+      accountIds[3]
+    );
+    expect(matchQualifyingResults!.match.results[6].score).toEqual(400);
+    expect(matchQualifyingResults!.match.results[7].player!.accountId).toEqual(
+      accountIds[2]
+    );
+    expect(matchQualifyingResults!.match.results[7].score).toEqual(300);
+    expect(matchQualifyingResults!.match.results[8].player!.accountId).toEqual(
+      accountIds[1]
+    );
+    expect(matchQualifyingResults!.match.results[8].score).toEqual(200);
+    expect(matchQualifyingResults!.match.results[9].player!.accountId).toEqual(
+      accountIds[0]
+    );
+    expect(matchQualifyingResults!.match.results[9].score).toEqual(100);
+    expect(matchQualifyingResults!.match.playersAwarded).toEqual(8);
+    expect(matchQualifyingResults!.match.pointsAwarded).toEqual(1);
+    expect(matchQualifyingResults!.match.pointsResults).toBeDefined();
+    expect(matchQualifyingResults!.match.pointsResults.length).toEqual(
+      accountIds.length
+    );
+    expect(
+      matchQualifyingResults!.match.pointsResults[0].player!.accountId
+    ).toEqual(accountIds[9]);
+    expect(matchQualifyingResults!.match.pointsResults[0].score).toEqual(1);
+    expect(
+      matchQualifyingResults!.match.pointsResults[1].player!.accountId
+    ).toEqual(accountIds[8]);
+    expect(matchQualifyingResults!.match.pointsResults[1].score).toEqual(1);
+    expect(
+      matchQualifyingResults!.match.pointsResults[2].player!.accountId
+    ).toEqual(accountIds[7]);
+    expect(matchQualifyingResults!.match.pointsResults[2].score).toEqual(1);
+    expect(
+      matchQualifyingResults!.match.pointsResults[3].player!.accountId
+    ).toEqual(accountIds[6]);
+    expect(matchQualifyingResults!.match.pointsResults[3].score).toEqual(1);
+    expect(
+      matchQualifyingResults!.match.pointsResults[4].player!.accountId
+    ).toEqual(accountIds[5]);
+    expect(matchQualifyingResults!.match.pointsResults[4].score).toEqual(1);
+    expect(
+      matchQualifyingResults!.match.pointsResults[5].player!.accountId
+    ).toEqual(accountIds[4]);
+    expect(matchQualifyingResults!.match.pointsResults[5].score).toEqual(1);
+    expect(
+      matchQualifyingResults!.match.pointsResults[6].player!.accountId
+    ).toEqual(accountIds[3]);
+    expect(matchQualifyingResults!.match.pointsResults[6].score).toEqual(1);
+    expect(
+      matchQualifyingResults!.match.pointsResults[7].player!.accountId
+    ).toEqual(accountIds[2]);
+    expect(matchQualifyingResults!.match.pointsResults[7].score).toEqual(1);
+    expect(
+      matchQualifyingResults!.match.pointsResults[8].player!.accountId
+    ).toEqual(accountIds[1]);
+    expect(matchQualifyingResults!.match.pointsResults[8].score).toEqual(0);
+    expect(
+      matchQualifyingResults!.match.pointsResults[9].player!.accountId
+    ).toEqual(accountIds[0]);
+    expect(matchQualifyingResults!.match.pointsResults[9].score).toEqual(0);
+
     expect(lbJson.players).toBeDefined();
   });
 });

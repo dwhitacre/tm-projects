@@ -7,7 +7,7 @@ export interface WeeklyResult extends MatchResult {
 
 export interface Weekly {
   weeklyId: string;
-  matches: Array<Match>;
+  matches: Array<{ match: Match }>;
   maps: Array<Map>;
   results: Array<WeeklyResult>;
 }
