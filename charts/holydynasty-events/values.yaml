@@ -34,6 +34,7 @@ api:
   securityContext: {}
 
 tmioUrl: https://trackmania.io
+discordInviteUrl: https://discord.gg/yR5EtqAWW7
 
 imagePullSecrets:
   - name: danonthemoon-ips
@@ -68,6 +69,8 @@ ingress:
       secretName: holydynasty-events-tls
   directs:
     - host: join.holydynasty.events
+  directPaths:
+    - path: /join
 
 nodeSelector: {}
 tolerations: []

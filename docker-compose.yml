@@ -23,6 +23,7 @@ services:
       ADMIN_KEY: developer-test-key
       TMIO_URL: http://tmiosim:8100
       HOST: 0.0.0.0
+      DISCORD_INVITE_URL: https://discord.gg/yR5EtqAWW7
     ports:
       - 8081:8081
     networks:

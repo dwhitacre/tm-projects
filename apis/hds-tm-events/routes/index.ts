@@ -2,6 +2,7 @@ import type ApiRequest from "../domain/apirequest";
 import ApiResponse from "../domain/apiresponse";
 import admin from "./admin";
 import direct from "./direct";
+import join from "./join";
 import leaderboard from "./leaderboard";
 import map from "./map";
 import match from "./match";
@@ -30,6 +31,7 @@ function getHandle(req: ApiRequest): (req: ApiRequest) => Promise<ApiResponse> {
     return leaderboard.pathParamHandle;
   if (req.checkPath("/api/leaderboard")) return leaderboard.handle;
 
+  if (req.checkPath("/join")) return join.handle;
   if (req.checkPath("/")) return direct.handle;
   return Route.defaultHandle;
 }

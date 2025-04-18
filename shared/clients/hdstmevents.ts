@@ -16,6 +16,10 @@ export class HdstmEventsClient extends Client {
     return this.httpGet<ReadyResponse>(`/ready`);
   }
 
+  join() {
+    return this.httpGet(`/join`);
+  }
+
   ready() {
     return this.httpGet<ReadyResponse>(`/api/ready`);
   }

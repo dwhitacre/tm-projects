@@ -68,6 +68,8 @@ spec:
               value: "0.0.0.0"
             - name: TMIO_URL
               value: {{ .Values.tmioUrl }}
+            - name: DISCORD_INVITE_URL
+              value: {{ .Values.discordInviteUrl }}
           ports:
             - name: api-http
               containerPort: 8081
