@@ -26,16 +26,16 @@ const fakeWeeklyId = () =>
     faker.date.anytime().toISOString().split("T")[0]
   }-${faker.string.alphanumeric(10)}`;
 const fakeWeeklyIdPast = () =>
-  `${faker.date.past().toISOString().split("T")[0]}-${faker.string.alphanumeric(
-    10
-  )}`;
+  `${
+    faker.date.past({ years: 2 }).toISOString().split("T")[0]
+  }-${faker.string.alphanumeric(10)}`;
 const fakeWeeklyIdRecent = () =>
   `${
     faker.date.recent().toISOString().split("T")[0]
   }-${faker.string.alphanumeric(10)}`;
 const fakeWeeklyIdFuture = () =>
   `${
-    faker.date.future().toISOString().split("T")[0]
+    faker.date.future({ years: 2 }).toISOString().split("T")[0]
   }-${faker.string.alphanumeric(10)}`;
 
 let db: Db;
@@ -613,6 +613,10 @@ describe("/api/leaderboard", () => {
     expect(matchFinal!.match.results[0].player!.accountId).toEqual(
       accountIds[9]
     );
+    expect(matchFinal!.match.results[0].player!.name).toEqual(name);
+    expect(matchFinal!.match.results[0].player!.image).toEqual(image);
+    expect(matchFinal!.match.results[0].player!.twitch).toEqual(twitch);
+    expect(matchFinal!.match.results[0].player!.discord).toEqual(discord);
     expect(matchFinal!.match.results[0].score).toEqual(100);
     expect(matchFinal!.match.results[1].player!.accountId).toEqual(
       accountIds[5]
@@ -625,6 +629,10 @@ describe("/api/leaderboard", () => {
     expect(matchFinal!.match.pointsResults[0].player!.accountId).toEqual(
       accountIds[9]
     );
+    expect(matchFinal!.match.pointsResults[0].player!.name).toEqual(name);
+    expect(matchFinal!.match.pointsResults[0].player!.image).toEqual(image);
+    expect(matchFinal!.match.pointsResults[0].player!.twitch).toEqual(twitch);
+    expect(matchFinal!.match.pointsResults[0].player!.discord).toEqual(discord);
     expect(matchFinal!.match.pointsResults[0].score).toEqual(4);
     expect(matchFinal!.match.pointsResults[1].player!.accountId).toEqual(
       accountIds[5]
@@ -671,6 +679,10 @@ describe("/api/leaderboard", () => {
     expect(matchSemifinal!.match.results[0].player!.accountId).toEqual(
       accountIds[9]
     );
+    expect(matchSemifinal!.match.results[0].player!.name).toEqual(name);
+    expect(matchSemifinal!.match.results[0].player!.image).toEqual(image);
+    expect(matchSemifinal!.match.results[0].player!.twitch).toEqual(twitch);
+    expect(matchSemifinal!.match.results[0].player!.discord).toEqual(discord);
     expect(matchSemifinal!.match.results[0].score).toEqual(100);
     expect(matchSemifinal!.match.results[1].player!.accountId).toEqual(
       accountIds[7]
@@ -682,6 +694,14 @@ describe("/api/leaderboard", () => {
     expect(matchSemifinal!.match.pointsResults.length).toEqual(2);
     expect(matchSemifinal!.match.pointsResults[0].player!.accountId).toEqual(
       accountIds[9]
+    );
+    expect(matchSemifinal!.match.pointsResults[0].player!.name).toEqual(name);
+    expect(matchSemifinal!.match.pointsResults[0].player!.image).toEqual(image);
+    expect(matchSemifinal!.match.pointsResults[0].player!.twitch).toEqual(
+      twitch
+    );
+    expect(matchSemifinal!.match.pointsResults[0].player!.discord).toEqual(
+      discord
     );
     expect(matchSemifinal!.match.pointsResults[0].score).toEqual(5);
     expect(matchSemifinal!.match.pointsResults[1].player!.accountId).toEqual(
@@ -818,9 +838,27 @@ describe("/api/leaderboard", () => {
     expect(matchQuarterFinal!.match.results[0].player!.accountId).toEqual(
       accountIds[9]
     );
+    expect(matchQuarterFinal!.match.results[0].player!.name).toEqual(name);
+    expect(matchQuarterFinal!.match.results[0].player!.image).toEqual(image);
+    expect(matchQuarterFinal!.match.results[0].player!.twitch).toEqual(twitch);
+    expect(matchQuarterFinal!.match.results[0].player!.discord).toEqual(
+      discord
+    );
     expect(matchQuarterFinal!.match.results[0].score).toEqual(100);
     expect(matchQuarterFinal!.match.results[1].player!.accountId).toEqual(
       accountIds[8]
+    );
+    expect(
+      matchQuarterFinal!.match.results[1].player!.name.length
+    ).toBeGreaterThan(0);
+    expect(matchQuarterFinal!.match.results[1].player!.image).toMatch(
+      /assets\/images\/.{3}\..{3}/
+    );
+    expect(matchQuarterFinal!.match.results[1].player!.twitch.length).toEqual(
+      0
+    );
+    expect(matchQuarterFinal!.match.results[1].player!.discord.length).toEqual(
+      0
     );
     expect(matchQuarterFinal!.match.results[1].score).toEqual(0);
     expect(matchQuarterFinal!.match.playersAwarded).toEqual(1);
@@ -830,10 +868,34 @@ describe("/api/leaderboard", () => {
     expect(matchQuarterFinal!.match.pointsResults[0].player!.accountId).toEqual(
       accountIds[9]
     );
+    expect(matchQuarterFinal!.match.pointsResults[0].player!.name).toEqual(
+      name
+    );
+    expect(matchQuarterFinal!.match.pointsResults[0].player!.image).toEqual(
+      image
+    );
+    expect(matchQuarterFinal!.match.pointsResults[0].player!.twitch).toEqual(
+      twitch
+    );
+    expect(matchQuarterFinal!.match.pointsResults[0].player!.discord).toEqual(
+      discord
+    );
     expect(matchQuarterFinal!.match.pointsResults[0].score).toEqual(5);
     expect(matchQuarterFinal!.match.pointsResults[1].player!.accountId).toEqual(
       accountIds[8]
     );
+    expect(
+      matchQuarterFinal!.match.pointsResults[1].player!.name.length
+    ).toBeGreaterThan(0);
+    expect(matchQuarterFinal!.match.pointsResults[1].player!.image).toMatch(
+      /assets\/images\/.{3}\..{3}/
+    );
+    expect(
+      matchQuarterFinal!.match.pointsResults[1].player!.twitch.length
+    ).toEqual(0);
+    expect(
+      matchQuarterFinal!.match.pointsResults[1].player!.discord.length
+    ).toEqual(0);
     expect(matchQuarterFinal!.match.pointsResults[1].score).toEqual(0);
 
     let matchQuarterFinalTiebreak = lbJson.weeklies![0].weekly.matches.find(
@@ -849,6 +911,18 @@ describe("/api/leaderboard", () => {
     expect(
       matchQuarterFinalTiebreak!.match.results[0].player!.accountId
     ).toEqual(accountIds[8]);
+    expect(
+      matchQuarterFinalTiebreak!.match.results[0].player!.name.length
+    ).toBeGreaterThan(0);
+    expect(matchQuarterFinalTiebreak!.match.results[0].player!.image).toMatch(
+      /assets\/images\/.{3}\..{3}/
+    );
+    expect(
+      matchQuarterFinalTiebreak!.match.results[0].player!.twitch.length
+    ).toEqual(0);
+    expect(
+      matchQuarterFinalTiebreak!.match.results[0].player!.discord.length
+    ).toEqual(0);
     expect(matchQuarterFinalTiebreak!.match.results[0].score).toEqual(1);
     expect(matchQuarterFinalTiebreak!.match.playersAwarded).toEqual(1);
     expect(matchQuarterFinalTiebreak!.match.pointsAwarded).toEqual(3);
@@ -857,6 +931,18 @@ describe("/api/leaderboard", () => {
     expect(
       matchQuarterFinalTiebreak!.match.pointsResults[0].player!.accountId
     ).toEqual(accountIds[8]);
+    expect(
+      matchQuarterFinalTiebreak!.match.pointsResults[0].player!.name.length
+    ).toBeGreaterThan(0);
+    expect(
+      matchQuarterFinalTiebreak!.match.pointsResults[0].player!.image
+    ).toMatch(/assets\/images\/.{3}\..{3}/);
+    expect(
+      matchQuarterFinalTiebreak!.match.pointsResults[0].player!.twitch.length
+    ).toEqual(0);
+    expect(
+      matchQuarterFinalTiebreak!.match.pointsResults[0].player!.discord.length
+    ).toEqual(0);
     expect(matchQuarterFinalTiebreak!.match.pointsResults[0].score).toEqual(3);
 
     matchQuarterFinalTiebreak = lbJson.weeklies![0].weekly.matches.find(
@@ -921,10 +1007,32 @@ describe("/api/leaderboard", () => {
     expect(matchQualifyingResults!.match.results[0].player!.accountId).toEqual(
       accountIds[9]
     );
+    expect(matchQualifyingResults!.match.results[0].player!.name).toEqual(name);
+    expect(matchQualifyingResults!.match.results[0].player!.image).toEqual(
+      image
+    );
+    expect(matchQualifyingResults!.match.results[0].player!.twitch).toEqual(
+      twitch
+    );
+    expect(matchQualifyingResults!.match.results[0].player!.discord).toEqual(
+      discord
+    );
     expect(matchQualifyingResults!.match.results[0].score).toEqual(1000);
     expect(matchQualifyingResults!.match.results[1].player!.accountId).toEqual(
       accountIds[8]
     );
+    expect(
+      matchQualifyingResults!.match.results[1].player!.name.length
+    ).toBeGreaterThan(0);
+    expect(matchQualifyingResults!.match.results[1].player!.image).toMatch(
+      /assets\/images\/.{3}\..{3}/
+    );
+    expect(
+      matchQualifyingResults!.match.results[1].player!.twitch.length
+    ).toEqual(0);
+    expect(
+      matchQualifyingResults!.match.results[1].player!.discord.length
+    ).toEqual(0);
     expect(matchQualifyingResults!.match.results[1].score).toEqual(900);
     expect(matchQualifyingResults!.match.results[2].player!.accountId).toEqual(
       accountIds[7]
@@ -967,10 +1075,34 @@ describe("/api/leaderboard", () => {
     expect(
       matchQualifyingResults!.match.pointsResults[0].player!.accountId
     ).toEqual(accountIds[9]);
+    expect(matchQualifyingResults!.match.pointsResults[0].player!.name).toEqual(
+      name
+    );
+    expect(
+      matchQualifyingResults!.match.pointsResults[0].player!.image
+    ).toEqual(image);
+    expect(
+      matchQualifyingResults!.match.pointsResults[0].player!.twitch
+    ).toEqual(twitch);
+    expect(
+      matchQualifyingResults!.match.pointsResults[0].player!.discord
+    ).toEqual(discord);
     expect(matchQualifyingResults!.match.pointsResults[0].score).toEqual(1);
     expect(
       matchQualifyingResults!.match.pointsResults[1].player!.accountId
     ).toEqual(accountIds[8]);
+    expect(
+      matchQualifyingResults!.match.pointsResults[1].player!.name.length
+    ).toBeGreaterThan(0);
+    expect(
+      matchQualifyingResults!.match.pointsResults[1].player!.image
+    ).toMatch(/assets\/images\/.{3}\..{3}/);
+    expect(
+      matchQualifyingResults!.match.pointsResults[1].player!.twitch.length
+    ).toEqual(0);
+    expect(
+      matchQualifyingResults!.match.pointsResults[1].player!.discord.length
+    ).toEqual(0);
     expect(matchQualifyingResults!.match.pointsResults[1].score).toEqual(1);
     expect(
       matchQualifyingResults!.match.pointsResults[2].player!.accountId
