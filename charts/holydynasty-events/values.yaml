@@ -69,8 +69,6 @@ ingress:
       secretName: holydynasty-events-tls
   directs:
     - host: join.holydynasty.events
-  directPaths:
-    - path: /join
 
 nodeSelector: {}
 tolerations: []

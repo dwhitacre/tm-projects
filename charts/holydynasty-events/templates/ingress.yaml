@@ -43,15 +43,13 @@ spec:
                 name: {{ $fullName }}
                 port:
                   number: {{ $apiSvcPort }}
-    {{- range .Values.ingress.directPaths }}
-          - path: {{ .path | quote }}
+          - path: /join
             pathType: Exact
             backend:
               service:
                 name: {{ $fullName }}
                 port:
                   number: {{ $apiSvcPort }}
-    {{- end }}
     {{- end }}
     {{- range .Values.ingress.directs }}
     - host: {{ .host | quote }}
