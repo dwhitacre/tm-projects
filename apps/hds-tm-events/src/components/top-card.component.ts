@@ -71,7 +71,7 @@ import { WeeklyResult } from 'src/domain/weekly'
         padding: 8px 16px;
         background-color: var(--primary-color);
         color: var(--primary-color-text);
-        font-weight: 700;
+        font-weight: 500;
       }
 
       .footer {

@@ -189,7 +189,6 @@ import { Map } from 'src/domain/map'
         display: flex;
         align-items: center;
         font-size: 1rem;
-        font-weight: 500;
         width: 250px;
         border-radius: 12px;
       }
