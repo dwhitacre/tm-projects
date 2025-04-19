@@ -9,8 +9,8 @@ import { Map } from 'src/domain/map'
   template: `
     <div class="layout-topbar">
       <a class="layout-topbar-logo">
-        <img src="assets/images/hds-events-nobg.png" alt="logo" height="32" />
-        <span class="layout-topbar-title">HD Weekly League</span>
+        <img src="assets/images/holydynasty.png" alt="logo" height="32" />
+        <span class="layout-topbar-title">Weekly League</span>
       </a>
       <div class="layout-topbar-menu">
         <ng-container *ngFor="let menuItem of menuItems$ | async">
@@ -220,6 +220,7 @@ import { Map } from 'src/domain/map'
       }
 
       .layout-topbar-title {
+        font-family: var(--font-family);
         margin-left: 12px;
       }
 
