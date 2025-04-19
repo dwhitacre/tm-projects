@@ -34,6 +34,7 @@ import { Stat } from 'src/domain/leaderboard'
         </ng-template>
         <ng-template pTemplate="body" let-stat let-rowIndex="rowIndex" let-expanded="expanded">
           <tr
+            class="row"
             [ngClass]="{
               'row-top': stat.position <= topLimit,
               'row-bottom': stat.position > topLimit && stat.position <= bottomLimit
@@ -106,6 +107,14 @@ import { Stat } from 'src/domain/leaderboard'
       .stats-table {
         margin-top: 12px;
         margin-bottom: 12px;
+      }
+
+      .row {
+        background-color: rgba(24, 24, 27, 0.7);
+      }
+
+      .row:nth-child(odd) {
+        background-color: rgba(31, 31, 34, 0.9);
       }
 
       .row-top {
