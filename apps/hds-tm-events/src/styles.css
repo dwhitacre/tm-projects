@@ -7,4 +7,17 @@
 
 :root {
   --font-family: 'Kanit', sans-serif;
+  --primary-color: #f2db0d;
+  --primary-color-text: #231f20;
+  background-image: url('assets/images/background.png');
+  background-size: cover;
+}
+
+.p-button.p-button-text {
+  font-weight: 400;
+  color: var(--primary-color) !important;
+}
+
+.p-button-label {
+  font-weight: 400;
 }

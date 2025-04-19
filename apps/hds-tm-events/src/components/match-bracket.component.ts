@@ -202,25 +202,25 @@ import { StoreService } from 'src/services/store.service'
       }
 
       .column-left {
-        border-left: var(--primary-600) solid 2px;
+        border-left: var(--primary-color) solid 2px;
       }
 
       .row-right {
         height: 51%;
         width: calc(100% + 2px);
-        border-bottom: var(--primary-600) solid 2px;
+        border-bottom: var(--primary-color) solid 2px;
       }
 
       .row-up {
         height: 51%;
-        border-right: var(--primary-600) solid 2px;
-        border-bottom: var(--primary-600) solid 2px;
+        border-right: var(--primary-color) solid 2px;
+        border-bottom: var(--primary-color) solid 2px;
       }
 
       .row-down {
         height: 51%;
-        border-right: var(--primary-600) solid 2px;
-        border-top: var(--primary-600) solid 2px;
+        border-right: var(--primary-color) solid 2px;
+        border-top: var(--primary-color) solid 2px;
       }
 
       .row-down-buffer {

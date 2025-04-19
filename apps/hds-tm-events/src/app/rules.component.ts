@@ -133,7 +133,7 @@ import { FieldsetModule } from 'primeng/fieldset'
       }
 
       :host ::ng-deep .p-fieldset-legend a {
-        color: #fbbf24;
+        color: var(--primary-color);
       }
     `,
   ],

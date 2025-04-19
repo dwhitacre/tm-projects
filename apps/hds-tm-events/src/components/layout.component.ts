@@ -20,7 +20,7 @@ import { StoreService } from 'src/services/store.service'
   styles: [
     `
       div {
-        color: var(--primary-500);
+        color: var(--primary-color);
       }
 
       .layout-wrapper {
