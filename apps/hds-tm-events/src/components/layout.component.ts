@@ -39,6 +39,7 @@ import { StoreService } from 'src/services/store.service'
         padding-top: 3rem;
         padding-left: 8%;
         padding-right: 8%;
+        padding-bottom: 3rem;
       }
 
       .layout-main {

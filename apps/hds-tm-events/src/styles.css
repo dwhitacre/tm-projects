@@ -9,8 +9,25 @@
   --font-family: 'Kanit', sans-serif;
   --primary-color: #f2db0d;
   --primary-color-text: #231f20;
+}
+
+body {
+  margin: 0;
+  height: 100vh;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
   background-image: url('assets/images/background.png');
   background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+  z-index: -1;
 }
 
 .p-button.p-button-text {
