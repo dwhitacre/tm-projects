@@ -88,6 +88,7 @@ export class Leaderboard {
           const top = { player: result.player!, score: 0 };
           idx = this.tops.length;
           this.tops.push(top);
+          this.players.push(top.player);
         }
         this.tops[idx].score += result.score;
       });
@@ -104,19 +105,6 @@ export class Leaderboard {
           ? this.tops[idx - 1].position
           : idx + 1;
       this.playercount++;
-    });
-
-    return this;
-  }
-
-  hydratePlayers(players: Array<Player>) {
-    this.players = players;
-
-    this.tops.forEach((top) => {
-      const player = players.find(
-        (player) => player.accountId === top.player.accountId
-      );
-      if (player) top.player = player;
     });
 
     return this;
