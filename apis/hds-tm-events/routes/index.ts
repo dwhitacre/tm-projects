@@ -9,6 +9,7 @@ import match from "./match";
 import player from "./player";
 import ready from "./ready";
 import Route from "./route";
+import rule from "./rule";
 import weekly from "./weekly";
 
 function getHandle(req: ApiRequest): (req: ApiRequest) => Promise<ApiResponse> {
@@ -27,9 +28,14 @@ function getHandle(req: ApiRequest): (req: ApiRequest) => Promise<ApiResponse> {
   if (req.checkPath("/api/weekly/{weeklyId}/map")) return weekly.mapHandle;
   if (req.checkPath("/api/weekly")) return weekly.handle;
 
+  if (req.checkPath("/api/leaderboard/{leaderboardId}/rule"))
+    return rule.leaderboardHandle;
   if (req.checkPath("/api/leaderboard/{leaderboardId}"))
     return leaderboard.pathParamHandle;
   if (req.checkPath("/api/leaderboard")) return leaderboard.handle;
+
+  if (req.checkPath("/api/rulecategory")) return rule.categoryHandle;
+  if (req.checkPath("/api/rule")) return rule.handle;
 
   if (req.checkPath("/join")) return join.handle;
   if (req.checkPath("/")) return direct.handle;

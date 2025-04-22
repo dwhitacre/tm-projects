@@ -77,6 +77,9 @@ export class Player implements IPlayer {
       displayName: this.displayName,
       dateModified: this.dateModified,
       permissions: this.permissions,
+      image: this.image,
+      twitch: this.twitch,
+      discord: this.discord,
     };
   }
 }

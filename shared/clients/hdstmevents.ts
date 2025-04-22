@@ -6,6 +6,7 @@ import type { Weekly } from "../domain/weekly";
 import type { Leaderboard } from "../domain/leaderboard";
 import type { AdminResponse } from "../domain/admin";
 import type { ReadyResponse } from "../domain/ready";
+import type { RuleResponse, Rule, RuleCategory } from "../domain/rule";
 
 export class HdstmEventsClient extends Client {
   constructor(options: Partial<ClientOptions>) {
@@ -147,5 +148,73 @@ export class HdstmEventsClient extends Client {
       leaderboardId,
       weeklies: weeklies.map((weeklyId) => ({ weekly: { weeklyId } })),
     });
+  }
+
+  createRuleCategory(
+    leaderboardId: Leaderboard["leaderboardId"],
+    ruleCategory: Partial<RuleCategory> = {}
+  ) {
+    return this.httpPut(`/api/rulecategory`, {
+      leaderboardId,
+      ...ruleCategory,
+    });
+  }
+
+  updateRuleCategory(
+    leaderboardId: Leaderboard["leaderboardId"],
+    ruleCategoryId: RuleCategory["ruleCategoryId"],
+    ruleCategory: Partial<RuleCategory> = {}
+  ) {
+    return this.httpPost(`/api/rulecategory`, {
+      leaderboardId,
+      ruleCategoryId,
+      ...ruleCategory,
+    });
+  }
+
+  deleteRuleCategory(
+    leaderboardId: Leaderboard["leaderboardId"],
+    ruleCategoryId: RuleCategory["ruleCategoryId"]
+  ) {
+    return this.httpDelete(`/api/rulecategory`, {
+      leaderboardId,
+      ruleCategoryId,
+    });
+  }
+
+  createRule(
+    ruleCategoryId: RuleCategory["ruleCategoryId"],
+    rule: Partial<Rule> = {}
+  ) {
+    return this.httpPut(`/api/rule`, {
+      ruleCategoryId,
+      ...rule,
+    });
+  }
+
+  updateRule(
+    ruleCategoryId: RuleCategory["ruleCategoryId"],
+    ruleId: Rule["ruleId"],
+    rule: Partial<Rule> = {}
+  ) {
+    return this.httpPost(`/api/rule`, {
+      ruleCategoryId,
+      ruleId,
+      ...rule,
+    });
+  }
+
+  deleteRule(
+    ruleCategoryId: RuleCategory["ruleCategoryId"],
+    ruleId: Rule["ruleId"]
+  ) {
+    return this.httpDelete(`/api/rule`, {
+      ruleCategoryId,
+      ruleId,
+    });
+  }
+
+  getRules(leaderboardId: Leaderboard["leaderboardId"]) {
+    return this.httpGet<RuleResponse>(`/api/leaderboard/${leaderboardId}/rule`);
   }
 }
