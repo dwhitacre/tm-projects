@@ -47,6 +47,31 @@ export class RuleService {
     return rulesCategories;
   }
 
+  async existsRuleCategoryOnLeaderboard(
+    leaderboardId: RuleCategory["leaderboardId"],
+    ruleCategoryId: RuleCategory["ruleCategoryId"]
+  ): Promise<boolean> {
+    const result = await this.db.select(
+      `
+        select RuleCategoryId from RuleCategory where LeaderboardId = $1 and RuleCategoryId = $2
+      `,
+      [leaderboardId, ruleCategoryId]
+    );
+    return result.length > 0;
+  }
+
+  async existsRuleCategory(
+    ruleCategoryId: RuleCategory["ruleCategoryId"]
+  ): Promise<boolean> {
+    const result = await this.db.select(
+      `
+        select RuleCategoryId from RuleCategory where RuleCategoryId = $1
+      `,
+      [ruleCategoryId]
+    );
+    return result.length > 0;
+  }
+
   insertRuleCategory(ruleCategory: RuleCategory) {
     return this.db.insert(
       `

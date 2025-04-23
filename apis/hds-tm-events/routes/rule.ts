@@ -34,6 +34,13 @@ class RuleRoute extends Route {
       return ApiResponse.ok(req);
     }
 
+    const ruleCategoryExists =
+      await req.services.rule.existsRuleCategoryOnLeaderboard(
+        category.leaderboardId,
+        category.ruleCategoryId
+      );
+    if (!ruleCategoryExists) return ApiResponse.badRequest(req);
+
     if (req.checkMethod("post")) {
       await req.services.rule.updateRuleCategory(category);
       return ApiResponse.ok(req);
@@ -50,6 +57,11 @@ class RuleRoute extends Route {
 
     const rule = await req.parse(Rule);
     if (!rule) return ApiResponse.badRequest(req);
+
+    const ruleCategory = await req.services.rule.existsRuleCategory(
+      rule.ruleCategoryId
+    );
+    if (!ruleCategory) return ApiResponse.badRequest(req);
 
     if (req.checkMethod("put")) {
       await req.services.rule.insert(rule);
