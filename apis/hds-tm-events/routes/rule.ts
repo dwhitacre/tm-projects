@@ -24,6 +24,11 @@ class RuleRoute extends Route {
     const category = await req.parse(RuleCategory);
     if (!category) return ApiResponse.badRequest(req);
 
+    const leaderboard = await req.services.leaderboard.exists(
+      category.leaderboardId
+    );
+    if (!leaderboard) return ApiResponse.badRequest(req);
+
     if (req.checkMethod("put")) {
       await req.services.rule.insertRuleCategory(category);
       return ApiResponse.ok(req);

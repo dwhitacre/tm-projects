@@ -10,7 +10,6 @@ let leaderboardService: LeaderboardService;
 const client = new HdstmEventsClient({
   baseUrl: "http://localhost:8081",
   apikeyHeader: "x-hdstmevents-adminkey",
-  debug: true,
 });
 const adminClient = new HdstmEventsClient({
   baseUrl: "http://localhost:8081",
@@ -31,11 +30,66 @@ afterAll(async () => {
 });
 
 describe("/api/rulecategory", () => {
-  test.todo("add rulecategory not admin");
-  test.todo("add rulecategory bad method");
-  test.todo("add rulecategory bad body");
-  test.todo("add rulecategory leaderboard dne");
-  test.todo("add rulecategory already exists");
+  test("add rulecategory not admin", async () => {
+    const leaderboardId = faker.string.uuid();
+    const leaderboard: Leaderboard = {
+      leaderboardId,
+      name: faker.string.alphanumeric(10),
+      campaignId: faker.number.int(99999999),
+      clubId: faker.number.int(99999999),
+      lastModified: new Date().toISOString(),
+    };
+    await leaderboardService.create(leaderboard);
+
+    const response = await client.createRuleCategory(leaderboardId);
+    expect(response.status).toBe(403);
+  });
+  test("add rulecategory bad method", async () => {
+    const leaderboardId = faker.string.uuid();
+    const leaderboard: Leaderboard = {
+      leaderboardId,
+      name: faker.string.alphanumeric(10),
+      campaignId: faker.number.int(99999999),
+      clubId: faker.number.int(99999999),
+      lastModified: new Date().toISOString(),
+    };
+    await leaderboardService.create(leaderboard);
+
+    const response = await adminClient.httpPatch(`/api/rulecategory`, {
+      leaderboardId,
+    });
+    expect(response.status).toBe(405);
+  });
+  test("add rulecategory bad body", async () => {
+    const leaderboardId = faker.string.uuid();
+    const leaderboard: Leaderboard = {
+      leaderboardId,
+      name: faker.string.alphanumeric(10),
+      campaignId: faker.number.int(99999999),
+      clubId: faker.number.int(99999999),
+      lastModified: new Date().toISOString(),
+    };
+    await leaderboardService.create(leaderboard);
+
+    const response = await adminClient.createRuleCategory(
+      undefined as unknown as Leaderboard["leaderboardId"]
+    );
+    expect(response.status).toBe(400);
+  });
+  test("add rulecategory leaderboard dne", async () => {
+    const leaderboardId = faker.string.uuid();
+    const leaderboard: Leaderboard = {
+      leaderboardId,
+      name: faker.string.alphanumeric(10),
+      campaignId: faker.number.int(99999999),
+      clubId: faker.number.int(99999999),
+      lastModified: new Date().toISOString(),
+    };
+    await leaderboardService.create(leaderboard);
+
+    const response = await adminClient.createRuleCategory(faker.string.uuid());
+    expect(response.status).toBe(400);
+  });
   test("add rulecategory", async () => {
     const leaderboardId = faker.string.uuid();
     const leaderboard: Leaderboard = {
@@ -77,15 +131,110 @@ describe("/api/rulecategory", () => {
   test.todo("update rulecategory leaderboard dne");
   test.todo("update rulecategory bad leaderboard");
   test.todo("update rulecategory not found");
-  test.todo("update rulecategory");
-  test.todo("update rulecategory with optionals");
+  test("update rulecategory", async () => {
+    const leaderboardId = faker.string.uuid();
+    const leaderboard: Leaderboard = {
+      leaderboardId,
+      name: faker.string.alphanumeric(10),
+      campaignId: faker.number.int(99999999),
+      clubId: faker.number.int(99999999),
+      lastModified: new Date().toISOString(),
+    };
+    await leaderboardService.create(leaderboard);
+    await adminClient.createRuleCategory(leaderboardId);
+
+    const ruleCategoryResponse = await client.getRules(leaderboardId);
+    const ruleCategoryId = (await ruleCategoryResponse.json()).rules[0]
+      .ruleCategoryId;
+
+    const response = await adminClient.updateRuleCategory(
+      leaderboardId,
+      ruleCategoryId
+    );
+    expect(response.status).toBe(200);
+
+    const rulesResponse = await client.getRules(leaderboardId);
+    const json = await rulesResponse.json();
+    expect(json.rules.length).toEqual(1);
+    expect(json.rules[0].ruleCategoryId).toBeDefined();
+    expect(json.rules[0].leaderboardId).toEqual(leaderboardId);
+    expect(json.rules[0].name).toEqual("");
+    expect(json.rules[0].sortOrder).toEqual(0);
+    expect(json.rules[0].isVisible).toEqual(true);
+    expect(json.rules[0].dateCreated).toBeDefined();
+    expect(json.rules[0].dateModified).toBeDefined();
+    expect(json.rules[0].dateModified).not.toEqual(json.rules[0].dateCreated);
+  });
+  test("update rulecategory with optionals", async () => {
+    const leaderboardId = faker.string.uuid();
+    const leaderboard: Leaderboard = {
+      leaderboardId,
+      name: faker.string.alphanumeric(10),
+      campaignId: faker.number.int(99999999),
+      clubId: faker.number.int(99999999),
+      lastModified: new Date().toISOString(),
+    };
+    await leaderboardService.create(leaderboard);
+    await adminClient.createRuleCategory(leaderboardId);
+
+    const ruleCategoryResponse = await client.getRules(leaderboardId);
+    const ruleCategoryId = (await ruleCategoryResponse.json()).rules[0]
+      .ruleCategoryId;
+
+    const name = faker.string.alphanumeric(10);
+    const sortOrder = faker.number.int(99999999);
+    const isVisible = false;
+    const response = await adminClient.updateRuleCategory(
+      leaderboardId,
+      ruleCategoryId,
+      { name, sortOrder, isVisible }
+    );
+    expect(response.status).toBe(200);
+
+    const rulesResponse = await client.getRules(leaderboardId);
+    const json = await rulesResponse.json();
+    expect(json.rules.length).toEqual(1);
+    expect(json.rules[0].ruleCategoryId).toBeDefined();
+    expect(json.rules[0].leaderboardId).toEqual(leaderboardId);
+    expect(json.rules[0].name).toEqual(name);
+    expect(json.rules[0].sortOrder).toEqual(sortOrder);
+    expect(json.rules[0].isVisible).toEqual(false);
+    expect(json.rules[0].dateCreated).toBeDefined();
+    expect(json.rules[0].dateModified).toBeDefined();
+    expect(json.rules[0].dateModified).not.toEqual(json.rules[0].dateCreated);
+  });
   test.todo("delete rulecategory not admin");
   test.todo("delete rulecategory bad method");
   test.todo("delete rulecategory bad body");
   test.todo("delete rulecategory leaderboard dne");
   test.todo("delete rulecategory bad leaderboard");
   test.todo("delete rulecategory not found");
-  test.todo("delete rulecategory");
+  test("delete rulecategory", async () => {
+    const leaderboardId = faker.string.uuid();
+    const leaderboard: Leaderboard = {
+      leaderboardId,
+      name: faker.string.alphanumeric(10),
+      campaignId: faker.number.int(99999999),
+      clubId: faker.number.int(99999999),
+      lastModified: new Date().toISOString(),
+    };
+    await leaderboardService.create(leaderboard);
+    await adminClient.createRuleCategory(leaderboardId);
+
+    const ruleCategoryResponse = await client.getRules(leaderboardId);
+    const ruleCategoryId = (await ruleCategoryResponse.json()).rules[0]
+      .ruleCategoryId;
+
+    const response = await adminClient.deleteRuleCategory(
+      leaderboardId,
+      ruleCategoryId
+    );
+    expect(response.status).toBe(200);
+
+    const rulesResponse = await client.getRules(leaderboardId);
+    const json = await rulesResponse.json();
+    expect(json.rules.length).toEqual(0);
+  });
 });
 
 describe("/api/rule", () => {
@@ -168,14 +317,121 @@ describe("/api/rule", () => {
   test.todo("update rule rulecategory dne");
   test.todo("update rule bad rulecategory");
   test.todo("update rule not found");
-  test.todo("update rule with optionals");
+  test("update rule", async () => {
+    const leaderboardId = faker.string.uuid();
+    const leaderboard: Leaderboard = {
+      leaderboardId,
+      name: faker.string.alphanumeric(10),
+      campaignId: faker.number.int(99999999),
+      clubId: faker.number.int(99999999),
+      lastModified: new Date().toISOString(),
+    };
+    await leaderboardService.create(leaderboard);
+    await adminClient.createRuleCategory(leaderboardId);
+
+    const ruleCategoryResponse = await client.getRules(leaderboardId);
+    const ruleCategoryId = (await ruleCategoryResponse.json()).rules[0]
+      .ruleCategoryId;
+
+    await adminClient.createRule(ruleCategoryId);
+
+    const ruleResponse = await client.getRules(leaderboardId);
+    const ruleId = (await ruleResponse.json()).rules[0].rules[0].ruleId;
+
+    const response = await adminClient.updateRule(ruleCategoryId, ruleId);
+    expect(response.status).toBe(200);
+
+    const rulesResponse = await client.getRules(leaderboardId);
+    const json = await rulesResponse.json();
+    expect(json.rules[0].rules[0].ruleId).toBeDefined();
+    expect(json.rules[0].rules[0].ruleCategoryId).toEqual(ruleCategoryId);
+    expect(json.rules[0].rules[0].content).toEqual("");
+    expect(json.rules[0].rules[0].sortOrder).toEqual(0);
+    expect(json.rules[0].rules[0].isVisible).toEqual(true);
+    expect(json.rules[0].rules[0].dateCreated).toBeDefined();
+    expect(json.rules[0].rules[0].dateModified).toBeDefined();
+    expect(json.rules[0].rules[0].dateModified).not.toEqual(
+      json.rules[0].rules[0].dateCreated
+    );
+  });
+  test("update rule with optionals", async () => {
+    const leaderboardId = faker.string.uuid();
+    const leaderboard: Leaderboard = {
+      leaderboardId,
+      name: faker.string.alphanumeric(10),
+      campaignId: faker.number.int(99999999),
+      clubId: faker.number.int(99999999),
+      lastModified: new Date().toISOString(),
+    };
+    await leaderboardService.create(leaderboard);
+    await adminClient.createRuleCategory(leaderboardId);
+
+    const ruleCategoryResponse = await client.getRules(leaderboardId);
+    const ruleCategoryId = (await ruleCategoryResponse.json()).rules[0]
+      .ruleCategoryId;
+
+    await adminClient.createRule(ruleCategoryId);
+
+    const ruleResponse = await client.getRules(leaderboardId);
+    const ruleId = (await ruleResponse.json()).rules[0].rules[0].ruleId;
+
+    const content = faker.string.alphanumeric(1000);
+    const sortOrderRule = faker.number.int(99999999);
+    const isVisibleRule = false;
+    const response = await adminClient.updateRule(ruleCategoryId, ruleId, {
+      content,
+      sortOrder: sortOrderRule,
+      isVisible: isVisibleRule,
+    });
+    expect(response.status).toBe(200);
+
+    const rulesResponse = await client.getRules(leaderboardId);
+    const json = await rulesResponse.json();
+    expect(json.rules[0].rules[0].ruleId).toBeDefined();
+    expect(json.rules[0].rules[0].ruleCategoryId).toEqual(ruleCategoryId);
+    expect(json.rules[0].rules[0].content).toEqual(content);
+    expect(json.rules[0].rules[0].sortOrder).toEqual(sortOrderRule);
+    expect(json.rules[0].rules[0].isVisible).toEqual(false);
+    expect(json.rules[0].rules[0].dateCreated).toBeDefined();
+    expect(json.rules[0].rules[0].dateModified).toBeDefined();
+    expect(json.rules[0].rules[0].dateModified).not.toEqual(
+      json.rules[0].rules[0].dateCreated
+    );
+  });
   test.todo("delete rule not admin");
   test.todo("delete rule bad method");
   test.todo("delete rule bad body");
   test.todo("delete rule rulecategory dne");
   test.todo("delete rule bad rulecategory");
   test.todo("delete rule not found");
-  test.todo("delete rule");
+  test("delete rule", async () => {
+    const leaderboardId = faker.string.uuid();
+    const leaderboard: Leaderboard = {
+      leaderboardId,
+      name: faker.string.alphanumeric(10),
+      campaignId: faker.number.int(99999999),
+      clubId: faker.number.int(99999999),
+      lastModified: new Date().toISOString(),
+    };
+    await leaderboardService.create(leaderboard);
+    await adminClient.createRuleCategory(leaderboardId);
+
+    const ruleCategoryResponse = await client.getRules(leaderboardId);
+    const ruleCategoryId = (await ruleCategoryResponse.json()).rules[0]
+      .ruleCategoryId;
+
+    await adminClient.createRule(ruleCategoryId);
+
+    const ruleResponse = await client.getRules(leaderboardId);
+    const ruleId = (await ruleResponse.json()).rules[0].rules[0].ruleId;
+
+    const response = await adminClient.deleteRule(ruleCategoryId, ruleId);
+    expect(response.status).toBe(200);
+
+    const rulesResponse = await client.getRules(leaderboardId);
+    const json = await rulesResponse.json();
+    expect(json.rules[0].rules.length).toEqual(0);
+  });
 });
 
 describe("/api/leaderboard/{leaderboardId}/rule", () => {
