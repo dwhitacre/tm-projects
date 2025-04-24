@@ -6,6 +6,7 @@ import match from "./match";
 import player from "./player";
 import tmio from "./tmio";
 import weekly from "./weekly";
+import rule from "./rule";
 
 const services = {
   logger,
@@ -16,6 +17,7 @@ const services = {
   match: match(db),
   weekly: weekly(db),
   leaderboard: leaderboard(db),
+  rule: rule(db),
 };
 export type Services = typeof services;
 export default services;

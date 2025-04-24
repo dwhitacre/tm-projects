@@ -10,6 +10,16 @@ export class LeaderboardService {
     this.db = db;
   }
 
+  async exists(leaderboardId: Leaderboard["leaderboardId"]): Promise<boolean> {
+    const result = await this.db.select(
+      `
+        select LeaderboardId from Leaderboard where LeaderboardId = $1
+      `,
+      [leaderboardId]
+    );
+    return result.length > 0;
+  }
+
   async get(
     leaderboardId: Leaderboard["leaderboardId"]
   ): Promise<Leaderboard | undefined> {
