@@ -15,6 +15,8 @@ import { MatchService } from './match.service'
 import { PlayerService } from './player.service'
 import { MapService } from './map.service'
 import { Player } from 'src/domain/player'
+import { RuleCategory } from 'src/domain/rule'
+import { RuleService } from './rule.service'
 
 export interface StoreState {
   leaderboard: Leaderboard
@@ -32,6 +34,7 @@ export interface StoreState {
   }
   maps: Array<Map>
   weeklies: { [weeklyId: Weekly['weeklyId']]: Partial<Weekly> }
+  rules: Array<RuleCategory>
 }
 
 @Injectable({ providedIn: 'root' })
@@ -47,6 +50,7 @@ export class StoreService extends ComponentStore<StoreState> {
   readonly nemesisWeights$ = this.select((state) => state.nemesisWeights)
   readonly maps$ = this.select((state) => state.maps)
   readonly weeklies$ = this.select((state) => state.weeklies)
+  readonly rules$ = this.select((state) => state.rules)
 
   readonly players$ = this.select((state) =>
     state.leaderboard.players.sort((playerA, playerB) => {
@@ -294,6 +298,7 @@ export class StoreService extends ComponentStore<StoreState> {
     private matchService: MatchService,
     private playerService: PlayerService,
     private mapService: MapService,
+    private ruleService: RuleService,
   ) {
     super({
       leaderboard: {
@@ -318,9 +323,11 @@ export class StoreService extends ComponentStore<StoreState> {
       },
       maps: [],
       weeklies: {},
+      rules: [],
     })
 
     this.fetchLeaderboard()
+    this.fetchRules()
     this.fetchMaps()
     this.fetchAdmin()
   }
@@ -360,6 +367,20 @@ export class StoreService extends ComponentStore<StoreState> {
             },
             error: (error: HttpErrorResponse) => this.logService.error(error),
             finalize: () => this.patchState({ loading: false }),
+          }),
+        ),
+      ),
+    )
+  })
+
+  readonly fetchRules = this.effect<void>((trigger$) => {
+    return trigger$.pipe(
+      concatLatestFrom(() => [this.leaderboardUid$]),
+      switchMap(([_, leaderboardUid]) =>
+        this.ruleService.getRules(leaderboardUid).pipe(
+          tapResponse({
+            next: (rulesResponse) => this.patchState({ rules: rulesResponse.rules }),
+            error: (error: HttpErrorResponse) => this.logService.error(error),
           }),
         ),
       ),

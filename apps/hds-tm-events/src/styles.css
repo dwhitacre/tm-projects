@@ -38,3 +38,20 @@ body::before {
 .p-button-label {
   font-weight: 400;
 }
+
+.p-fieldset .p-fieldset-legend {
+  font-weight: 400 !important;
+}
+
+.p-fieldset.p-component {
+  font-weight: 300 !important;
+  color: #cccccc;
+}
+
+.p-datatable .p-datatable-footer {
+  font-weight: 400 !important;
+}
+
+.p-datatable-thead {
+  font-weight: 400 !important;
+}
