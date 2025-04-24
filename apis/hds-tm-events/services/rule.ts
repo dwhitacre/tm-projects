@@ -114,6 +114,29 @@ export class RuleService {
     );
   }
 
+  async existsOnRuleCategory(
+    ruleCategoryId: Rule["ruleCategoryId"],
+    ruleId: Rule["ruleId"]
+  ): Promise<boolean> {
+    const result = await this.db.select(
+      `
+        select RuleId from Rule where RuleCategoryId = $1 and RuleId = $2
+      `,
+      [ruleCategoryId, ruleId]
+    );
+    return result.length > 0;
+  }
+
+  async exists(ruleId: Rule["ruleId"]): Promise<boolean> {
+    const result = await this.db.select(
+      `
+        select RuleId from Rule where RuleId = $1
+      `,
+      [ruleId]
+    );
+    return result.length > 0;
+  }
+
   insert(rule: Rule) {
     return this.db.insert(
       `

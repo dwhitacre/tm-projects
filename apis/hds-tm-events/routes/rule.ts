@@ -10,6 +10,9 @@ class RuleRoute extends Route {
     const leaderboardId = req.getPathParam("leaderboardId");
     if (!leaderboardId) return ApiResponse.badRequest(req);
 
+    const leaderboard = await req.services.leaderboard.exists(leaderboardId);
+    if (!leaderboard) return ApiResponse.badRequest(req);
+
     const rules = await req.services.rule.getAll(leaderboardId);
     if (!rules) return ApiResponse.badRequest(req);
 
@@ -67,6 +70,12 @@ class RuleRoute extends Route {
       await req.services.rule.insert(rule);
       return ApiResponse.ok(req);
     }
+
+    const ruleExists = await req.services.rule.existsOnRuleCategory(
+      rule.ruleCategoryId,
+      rule.ruleId
+    );
+    if (!ruleExists) return ApiResponse.badRequest(req);
 
     if (req.checkMethod("post")) {
       await req.services.rule.update(rule);
