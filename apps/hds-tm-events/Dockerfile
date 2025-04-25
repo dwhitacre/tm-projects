@@ -1,4 +1,4 @@
-FROM node:18-alpine as build
+FROM node:22-alpine AS build
 
 WORKDIR /app
 COPY ./package.json .
@@ -10,7 +10,7 @@ COPY ./*.json .
 COPY ./src ./src/
 RUN yarn build
 
-FROM nginx
+FROM nginx:stable-alpine-slim
 
 COPY ./docker/nginx.conf /etc/nginx/nginx.conf
 COPY --from=build /app/dist/app/browser /usr/share/nginx/html/

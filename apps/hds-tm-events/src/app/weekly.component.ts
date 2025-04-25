@@ -27,7 +27,7 @@ import { Match } from 'src/domain/match'
                 [ngModel]="vm.selectedWeekly"
                 (onChange)="storeService.updateSelectedWeekly($event.value)"
               />
-              <p-tag *ngIf="!vm.published" severity="primary" value="Unpublished" />
+              <p-tag *ngIf="!vm.published" severity="success" value="Unpublished" />
             </div>
             <div class="weekly-header-buffer"></div>
             <div class="weekly-header-buffer"></div>
