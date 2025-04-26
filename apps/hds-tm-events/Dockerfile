@@ -1,14 +1,15 @@
 FROM node:22-alpine AS build
-
 WORKDIR /app
-COPY ./package.json .
-COPY ./yarn.lock .
 
-RUN yarn
+RUN npm i -g bun@1
+
+COPY package.json .
+COPY bun.lock .
+RUN bun install --frozen-lockfile --production
 
 COPY ./*.json .
 COPY ./src ./src/
-RUN yarn build
+RUN bun run build
 
 FROM nginx:stable-alpine-slim
 

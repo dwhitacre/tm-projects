@@ -3,5 +3,5 @@
 
 !src
 !*.json
-!yarn.lock
+!bun.lock
 !docker
