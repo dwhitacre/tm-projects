@@ -3,7 +3,7 @@ version: "0.5"
 processes:
   hds-tm-events-app:
     working_dir: apps/hds-tm-events
-    command: yarn start
+    command: bun run start
 
   hds-tm-events-api:
     working_dir: apis/hds-tm-events

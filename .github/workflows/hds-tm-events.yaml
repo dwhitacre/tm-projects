@@ -16,21 +16,6 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
 
 jobs:
-  app:
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: apps/hds-tm-events
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - uses: actions/setup-node@v4
-        with:
-          node-version: "18.x"
-      - run: yarn
-      # - run: yarn lint
-      # - run: yarn test
   api:
     runs-on: ubuntu-latest
     defaults:
