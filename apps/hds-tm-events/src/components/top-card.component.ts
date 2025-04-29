@@ -6,6 +6,7 @@ import { WeeklyResult } from 'src/domain/weekly'
 
 @Component({
   selector: 'top-card',
+  standalone: false,
   template: `
     <div *ngIf="label" class="label">{{ label }}</div>
     <p-card [style]="{ width: '268px' }">
@@ -16,6 +17,7 @@ import { WeeklyResult } from 'src/domain/weekly'
           [src]="tops[0].player.image || 'assets/images/hds-events-nobg.png'"
           (error)="onImgError($event)"
           height="192"
+          width
         />
       </ng-template>
       <ng-template pTemplate="content">
@@ -72,6 +74,10 @@ import { WeeklyResult } from 'src/domain/weekly'
         background-color: var(--primary-color);
         color: var(--primary-color-text);
         font-weight: 500;
+      }
+
+      :host::ng-deep .p-card-header img {
+        width: 100%;
       }
 
       .footer {

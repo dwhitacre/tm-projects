@@ -1,9 +1,7 @@
-import { Component, NgModule } from '@angular/core'
+import { Component } from '@angular/core'
 import { ComponentsModule } from 'src/components/components.module'
 import { StoreService } from 'src/services/store.service'
 import { CommonModule } from '@angular/common'
-import { PositionPipe } from 'src/pipes/position.pipe'
-
 @Component({
   selector: 'standings',
   template: `
@@ -27,14 +25,9 @@ import { PositionPipe } from 'src/pipes/position.pipe'
       }
     `,
   ],
+  imports: [CommonModule, ComponentsModule],
+  standalone: true,
 })
 export class StandingsComponent {
   constructor(public storeService: StoreService) {}
 }
-
-@NgModule({
-  exports: [StandingsComponent],
-  declarations: [StandingsComponent],
-  imports: [CommonModule, ComponentsModule, PositionPipe],
-})
-export class StandingsModule {}

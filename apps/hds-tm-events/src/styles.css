@@ -1,12 +1,8 @@
-/* You can add global styles to this file, and also import other style files */
 @import url('https://fonts.googleapis.com/css2?family=Kanit:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
-
-@import 'primeng/resources/themes/aura-dark-amber/theme.css';
-@import 'primeng/resources/primeng.css';
 @import 'primeicons/primeicons.css';
 
 :root {
-  --font-family: 'Kanit', sans-serif;
+  font-family: 'Kanit', sans-serif;
   --primary-color: #f2db0d;
   --primary-color-text: #231f20;
 }
@@ -48,7 +44,7 @@ body::before {
   color: #cccccc;
 }
 
-.p-datatable .p-datatable-footer {
+.p-datatable .p-datatable-tfoot {
   font-weight: 400 !important;
 }
 

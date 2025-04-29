@@ -3,6 +3,7 @@ import { Stat } from 'src/domain/leaderboard'
 
 @Component({
   selector: 'stats-table',
+  standalone: false,
   template: `
     <div class="stats-table" *ngIf="stats">
       <p-table
@@ -37,7 +38,7 @@ import { Stat } from 'src/domain/leaderboard'
             class="row"
             [ngClass]="{
               'row-top': stat.position <= topLimit,
-              'row-bottom': stat.position > topLimit && stat.position <= bottomLimit
+              'row-bottom': stat.position > topLimit && stat.position <= bottomLimit,
             }"
           >
             <ng-template #emptyTd><td></td></ng-template>
@@ -55,18 +56,18 @@ import { Stat } from 'src/domain/leaderboard'
             <td>{{ stat.position || rowIndex + 1 | position }}</td>
             <td>{{ stat.player.name }}</td>
             <td>{{ stat.weekliesPlayed }}</td>
-            <td>{{ stat.averageQualifierPosition | number : '1.2-2' }}</td>
+            <td>{{ stat.averageQualifierPosition | number: '1.2-2' }}</td>
             <td>{{ stat.qualifiedAmount }}</td>
-            <td>{{ stat.averageWeeklyPosition | number : '1.2-2' }}</td>
+            <td>{{ stat.averageWeeklyPosition | number: '1.2-2' }}</td>
             <td>{{ stat.matchWins }}-{{ stat.matchLosses }}</td>
             <td *ngIf="stat.mapWins > 0 || stat.mapLosses > 0; else emptyTd">
               {{ stat.mapWins }}-{{ stat.mapLosses }}
             </td>
             <td>{{ stat.weeklyWins }}</td>
             <td>{{ stat.weeklyRunnerups }}</td>
-            <td>{{ stat.averageWeeklyScore | number : '1.2-2' }}</td>
+            <td>{{ stat.averageWeeklyScore | number: '1.2-2' }}</td>
             <td>{{ stat.score || 0 }}</td>
-            <td *ngIf="stat.earningsAmount > 0; else emptyTd">{{ stat.earningsAmount | currency : 'USD' }}</td>
+            <td *ngIf="stat.earningsAmount > 0; else emptyTd">{{ stat.earningsAmount | currency: 'USD' }}</td>
             <td *ngIf="stat.nemesis && stat.nemesisWins >= 0 && stat.nemesisLosses > 0; else emptyTd">
               {{ stat.nemesis.name }}
             </td>

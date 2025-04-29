@@ -1,4 +1,5 @@
 import { NgModule } from '@angular/core'
+import { RouterModule } from '@angular/router'
 import { ButtonModule } from 'primeng/button'
 import { CardModule } from 'primeng/card'
 import { LayoutComponent } from './layout.component'
@@ -66,6 +67,7 @@ import { SafeHtmlPipe } from 'src/pipes/safe-html.pipe'
     InputNumberModule,
     TmPipe,
     SafeHtmlPipe,
+    RouterModule,
   ],
 })
 export class ComponentsModule {}

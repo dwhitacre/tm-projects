@@ -4,6 +4,7 @@ import { WeeklyResult } from 'src/domain/weekly'
 
 @Component({
   selector: 'tops-grid',
+  standalone: false,
   template: `
     <div class="tops-grid" *ngIf="tops">
       <ng-container *ngFor="let top of tops">

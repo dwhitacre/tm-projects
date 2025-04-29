@@ -6,6 +6,7 @@ import { Map } from 'src/domain/map'
 
 @Component({
   selector: 'topbar',
+  standalone: false,
   template: `
     <div class="layout-topbar">
       <a class="layout-topbar-logo">
@@ -114,10 +115,10 @@ import { Map } from 'src/domain/map'
           <ng-container *ngIf="storeService.maps$ | async as maps">
             <p-dropdown [options]="maps" [placeholder]="'Select Map'" [(ngModel)]="addWeeklyMapSelected">
               <ng-template let-map pTemplate="selectedItem">
-                <span>{{ map.name | tm : 'humanize' }}</span>
+                <span>{{ map.name | tm: 'humanize' }}</span>
               </ng-template>
               <ng-template let-map pTemplate="item">
-                <span>{{ map.name | tm : 'humanize' }}</span>
+                <span>{{ map.name | tm: 'humanize' }}</span>
               </ng-template>
             </p-dropdown>
           </ng-container>
@@ -180,9 +181,12 @@ import { Map } from 'src/domain/map'
         transition: left 0.2s;
         display: flex;
         align-items: center;
-        box-shadow: 0 3px 5px #00000005, 0 0 2px #0000000d, 0 1px 4px #00000014;
-        border-bottom: 1px solid var(--surface-border);
-        background-color: var(--surface-card);
+        box-shadow:
+          0 3px 5px #00000005,
+          0 0 2px #0000000d,
+          0 1px 4px #00000014;
+        border-bottom: 1px solid var(--p-surface-700);
+        background-color: var(--p-datatable-footer-cell-background);
       }
 
       .layout-topbar .layout-topbar-logo {
@@ -219,7 +223,6 @@ import { Map } from 'src/domain/map'
       }
 
       .layout-topbar-title {
-        font-family: var(--font-family);
         margin-left: 12px;
       }
 

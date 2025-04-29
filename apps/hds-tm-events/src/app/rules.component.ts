@@ -1,4 +1,4 @@
-import { Component, NgModule } from '@angular/core'
+import { Component } from '@angular/core'
 import { ComponentsModule } from 'src/components/components.module'
 import { CommonModule } from '@angular/common'
 import { FieldsetModule } from 'primeng/fieldset'
@@ -30,14 +30,9 @@ import { StoreService } from 'src/services/store.service'
       }
     `,
   ],
+  imports: [CommonModule, ComponentsModule, FieldsetModule],
+  standalone: true,
 })
 export class RulesComponent {
   constructor(public storeService: StoreService) {}
 }
-
-@NgModule({
-  exports: [RulesComponent],
-  declarations: [RulesComponent],
-  imports: [CommonModule, ComponentsModule, FieldsetModule],
-})
-export class RulesModule {}

@@ -47,6 +47,7 @@ import { StoreService } from 'src/services/store.service'
       }
     `,
   ],
+  standalone: false,
 })
 export class LayoutComponent {
   messages$ = this.storeService.leaderboardPublished$.pipe(
