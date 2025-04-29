@@ -17,7 +17,6 @@ import { WeeklyResult } from 'src/domain/weekly'
           [src]="tops[0].player.image || 'assets/images/hds-events-nobg.png'"
           (error)="onImgError($event)"
           height="192"
-          width
         />
       </ng-template>
       <ng-template pTemplate="content">
