@@ -63,7 +63,7 @@ import { WeeklyResult } from 'src/domain/weekly'
       }
 
       :host::ng-deep .p-card {
-        border: 2px var(--surface-border) solid;
+        border: 2px #27272a solid;
         border-radius: 4px;
       }
 
@@ -83,9 +83,10 @@ import { WeeklyResult } from 'src/domain/weekly'
         display: flex;
         flex-direction: column;
         gap: 1rem;
-        border: 2px var(--surface-border) solid;
+        border: 2px #27272a solid;
         border-top: 1px;
         border-radius: 0px 0px 4px 4px;
+        font-weight: 300;
       }
     `,
   ],
