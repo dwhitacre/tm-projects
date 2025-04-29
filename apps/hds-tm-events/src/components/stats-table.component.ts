@@ -8,12 +8,13 @@ import { Stat } from 'src/domain/leaderboard'
     <div class="stats-table" *ngIf="stats">
       <p-table
         [value]="stats"
-        styleClass="p-datatable-gridlines p-datatable-sm p-datatable-striped"
+        showGridlines
+        [size]="'small'"
         [scrollable]="true"
         [tableStyle]="{ 'min-width': '40rem' }"
         dataKey="player.accountId"
       >
-        <ng-template pTemplate="header">
+        <ng-template #header>
           <tr class="header">
             <th *ngIf="showExpand"></th>
             <th></th>
@@ -33,7 +34,7 @@ import { Stat } from 'src/domain/leaderboard'
             <th>Nemesis Record</th>
           </tr>
         </ng-template>
-        <ng-template pTemplate="body" let-stat let-rowIndex="rowIndex" let-expanded="expanded">
+        <ng-template #body let-stat let-rowIndex="rowIndex" let-expanded="expanded">
           <tr
             class="row"
             [ngClass]="{
@@ -48,8 +49,7 @@ import { Stat } from 'src/domain/leaderboard'
                 class="expand-button"
                 type="button"
                 [pRowToggler]="stat"
-                [text]="true"
-                [plain]="true"
+                [variant]="'text'"
                 [icon]="expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'"
               />
             </td>
@@ -76,8 +76,8 @@ import { Stat } from 'src/domain/leaderboard'
             </td>
           </tr>
         </ng-template>
-        <ng-template pTemplate="rowexpansion" let-stat>
-          <tr>
+        <ng-template #expandedrow let-stat>
+          <tr class="row">
             <td colspan="16">
               <div>
                 <p-table [value]="stat.opponentsSorted" dataKey="id">
@@ -89,7 +89,13 @@ import { Stat } from 'src/domain/leaderboard'
                     </tr>
                   </ng-template>
                   <ng-template pTemplate="body" let-opponent let-rowIndex="rowIndex">
-                    <tr>
+                    <tr
+                      class="row"
+                      [ngClass]="{
+                        'row-top': stat.position <= topLimit,
+                        'row-bottom': stat.position > topLimit && stat.position <= bottomLimit,
+                      }"
+                    >
                       <td>{{ opponent.player.name }}</td>
                       <td>{{ opponent.matchWins }}-{{ opponent.matchLosses }}</td>
                       <td>{{ opponent.mapWins }}-{{ opponent.mapLosses }}</td>
@@ -98,6 +104,9 @@ import { Stat } from 'src/domain/leaderboard'
                 </p-table>
               </div>
             </td>
+          </tr>
+          <tr class="row">
+            <!-- prevents striped rows from switching on expansion -->
           </tr>
         </ng-template>
       </p-table>
@@ -141,12 +150,21 @@ import { Stat } from 'src/domain/leaderboard'
       }
 
       :host::ng-deep td.expand-button {
-        padding: 0;
+        padding: 0 !important;
       }
 
-      td,
-      th {
-        text-align: center;
+      :host::ng-deep .p-button.p-button-icon-only:active {
+        background-color: #ffffff29 !important;
+      }
+
+      :host::ng-deep .p-button.p-button-icon-only:hover {
+        background-color: #ffffff08 !important;
+      }
+
+      :host::ng-deep th,
+      td {
+        padding: 6px 8px !important;
+        text-align: center !important;
       }
     `,
   ],
