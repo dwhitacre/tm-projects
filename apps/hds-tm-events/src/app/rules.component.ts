@@ -25,8 +25,15 @@ import { StoreService } from 'src/services/store.service'
         text-align: center;
       }
 
-      :host ::ng-deep .p-fieldset-legend a {
-        color: var(--primary-color);
+      :host ::ng-deep .p-fieldset-legend-label {
+        color: var(--primary-color) !important;
+        font-family: 'Kanit', sans-serif !important;
+        font-size: 16px !important;
+        font-weight: 400 !important;
+      }
+
+      :host ::ng-deep .p-fieldset-legend > button {
+        padding: 4px 8px !important;
       }
     `,
   ],
