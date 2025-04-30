@@ -5,7 +5,7 @@ RUN npm i -g bun@1
 
 COPY package.json .
 COPY bun.lock .
-RUN bun install --frozen-lockfile --production
+RUN bun install --frozen-lockfile
 
 COPY ./*.json .
 COPY ./src ./src/
