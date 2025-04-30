@@ -252,6 +252,14 @@ import { Map } from 'src/domain/map'
         left: calc(100% - 240px) !important;
       }
 
+      :host::ng-deep .p-button-label {
+        font-weight: 400 !important;
+      }
+
+      :host::ng-deep span.p-button-icon {
+        padding-top: 2px;
+      }
+
       .layout-topbar-menu-standalone.layout-topbar-menu-menuitem-adminkey,
       .layout-topbar-menu-standalone.layout-topbar-menu-menuitem-github,
       .layout-topbar-menu-standalone.layout-topbar-menu-menuitem-rules,
