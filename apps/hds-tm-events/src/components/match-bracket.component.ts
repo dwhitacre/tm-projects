@@ -5,6 +5,7 @@ import { StoreService } from 'src/services/store.service'
 
 @Component({
   selector: 'match-bracket',
+  standalone: false,
   template: `
     <div class="weekly-matches weekly-matches-lg">
       <div class="header">Quarterfinals</div>

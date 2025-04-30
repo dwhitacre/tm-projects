@@ -7,6 +7,7 @@ import { WeeklyResult } from 'src/domain/weekly'
 
 @Component({
   selector: 'top-card-player',
+  standalone: false,
   template: `
     <div *ngIf="!isBye; else bye" #playercontent>
       <div class="player-content">
@@ -37,7 +38,7 @@ import { WeeklyResult } from 'src/domain/weekly'
           <span class="score">{{ top.score || 0 }}</span>
         </ng-template>
         <ng-template pTemplate="content">
-          <p-inputNumber [min]="0" [(ngModel)]="updatedScore" [size]="1" />
+          <p-inputNumber [min]="0" [(ngModel)]="updatedScore" [size]="'small'" />
         </ng-template>
       </p-inplace>
     </ng-template>

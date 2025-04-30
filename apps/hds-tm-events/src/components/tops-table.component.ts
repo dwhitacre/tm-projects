@@ -8,6 +8,7 @@ import { WeeklyResult } from 'src/domain/weekly'
 
 @Component({
   selector: 'tops-table',
+  standalone: false,
   template: `
     <div class="tops-table" *ngIf="tops">
       <p-contextMenu #cm [model]="playerContentItems" />
@@ -17,10 +18,10 @@ import { WeeklyResult } from 'src/domain/weekly'
         [contextMenu]="editable ? cm : undefined"
         (onEditComplete)="onUpdate($event)"
       >
-        <ng-template pTemplate="header">
+        <ng-template #header>
           <div *ngIf="label" class="label">{{ label }}</div>
         </ng-template>
-        <ng-template pTemplate="body" let-top let-rowIndex="rowIndex">
+        <ng-template #body let-top let-rowIndex="rowIndex">
           <tr [pContextMenuRow]="top.player">
             <td>{{ top.position || rowIndex + 1 | position }}</td>
             <td>
@@ -40,7 +41,7 @@ import { WeeklyResult } from 'src/domain/weekly'
             <td *ngIf="editable; else noteditablescore" [pEditableColumn]="top" pEditableColumnField="score">
               <p-cellEditor>
                 <ng-template pTemplate="input">
-                  <p-inputNumber [min]="0" [(ngModel)]="top.score" [size]="1" />
+                  <p-inputNumber [min]="0" [(ngModel)]="top.score" [size]="'small'" />
                 </ng-template>
                 <ng-template pTemplate="output">
                   {{ top.score || 0 }}
@@ -49,15 +50,17 @@ import { WeeklyResult } from 'src/domain/weekly'
             </td>
           </tr>
         </ng-template>
-        <ng-template pTemplate="summary">
-          <div class="summary">
-            <span>Total player count: {{ playercount }}</span>
-            <span *ngIf="lastModified">Last Updated: {{ lastModified }}</span>
-            <div *ngIf="editable" class="player-add">
-              <p-dropdown [options]="players" optionLabel="name" [(ngModel)]="selectedPlayer" />
-              <p-button icon="pi pi-check" (onClick)="addedMatchResult.emit(selectedPlayer)" />
-            </div>
-          </div>
+        <ng-template #footer>
+          <tr>
+            <td colspan="4" class="summary">
+              <span>Total player count: {{ playercount }}</span>
+              <span class="float-right" *ngIf="lastModified">Last Updated: {{ lastModified }}</span>
+              <div *ngIf="editable" class="player-add float-right">
+                <p-dropdown [options]="players" optionLabel="name" [(ngModel)]="selectedPlayer" />
+                <p-button icon="pi pi-check" (onClick)="addedMatchResult.emit(selectedPlayer)" />
+              </div>
+            </td>
+          </tr>
         </ng-template>
       </p-table>
     </div>
@@ -100,9 +103,8 @@ import { WeeklyResult } from 'src/domain/weekly'
         gap: 4px;
       }
 
-      .summary {
-        display: flex;
-        justify-content: space-between;
+      .float-right {
+        float: right;
       }
 
       .layout-dialog-input {

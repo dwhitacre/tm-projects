@@ -16,6 +16,8 @@ import { PlayerService } from 'src/services/player.service'
 import { MapService } from 'src/services/map.service'
 import { TmPipe } from 'src/pipes/tm.pipe'
 import { SafeHtmlPipe } from 'src/pipes/safe-html.pipe'
+import { providePrimeNG } from 'primeng/config'
+import Aura from '@primeng/themes/aura'
 
 export const adminkeyInterceptor: HttpInterceptorFn = (req, next) => {
   const adminService = inject(AdminService)
@@ -34,6 +36,11 @@ export const appConfig: ApplicationConfig = {
     provideRouter(appRoutes),
     provideAnimations(),
     provideHttpClient(withInterceptors([adminkeyInterceptor])),
+    providePrimeNG({
+      theme: {
+        preset: Aura,
+      },
+    }),
     LeaderboardService,
     LogService,
     MessageService,

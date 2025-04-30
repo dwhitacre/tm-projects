@@ -1,8 +1,7 @@
-import { Component, NgModule } from '@angular/core'
+import { Component } from '@angular/core'
 import { ComponentsModule } from 'src/components/components.module'
 import { StoreService } from 'src/services/store.service'
 import { CommonModule } from '@angular/common'
-import { PositionPipe } from 'src/pipes/position.pipe'
 import { DropdownModule } from 'primeng/dropdown'
 import { FormsModule } from '@angular/forms'
 import { SelectButtonModule } from 'primeng/selectbutton'
@@ -158,6 +157,16 @@ import { Match } from 'src/domain/match'
       }
     `,
   ],
+  imports: [
+    CommonModule,
+    ComponentsModule,
+    DropdownModule,
+    FormsModule,
+    SelectButtonModule,
+    TagModule,
+    InputSwitchModule,
+  ],
+  standalone: true,
 })
 export class WeeklyComponent {
   viewOptions = [
@@ -183,19 +192,3 @@ export class WeeklyComponent {
     this.storeService.deleteMatchResult([match.matchId, player.accountId])
   }
 }
-
-@NgModule({
-  exports: [WeeklyComponent],
-  declarations: [WeeklyComponent],
-  imports: [
-    CommonModule,
-    ComponentsModule,
-    PositionPipe,
-    DropdownModule,
-    FormsModule,
-    SelectButtonModule,
-    TagModule,
-    InputSwitchModule,
-  ],
-})
-export class WeeklyModule {}
