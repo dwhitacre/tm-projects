@@ -1,12 +1,12 @@
-import { Component } from '@angular/core'
-import { map } from 'rxjs'
+import { Component, Input } from '@angular/core'
+import { map, of } from 'rxjs'
 import { StoreService } from 'src/services/store.service'
 
 @Component({
   selector: 'layout',
   template: `
     <div class="layout-wrapper">
-      <topbar></topbar>
+      <topbar [title]="title" [showWeeklyLeagueMenuItems]="showWeeklyLeagueMenuItems"></topbar>
       <ng-container *ngIf="messages$ | async as messages">
         <p-messages key="published" [value]="messages" [closable]="false" />
       </ng-container>
@@ -21,6 +21,10 @@ import { StoreService } from 'src/services/store.service'
     `
       div {
         color: var(--primary-color);
+      }
+
+      :host::ng-deep .p-message:first-child {
+        margin-top: 32px;
       }
 
       .layout-wrapper {
@@ -50,21 +54,27 @@ import { StoreService } from 'src/services/store.service'
   standalone: false,
 })
 export class LayoutComponent {
-  messages$ = this.storeService.leaderboardPublished$.pipe(
-    map((leaderboardPublished) =>
-      leaderboardPublished
-        ? []
-        : [
-            {
-              severity: 'warn',
-              key: 'published',
-              summary: 'Unpublished',
-              detail:
-                'You are viewing unpublished results. This is not the current public results that everyone else can see. Toggle published view in the settings in the top right to see the public view.',
-            },
-          ],
-    ),
-  )
+  @Input() showMessages = true
+  @Input() title = 'Weekly League'
+  @Input() showWeeklyLeagueMenuItems = true
+
+  messages$ = this.showMessages
+    ? this.storeService.leaderboardPublished$.pipe(
+        map((leaderboardPublished) =>
+          leaderboardPublished
+            ? []
+            : [
+                {
+                  severity: 'warn',
+                  key: 'published',
+                  summary: 'Unpublished',
+                  detail:
+                    'You are viewing unpublished results. This is not the current public results that everyone else can see. Toggle published view in the settings in the top right to see the public view.',
+                },
+              ],
+        ),
+      )
+    : of([])
 
   constructor(private storeService: StoreService) {}
 }

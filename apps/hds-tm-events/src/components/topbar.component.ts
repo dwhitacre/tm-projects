@@ -1,4 +1,4 @@
-import { Component } from '@angular/core'
+import { Component, Input } from '@angular/core'
 import { MenuItem } from 'primeng/api'
 import { map } from 'rxjs'
 import { StoreService } from 'src/services/store.service'
@@ -11,7 +11,7 @@ import { Map } from 'src/domain/map'
     <div class="layout-topbar">
       <a class="layout-topbar-logo">
         <img src="assets/images/holydynasty.png" alt="logo" height="32" />
-        <span class="layout-topbar-title">Weekly League</span>
+        <span class="layout-topbar-title">{{ title }}</span>
       </a>
       <div class="layout-topbar-menu">
         <ng-container *ngFor="let menuItem of menuItems$ | async">
@@ -186,7 +186,7 @@ import { Map } from 'src/domain/map'
           0 0 2px #0000000d,
           0 1px 4px #00000014;
         border-bottom: 1px solid var(--p-surface-700);
-        background-color: var(--p-datatable-footer-cell-background);
+        background-color: #18181b;
       }
 
       .layout-topbar .layout-topbar-logo {
@@ -304,6 +304,9 @@ import { Map } from 'src/domain/map'
   ],
 })
 export class TopBarComponent {
+  @Input() title = 'Weekly League'
+  @Input() showWeeklyLeagueMenuItems = true
+
   adminkeyVisible = false
 
   createWeeklyVisible = false
@@ -328,21 +331,21 @@ export class TopBarComponent {
     label: 'Standings',
     icon: 'pi pi-crown',
     routerLink: '/standings',
-    visible: true,
+    visible: this.showWeeklyLeagueMenuItems,
     styleClass: 'layout-topbar-menu-menuitem-standings',
   }
   statsItem: MenuItem = {
     label: 'Stats',
     icon: 'pi pi-chart-bar',
     routerLink: '/stats',
-    visible: true,
+    visible: this.showWeeklyLeagueMenuItems,
     styleClass: 'layout-topbar-menu-menuitem-stats',
   }
   weeklyItem: MenuItem = {
     label: 'Weekly',
     icon: 'pi pi-calendar',
     routerLink: '/weekly',
-    visible: true,
+    visible: this.showWeeklyLeagueMenuItems,
     styleClass: 'layout-topbar-menu-menuitem-weekly',
   }
   discordItem: MenuItem = {
@@ -356,7 +359,7 @@ export class TopBarComponent {
     label: 'Rules',
     icon: 'pi pi-book',
     routerLink: '/rules',
-    visible: true,
+    visible: this.showWeeklyLeagueMenuItems,
     styleClass: 'layout-topbar-menu-menuitem-rules',
   }
   githubItem: MenuItem = {
@@ -380,42 +383,42 @@ export class TopBarComponent {
       this.storeService.toggleLeaderboardPublished()
       this.storeService.fetchLeaderboard()
     },
-    visible: true,
+    visible: this.showWeeklyLeagueMenuItems,
     styleClass: 'layout-topbar-menu-menuitem-published',
   }
   createWeeklyItem: MenuItem = {
     label: 'Create Weekly',
     icon: 'pi pi-calendar-plus',
     command: () => (this.createWeeklyVisible = true),
-    visible: true,
+    visible: this.showWeeklyLeagueMenuItems,
     styleClass: 'layout-topbar-menu-menuitem-createweekly',
   }
   publishWeeklyItem: MenuItem = {
     label: 'Publish Weekly',
     icon: 'pi pi-cloud-upload',
     command: () => (this.publishWeeklyVisible = true),
-    visible: true,
+    visible: this.showWeeklyLeagueMenuItems,
     styleClass: 'layout-topbar-menu-menuitem-publishweekly',
   }
   addWeeklyMapItem: MenuItem = {
     label: 'Add Weekly Map',
     icon: 'pi pi-map',
     command: () => (this.addWeeklyMapVisible = true),
-    visible: true,
+    visible: this.showWeeklyLeagueMenuItems,
     styleClass: 'layout-topbar-menu-menuitem-addweeklymap',
   }
   addPlayerItem: MenuItem = {
     label: 'Add Player',
     icon: 'pi pi-user-plus',
     command: () => (this.addPlayerVisible = true),
-    visible: true,
+    visible: this.showWeeklyLeagueMenuItems,
     styleClass: 'layout-topbar-menu-menuitem-addplayer',
   }
   addMapItem: MenuItem = {
     label: 'Add Map',
     icon: 'pi pi-map',
     command: () => (this.addMapVisible = true),
-    visible: true,
+    visible: this.showWeeklyLeagueMenuItems,
     styleClass: 'layout-topbar-menu-menuitem-addmap',
   }
 
