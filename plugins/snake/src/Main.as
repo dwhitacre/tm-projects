@@ -2,6 +2,15 @@ GameController gc;
 float g_delta_current = 0.f;
 
 void Main() {
+    // auto tokenTask = Auth::GetToken();
+
+    // while (!tokenTask.Finished()) {
+    //     yield();
+    // }
+
+    // string token = tokenTask.Token();
+    // LogInfo("Token: " + token);
+
     while (true) {
         try {
             if (gc is null) {
