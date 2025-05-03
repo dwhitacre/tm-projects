@@ -1,0 +1,503 @@
+{
+  "uuid": "103b817b-87e9-42ba-a952-9c17b5cb568d",
+  "lastMigration": 33,
+  "name": "Openplanet Sim",
+  "endpointPrefix": "",
+  "latency": 0,
+  "port": 8101,
+  "hostname": "",
+  "folders": [],
+  "routes": [
+    {
+      "uuid": "91430974-c882-4eec-9f51-6d12f44368d6",
+      "type": "http",
+      "documentation": "CI Only",
+      "method": "get",
+      "endpoint": "ready",
+      "responses": [
+        {
+          "uuid": "d5ac0b9e-097d-4b00-ba0e-853db3ef9898",
+          "body": "OK",
+          "latency": 0,
+          "statusCode": 200,
+          "label": "",
+          "headers": [],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": true,
+          "crudKey": "id",
+          "callbacks": []
+        }
+      ],
+      "responseMode": null,
+      "streamingMode": null,
+      "streamingInterval": 0
+    },
+    {
+      "uuid": "09db7b11-38d9-4131-9959-813162b1a154",
+      "type": "http",
+      "documentation": "",
+      "method": "get",
+      "endpoint": "api/auth/validate",
+      "responses": [
+        {
+          "uuid": "c5f8c0df-6adc-4aa5-bf39-cfcab453b548",
+          "body": "{\n  \"error\": \"Method Not Allowed\"\n}",
+          "latency": 0,
+          "statusCode": 405,
+          "label": "",
+          "headers": [
+            {
+              "key": "allow",
+              "value": "POST"
+            },
+            {
+              "key": "alt-svc",
+              "value": "h3=\":443\"; ma=2592000"
+            },
+            {
+              "key": "connection",
+              "value": "close"
+            },
+            {
+              "key": "content-type",
+              "value": "application/json"
+            },
+            {
+              "key": "date",
+              "value": "Fri, 02 May 2025 23:17:35 GMT"
+            },
+            {
+              "key": "server",
+              "value": "Caddy"
+            },
+            {
+              "key": "content-length",
+              "value": "35"
+            }
+          ],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": false,
+          "crudKey": "id",
+          "callbacks": []
+        }
+      ],
+      "responseMode": null,
+      "streamingMode": null,
+      "streamingInterval": 0
+    },
+    {
+      "uuid": "1670f808-4ad5-49c1-9341-21616850fd5c",
+      "type": "http",
+      "documentation": "",
+      "method": "post",
+      "endpoint": "api/auth/validate",
+      "responses": [
+        {
+          "uuid": "824c767b-5c2a-4843-a42d-d1e9f57f67ff",
+          "body": "{\n  \"error\": \"Unprocessable Entity\"\n}",
+          "latency": 0,
+          "statusCode": 422,
+          "label": "No body",
+          "headers": [
+            {
+              "key": "connection",
+              "value": "close"
+            },
+            {
+              "key": "content-type",
+              "value": "application/json"
+            },
+            {
+              "key": "server",
+              "value": "Caddy"
+            }
+          ],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [
+            {
+              "target": "body",
+              "modifier": "token",
+              "value": "^4220",
+              "invert": false,
+              "operator": "regex"
+            }
+          ],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": false,
+          "crudKey": "id",
+          "callbacks": []
+        },
+        {
+          "uuid": "18ac8f3b-bd66-4a0e-8004-58fa7dc84093",
+          "body": "{\n  \"error\": \"Key: 'Token' Error:Field validation for 'Token' failed on the 'required' tag\\nKey: 'Secret' Error:Field validation for 'Secret' failed on the 'required' tag\"\n}",
+          "latency": 0,
+          "statusCode": 500,
+          "label": "Empty body",
+          "headers": [
+            {
+              "key": "connection",
+              "value": "close"
+            },
+            {
+              "key": "content-type",
+              "value": "application/json"
+            },
+            {
+              "key": "server",
+              "value": "Caddy"
+            }
+          ],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [
+            {
+              "target": "body",
+              "modifier": "token",
+              "value": "^5000",
+              "invert": false,
+              "operator": "regex"
+            }
+          ],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": false,
+          "crudKey": "id",
+          "callbacks": []
+        },
+        {
+          "uuid": "0dec5af3-9bb7-4437-bc2a-cf84efbcc026",
+          "body": "{\n  \"error\": \"Key: 'Secret' Error:Field validation for 'Secret' failed on the 'required' tag\"\n}",
+          "latency": 0,
+          "statusCode": 500,
+          "label": "Missing secret",
+          "headers": [
+            {
+              "key": "connection",
+              "value": "close"
+            },
+            {
+              "key": "content-type",
+              "value": "application/json"
+            },
+            {
+              "key": "server",
+              "value": "Caddy"
+            }
+          ],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [
+            {
+              "target": "body",
+              "modifier": "token",
+              "value": "^5001",
+              "invert": false,
+              "operator": "regex_i"
+            }
+          ],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": false,
+          "crudKey": "id",
+          "callbacks": []
+        },
+        {
+          "uuid": "d3234ccb-b0ef-440b-99e2-45acdf8669f1",
+          "body": "{\n  \"error\": \"Key: 'Token' Error:Field validation for 'Token' failed on the 'required' tag\"\n}",
+          "latency": 0,
+          "statusCode": 500,
+          "label": "Missing token",
+          "headers": [
+            {
+              "key": "connection",
+              "value": "close"
+            },
+            {
+              "key": "content-type",
+              "value": "application/json"
+            },
+            {
+              "key": "server",
+              "value": "Caddy"
+            }
+          ],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [
+            {
+              "target": "body",
+              "modifier": "token",
+              "value": "^5002",
+              "invert": false,
+              "operator": "regex_i"
+            }
+          ],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": false,
+          "crudKey": "id",
+          "callbacks": []
+        },
+        {
+          "uuid": "a5b6646b-9f04-48a0-87ef-0ad93478bf42",
+          "body": "{\n  \"error\": \"invalid secret\"\n}",
+          "latency": 0,
+          "statusCode": 500,
+          "label": "Bad secret",
+          "headers": [
+            {
+              "key": "connection",
+              "value": "close"
+            },
+            {
+              "key": "content-type",
+              "value": "application/json"
+            },
+            {
+              "key": "server",
+              "value": "Caddy"
+            }
+          ],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [
+            {
+              "target": "body",
+              "modifier": "token",
+              "value": "^5003",
+              "invert": false,
+              "operator": "regex_i"
+            }
+          ],
+          "rulesOperator": "AND",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": false,
+          "crudKey": "id",
+          "callbacks": []
+        },
+        {
+          "uuid": "cb6782b7-3996-4494-9be4-43242d0c5c7b",
+          "body": "{\n  \"error\": \"invalid token split\"\n}",
+          "latency": 0,
+          "statusCode": 500,
+          "label": "Bad token (not jwt)",
+          "headers": [
+            {
+              "key": "connection",
+              "value": "close"
+            },
+            {
+              "key": "content-type",
+              "value": "application/json"
+            },
+            {
+              "key": "server",
+              "value": "Caddy"
+            }
+          ],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [
+            {
+              "target": "body",
+              "modifier": "token",
+              "value": "^5004",
+              "invert": false,
+              "operator": "regex_i"
+            }
+          ],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": false,
+          "crudKey": "id",
+          "callbacks": []
+        },
+        {
+          "uuid": "6d7f5dd5-d0ef-40a9-9cc5-257f3b5cc388",
+          "body": "{\n  \"error\": \"invalid token signature\"\n}",
+          "latency": 0,
+          "statusCode": 500,
+          "label": "Bad token",
+          "headers": [
+            {
+              "key": "connection",
+              "value": "close"
+            },
+            {
+              "key": "content-type",
+              "value": "application/json"
+            },
+            {
+              "key": "server",
+              "value": "Caddy"
+            }
+          ],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [
+            {
+              "target": "body",
+              "modifier": "token",
+              "value": "^5005",
+              "invert": false,
+              "operator": "regex_i"
+            }
+          ],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": false,
+          "crudKey": "id",
+          "callbacks": []
+        },
+        {
+          "uuid": "9b021e44-30c6-4452-8d07-3204912b060e",
+          "body": "{\n  \"account_id\": \"{{ faker 'string.uuid' }}\",\n  \"display_name\": \"{{ faker 'internet.userName' }}\",\n  \"token_time\": 1746231798\n}",
+          "latency": 0,
+          "statusCode": 200,
+          "label": "Success",
+          "headers": [
+            {
+              "key": "connection",
+              "value": "close"
+            },
+            {
+              "key": "content-type",
+              "value": "application/json"
+            },
+            {
+              "key": "server",
+              "value": "Caddy"
+            }
+          ],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [
+            {
+              "target": "body",
+              "modifier": "token",
+              "value": "",
+              "invert": true,
+              "operator": "null"
+            },
+            {
+              "target": "body",
+              "modifier": "secret",
+              "value": "",
+              "invert": true,
+              "operator": "null"
+            }
+          ],
+          "rulesOperator": "AND",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": false,
+          "crudKey": "id",
+          "callbacks": []
+        },
+        {
+          "uuid": "afbe9910-f000-4056-aa50-3267fb825a0e",
+          "body": "bad fallback, dont use",
+          "latency": 0,
+          "statusCode": 400,
+          "label": "Bad fallback, dont use",
+          "headers": [],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": true,
+          "crudKey": "id",
+          "callbacks": []
+        }
+      ],
+      "responseMode": null,
+      "streamingMode": null,
+      "streamingInterval": 0
+    }
+  ],
+  "rootChildren": [
+    {
+      "type": "route",
+      "uuid": "91430974-c882-4eec-9f51-6d12f44368d6"
+    },
+    {
+      "type": "route",
+      "uuid": "09db7b11-38d9-4131-9959-813162b1a154"
+    },
+    {
+      "type": "route",
+      "uuid": "1670f808-4ad5-49c1-9341-21616850fd5c"
+    }
+  ],
+  "proxyMode": false,
+  "proxyHost": "",
+  "proxyRemovePrefix": false,
+  "tlsOptions": {
+    "enabled": false,
+    "type": "CERT",
+    "pfxPath": "",
+    "certPath": "",
+    "keyPath": "",
+    "caPath": "",
+    "passphrase": ""
+  },
+  "cors": false,
+  "headers": [],
+  "proxyReqHeaders": [
+    {
+      "key": "",
+      "value": ""
+    }
+  ],
+  "proxyResHeaders": [
+    {
+      "key": "",
+      "value": ""
+    }
+  ],
+  "data": [],
+  "callbacks": []
+}
