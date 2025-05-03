@@ -102,6 +102,17 @@ services:
     volumes:
       - ./sims/tmiosim/:/data:ro
 
+  openplanetsim:
+    image: mockoon/cli:9
+    command: ["-d", "/data/mockoon.json", "-p", "8101"]
+    restart: unless-stopped
+    networks:
+      - server-network
+    ports:
+      - 8101:8101
+    volumes:
+      - ./sims/openplanetsim/:/data:ro
+
 networks:
   server-network:
     driver: bridge

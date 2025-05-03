@@ -70,3 +70,9 @@ processes:
     command: docker compose up tmiosim
     shutdown:
       command: docker compose stop tmiosim
+
+  openplanetsim:
+    working_dir: .
+    command: docker compose up openplanetsim
+    shutdown:
+      command: docker compose stop openplanetsim
