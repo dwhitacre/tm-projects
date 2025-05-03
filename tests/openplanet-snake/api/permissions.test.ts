@@ -1,16 +1,16 @@
 import { faker } from "@faker-js/faker";
 import { afterAll, beforeAll, beforeEach, expect, test } from "bun:test";
-import { PlayerMedalsClient } from "shared/clients/playermedals";
+import { SnakeClient } from "shared/clients/snake";
 import { Db } from "shared/domain/db";
 import { Player } from "shared/domain/player";
 import { PlayerService } from "shared/services/player";
 
 let db: Db;
 let playerService: PlayerService;
-const client = new PlayerMedalsClient({
+const client = new SnakeClient({
   baseUrl: "http://localhost:8082",
 });
-const adminClient = new PlayerMedalsClient({
+const adminClient = new SnakeClient({
   baseUrl: "http://localhost:8082",
 });
 

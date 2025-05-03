@@ -4,14 +4,14 @@ import type { JsonAny } from "shared/domain/json";
 import { Db } from "shared/domain/db";
 import { PlayerService } from "shared/services/player";
 import { Player } from "shared/domain/player";
-import { PlayerMedalsClient } from "shared/clients/playermedals";
+import { SnakeClient } from "shared/clients/snake";
 
 let db: Db;
 let playerService: PlayerService;
-const client = new PlayerMedalsClient({
+const client = new SnakeClient({
   baseUrl: "http://localhost:8082",
 });
-const adminClient = new PlayerMedalsClient({
+const adminClient = new SnakeClient({
   baseUrl: "http://localhost:8082",
 });
 

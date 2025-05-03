@@ -1,7 +1,7 @@
 import { expect, test } from "bun:test";
-import { PlayerMedalsClient } from "shared/clients/playermedals";
+import { SnakeClient } from "shared/clients/snake";
 
-const client = new PlayerMedalsClient({
+const client = new SnakeClient({
   baseUrl: "http://localhost:8082",
 });
 
