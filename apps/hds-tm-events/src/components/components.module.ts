@@ -26,6 +26,7 @@ import { StatsTableComponent } from './stats-table.component'
 import { MatchBracketComponent } from './match-bracket.component'
 import { TmPipe } from 'src/pipes/tm.pipe'
 import { SafeHtmlPipe } from 'src/pipes/safe-html.pipe'
+import { CheckboxModule } from 'primeng/checkbox'
 
 @NgModule({
   declarations: [
@@ -68,6 +69,7 @@ import { SafeHtmlPipe } from 'src/pipes/safe-html.pipe'
     TmPipe,
     SafeHtmlPipe,
     RouterModule,
+    CheckboxModule,
   ],
 })
 export class ComponentsModule {}

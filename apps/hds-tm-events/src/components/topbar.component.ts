@@ -1,8 +1,9 @@
-import { Component, Input } from '@angular/core'
+import { Component, Input, OnDestroy } from '@angular/core'
 import { MenuItem } from 'primeng/api'
-import { map } from 'rxjs'
+import { map, Subject, takeUntil } from 'rxjs'
 import { StoreService } from 'src/services/store.service'
 import { Map } from 'src/domain/map'
+import { FeatureToggleState } from 'src/services/feature.service'
 
 @Component({
   selector: 'topbar',
@@ -167,6 +168,43 @@ import { Map } from 'src/domain/map'
         <p-button label="Create" (click)="addMap(mapUid.value)" />
       </div>
     </p-dialog>
+
+    <p-dialog
+      header="Feature Toggles"
+      [modal]="true"
+      [(visible)]="featureTogglesVisible"
+      position="center"
+      [draggable]="false"
+    >
+      <div class="layout-dialog-input">
+        <p-table [value]="featureToggles" [tableStyle]="{ 'min-width': '50rem' }">
+          <ng-template #header>
+            <tr>
+              <th>Name</th>
+              <th>Description</th>
+              <th>Enabled?</th>
+            </tr>
+          </ng-template>
+          <ng-template #body let-featureToggle>
+            <tr>
+              <td>{{ featureToggle.name }}</td>
+              <td>{{ featureToggle.description }}</td>
+              <td>
+                <p-checkbox
+                  [disabled]="featureToggle.override"
+                  [(ngModel)]="featureToggle.enabled"
+                  [binary]="true"
+                  (change)="storeService.toggleFeature(featureToggle.name)"
+                ></p-checkbox>
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </div>
+      <div class="layout-dialog-actions">
+        <p-button label="Close" severity="secondary" (click)="featureTogglesVisible = false" />
+      </div>
+    </p-dialog>
   `,
   styles: [
     `
@@ -268,7 +306,8 @@ import { Map } from 'src/domain/map'
       .layout-topbar-menu-standalone.layout-topbar-menu-menuitem-publishweekly,
       .layout-topbar-menu-standalone.layout-topbar-menu-menuitem-addweeklymap,
       .layout-topbar-menu-standalone.layout-topbar-menu-menuitem-addplayer,
-      .layout-topbar-menu-standalone.layout-topbar-menu-menuitem-addmap {
+      .layout-topbar-menu-standalone.layout-topbar-menu-menuitem-addmap,
+      .layout-topbar-menu-standalone.layout-topbar-menu-menuitem-featuretoggles {
         display: none;
       }
 
@@ -303,7 +342,7 @@ import { Map } from 'src/domain/map'
     `,
   ],
 })
-export class TopBarComponent {
+export class TopBarComponent implements OnDestroy {
   @Input() title = 'Weekly League'
   @Input() showWeeklyLeagueMenuItems = true
 
@@ -322,6 +361,11 @@ export class TopBarComponent {
   addPlayerAccountId = ''
 
   addMapVisible = false
+
+  featureTogglesVisible = false
+  featureToggles: FeatureToggleState[] = []
+
+  destroy$ = new Subject<void>()
 
   noop = () => {
     /*noop*/
@@ -421,6 +465,13 @@ export class TopBarComponent {
     visible: this.showWeeklyLeagueMenuItems,
     styleClass: 'layout-topbar-menu-menuitem-addmap',
   }
+  featureTogglesItem: MenuItem = {
+    label: 'Feature Toggles',
+    icon: 'pi pi-code',
+    command: () => (this.featureTogglesVisible = true),
+    visible: true,
+    styleClass: 'layout-topbar-menu-menuitem-featuretoggles',
+  }
 
   menuItems$ = this.storeService.isAdmin$.pipe(
     map((isAdmin) => {
@@ -432,6 +483,7 @@ export class TopBarComponent {
             this.addWeeklyMapItem,
             this.addPlayerItem,
             this.addMapItem,
+            this.featureTogglesItem,
           ]
         : []
 
@@ -449,7 +501,11 @@ export class TopBarComponent {
     }),
   )
 
-  constructor(public storeService: StoreService) {}
+  constructor(public storeService: StoreService) {
+    storeService.featureToggles$.pipe(takeUntil(this.destroy$)).subscribe((featureToggles) => {
+      this.featureToggles = featureToggles
+    })
+  }
 
   createWeekly(value: string) {
     this.storeService.createWeekly(value)
@@ -474,5 +530,10 @@ export class TopBarComponent {
   addMap(value: string) {
     this.storeService.addMap(value)
     this.addMapVisible = false
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next()
+    this.destroy$.complete()
   }
 }

@@ -2,7 +2,7 @@ import { HttpErrorResponse } from '@angular/common/http'
 import { Injectable } from '@angular/core'
 import { ComponentStore } from '@ngrx/component-store'
 import { concatLatestFrom, tapResponse } from '@ngrx/operators'
-import { Observable, switchMap, tap } from 'rxjs'
+import { map, Observable, switchMap, tap } from 'rxjs'
 import { Leaderboard, Stat } from 'src/domain/leaderboard'
 import { Weekly, WeeklyResult } from 'src/domain/weekly'
 import { Map } from 'src/domain/map'
@@ -17,6 +17,8 @@ import { MapService } from './map.service'
 import { Player } from 'src/domain/player'
 import { RuleCategory } from 'src/domain/rule'
 import { RuleService } from './rule.service'
+import { FeatureService, FeatureToggleState } from './feature.service'
+import { FeatureToggle } from 'src/domain/feature'
 
 export interface StoreState {
   leaderboard: Leaderboard
@@ -35,6 +37,7 @@ export interface StoreState {
   maps: Array<Map>
   weeklies: { [weeklyId: Weekly['weeklyId']]: Partial<Weekly> }
   rules: Array<RuleCategory>
+  featureToggles: FeatureToggleState[]
 }
 
 @Injectable({ providedIn: 'root' })
@@ -51,6 +54,7 @@ export class StoreService extends ComponentStore<StoreState> {
   readonly maps$ = this.select((state) => state.maps)
   readonly weeklies$ = this.select((state) => state.weeklies)
   readonly rules$ = this.select((state) => state.rules)
+  readonly featureToggles$ = this.select((state) => state.featureToggles)
 
   readonly players$ = this.select((state) =>
     state.leaderboard.players.sort((playerA, playerB) => {
@@ -269,7 +273,7 @@ export class StoreService extends ComponentStore<StoreState> {
         (map) =>
           ({
             player: { name: map.name, image: map.thumbnailUrl } as Player,
-          } as WeeklyResult),
+          }) as WeeklyResult,
       )
 
       return {
@@ -299,6 +303,7 @@ export class StoreService extends ComponentStore<StoreState> {
     private playerService: PlayerService,
     private mapService: MapService,
     private ruleService: RuleService,
+    private featureService: FeatureService,
   ) {
     super({
       leaderboard: {
@@ -324,8 +329,10 @@ export class StoreService extends ComponentStore<StoreState> {
       maps: [],
       weeklies: {},
       rules: [],
+      featureToggles: [],
     })
 
+    this.fetchFeatureToggles()
     this.fetchLeaderboard()
     this.fetchRules()
     this.fetchMaps()
@@ -568,4 +575,22 @@ export class StoreService extends ComponentStore<StoreState> {
       ...weights,
     },
   }))
+
+  readonly fetchFeatureToggles = this.effect<void>((trigger$) => {
+    return trigger$.pipe(
+      map(() => {
+        const featureToggles = this.featureService.getAll()
+        return this.patchState({ featureToggles })
+      }),
+    )
+  })
+
+  readonly toggleFeature = this.effect<FeatureToggle>((feature$) => {
+    return feature$.pipe(
+      tap((feature) => {
+        this.featureService.toggle(feature)
+        this.fetchFeatureToggles()
+      }),
+    )
+  })
 }
