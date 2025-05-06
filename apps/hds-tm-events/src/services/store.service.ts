@@ -38,6 +38,9 @@ export interface StoreState {
   weeklies: { [weeklyId: Weekly['weeklyId']]: Partial<Weekly> }
   rules: Array<RuleCategory>
   featureToggles: FeatureToggleState[]
+  teams: Array<unknown>
+  posts: Array<unknown>
+  events: Array<unknown>
 }
 
 @Injectable({ providedIn: 'root' })
@@ -55,6 +58,9 @@ export class StoreService extends ComponentStore<StoreState> {
   readonly weeklies$ = this.select((state) => state.weeklies)
   readonly rules$ = this.select((state) => state.rules)
   readonly featureToggles$ = this.select((state) => state.featureToggles)
+  readonly teams$ = this.select((state) => state.teams)
+  readonly posts$ = this.select((state) => state.posts)
+  readonly events$ = this.select((state) => state.events)
 
   readonly players$ = this.select((state) =>
     state.leaderboard.players.sort((playerA, playerB) => {
@@ -330,6 +336,9 @@ export class StoreService extends ComponentStore<StoreState> {
       weeklies: {},
       rules: [],
       featureToggles: [],
+      teams: [],
+      posts: [],
+      events: [],
     })
 
     this.fetchFeatureToggles()

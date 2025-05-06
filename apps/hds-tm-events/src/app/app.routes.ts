@@ -3,8 +3,10 @@ import { StandingsComponent } from './standings.component'
 import { WeeklyComponent } from './weekly.component'
 import { StatsComponent } from './stats.component'
 import { RulesComponent } from './rules.component'
+import { FeatureToggle, isEnabled } from 'src/domain/feature'
+import { HomeComponent } from './home.component'
 
-export const appRoutes: Route[] = [
+const routes: Route[] = [
   {
     path: 'weeklyleague/standings',
     component: StandingsComponent,
@@ -39,6 +41,14 @@ export const appRoutes: Route[] = [
   },
   {
     path: '**',
-    redirectTo: 'weeklyleague/standings',
+    redirectTo: isEnabled(FeatureToggle.homepage) ? '' : 'weeklyleague/standings',
   },
 ]
+
+if (isEnabled(FeatureToggle.homepage))
+  routes.push({
+    path: '',
+    component: HomeComponent,
+  })
+
+export const appRoutes = routes

@@ -13,3 +13,17 @@ export const FeatureToggles: Record<FeatureToggle, FeatureToggleSettings> = {
     override: false,
   },
 }
+
+export const togglePrefix = 'hd.feature'
+
+export function isEnabled(feature: FeatureToggle): boolean {
+  return isOverridden(feature) || isEnabledLocally(feature)
+}
+
+export function isOverridden(feature: FeatureToggle): boolean {
+  return FeatureToggles[feature].override
+}
+
+export function isEnabledLocally(feature: FeatureToggle): boolean {
+  return localStorage.getItem(`${togglePrefix}.${feature}`) === 'true'
+}

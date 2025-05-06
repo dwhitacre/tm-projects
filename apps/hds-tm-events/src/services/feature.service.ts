@@ -1,5 +1,13 @@
 import { Injectable } from '@angular/core'
-import { FeatureToggle, FeatureToggles, FeatureToggleSettings } from 'src/domain/feature'
+import {
+  FeatureToggle,
+  FeatureToggles,
+  FeatureToggleSettings,
+  isEnabled,
+  isEnabledLocally,
+  isOverridden,
+  togglePrefix,
+} from 'src/domain/feature'
 
 export interface FeatureToggleState extends FeatureToggleSettings {
   name: FeatureToggle
@@ -9,28 +17,26 @@ export interface FeatureToggleState extends FeatureToggleSettings {
 
 @Injectable({ providedIn: 'root' })
 export class FeatureService {
-  #togglePrefix = 'hd.feature'
-
   constructor() {}
 
   isEnabled(feature: FeatureToggle): boolean {
-    return this.isOverridden(feature) || this.isEnabledLocally(feature)
+    return isEnabled(feature)
   }
 
   isOverridden(feature: FeatureToggle): boolean {
-    return FeatureToggles[feature].override
+    return isOverridden(feature)
   }
 
   isEnabledLocally(feature: FeatureToggle): boolean {
-    return localStorage.getItem(`${this.#togglePrefix}.${feature}`) === 'true'
+    return isEnabledLocally(feature)
   }
 
   enable(feature: FeatureToggle): void {
-    localStorage.setItem(`${this.#togglePrefix}.${feature}`, 'true')
+    localStorage.setItem(`${togglePrefix}.${feature}`, 'true')
   }
 
   disable(feature: FeatureToggle): void {
-    localStorage.removeItem(`${this.#togglePrefix}.${feature}`)
+    localStorage.removeItem(`${togglePrefix}.${feature}`)
   }
 
   toggle(feature: FeatureToggle): void {
