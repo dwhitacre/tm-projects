@@ -7,9 +7,18 @@
   --primary-color-text: #231f20 !important;
   --p-primary-color: #f2db0d !important;
   --p-primary-color-text: #231f20 !important;
+  --p-primary-hover-color: #ddc80b !important;
+  --p-primary-active-color: #ddc80b !important;
   --p-select-focus-border-color: #f2db0d !important;
   --p-input-focus-border-color: #f2db0d !important;
   --p-select-option-selected-focus-background: #f2db0d75 !important;
+  --p-highlight-background: #f2db0d75 !important;
+  --p-highlight-focus-background: #f2db0d75 !important;
+}
+
+::selection {
+  background: var(--primary-color) !important;
+  color: var(--primary-color-text) !important;
 }
 
 body {

@@ -90,6 +90,16 @@ import { WeeklyResult } from 'src/domain/weekly'
         justify-content: space-between;
       }
 
+      .player-content > span {
+        user-select: text;
+      }
+
+      .player-content > span::selection {
+        user-select: text;
+        background: var(--primary-color-text) !important;
+        color: var(--primary-color) !important;
+      }
+
       .player-content .name {
         white-space: nowrap;
         overflow: hidden;
