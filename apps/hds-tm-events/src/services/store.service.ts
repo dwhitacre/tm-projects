@@ -19,6 +19,9 @@ import { RuleCategory } from 'src/domain/rule'
 import { RuleService } from './rule.service'
 import { FeatureService, FeatureToggleState } from './feature.service'
 import { FeatureToggle } from 'src/domain/feature'
+import { TeamService } from './team.service'
+import { PostService } from './post.service'
+import { EventService } from './event.service'
 
 export interface StoreState {
   leaderboard: Leaderboard
@@ -310,6 +313,9 @@ export class StoreService extends ComponentStore<StoreState> {
     private mapService: MapService,
     private ruleService: RuleService,
     private featureService: FeatureService,
+    private teamService: TeamService,
+    private postService: PostService,
+    private eventService: EventService,
   ) {
     super({
       leaderboard: {
@@ -600,6 +606,45 @@ export class StoreService extends ComponentStore<StoreState> {
         this.featureService.toggle(feature)
         this.fetchFeatureToggles()
       }),
+    )
+  })
+
+  readonly fetchTeams = this.effect<void>((trigger$) => {
+    return trigger$.pipe(
+      switchMap(() =>
+        this.teamService.getAll().pipe(
+          tapResponse({
+            next: (res) => this.patchState({ teams: res.teams }),
+            error: (error: HttpErrorResponse) => this.logService.error(error),
+          }),
+        ),
+      ),
+    )
+  })
+
+  readonly fetchPosts = this.effect<void>((trigger$) => {
+    return trigger$.pipe(
+      switchMap(() =>
+        this.postService.getAll().pipe(
+          tapResponse({
+            next: (res) => this.patchState({ posts: res.posts }),
+            error: (error: HttpErrorResponse) => this.logService.error(error),
+          }),
+        ),
+      ),
+    )
+  })
+
+  readonly fetchEvents = this.effect<void>((trigger$) => {
+    return trigger$.pipe(
+      switchMap(() =>
+        this.eventService.getAll().pipe(
+          tapResponse({
+            next: (res) => this.patchState({ events: res.events }),
+            error: (error: HttpErrorResponse) => this.logService.error(error),
+          }),
+        ),
+      ),
     )
   })
 }
