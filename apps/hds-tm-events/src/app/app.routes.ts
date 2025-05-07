@@ -40,6 +40,10 @@ const routes: Route[] = [
     redirectTo: 'weeklyleague/rules',
   },
   {
+    path: 'weeklyleague',
+    redirectTo: 'weeklyleague/standings',
+  },
+  {
     path: '**',
     redirectTo: isEnabled(FeatureToggle.homepage) ? '' : 'weeklyleague/standings',
   },

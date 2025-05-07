@@ -8,6 +8,7 @@ import { FeatureToggleState } from 'src/services/feature.service'
 export interface MenuItemExtended extends MenuItem {
   weeklyOnly: boolean
   adminOnly: boolean
+  homeOnly?: boolean
 }
 
 @Component({
@@ -319,7 +320,8 @@ export interface MenuItemExtended extends MenuItem {
       @media (max-width: 780px) {
         .layout-topbar-menu-standalone.layout-topbar-menu-menuitem-standings,
         .layout-topbar-menu-standalone.layout-topbar-menu-menuitem-stats,
-        .layout-topbar-menu-standalone.layout-topbar-menu-menuitem-weekly {
+        .layout-topbar-menu-standalone.layout-topbar-menu-menuitem-weekly,
+        .layout-topbar-menu-standalone.layout-topbar-menu-menuitem-weeklyleague {
           display: none;
         }
       }
@@ -328,6 +330,7 @@ export interface MenuItemExtended extends MenuItem {
         :host::ng-deep .layout-topbar-menu-menuitem .layout-topbar-menu-menuitem-standings,
         :host::ng-deep .layout-topbar-menu-menuitem .layout-topbar-menu-menuitem-stats,
         :host::ng-deep .layout-topbar-menu-menuitem .layout-topbar-menu-menuitem-weekly,
+        :host::ng-deep .layout-topbar-menu-menuitem .layout-topbar-menu-menuitem-weeklyleague,
         :host::ng-deep .layout-topbar-menu-menuitem [role='separator'] {
           display: none;
         }
@@ -514,8 +517,19 @@ export class TopBarComponent implements OnInit, OnChanges, OnDestroy {
     adminOnly: true,
     styleClass: 'layout-topbar-menu-menuitem-featuretoggles',
   }
+  weeklyLeagueItem: MenuItemExtended = {
+    label: 'Weekly League',
+    icon: 'pi pi-calendar',
+    routerLink: '/weeklyleague',
+    visible: true,
+    weeklyOnly: false,
+    adminOnly: false,
+    homeOnly: true,
+    styleClass: 'layout-topbar-menu-menuitem-weeklyleague',
+  }
 
   #menuItems: MenuItemExtended[] = [
+    this.weeklyLeagueItem,
     this.standingsItem,
     this.statsItem,
     this.weeklyItem,
@@ -540,6 +554,9 @@ export class TopBarComponent implements OnInit, OnChanges, OnDestroy {
           return false
         }
         if (item.adminOnly && !isAdmin) {
+          return false
+        }
+        if (item.homeOnly && showWeeklyLeagueMenuItems) {
           return false
         }
         return true
