@@ -4,6 +4,7 @@ import { BehaviorSubject, combineLatest, map, Subject, takeUntil } from 'rxjs'
 import { StoreService } from 'src/services/store.service'
 import { Map } from 'src/domain/map'
 import { FeatureToggleState } from 'src/services/feature.service'
+import { FeatureToggle, isEnabled } from 'src/domain/feature'
 
 export interface MenuItemExtended extends MenuItem {
   weeklyOnly: boolean
@@ -16,7 +17,7 @@ export interface MenuItemExtended extends MenuItem {
   standalone: false,
   template: `
     <div class="layout-topbar">
-      <a class="layout-topbar-logo">
+      <a class="layout-topbar-logo" routerLink="/">
         <img src="assets/images/holydynasty.png" alt="logo" height="32" />
         <span class="layout-topbar-title">{{ title }}</span>
       </a>
@@ -239,6 +240,7 @@ export interface MenuItemExtended extends MenuItem {
         font-size: 1rem;
         width: 250px;
         border-radius: 12px;
+        color: var(--primary-color);
       }
 
       .layout-topbar .layout-topbar-menu {
@@ -313,7 +315,8 @@ export interface MenuItemExtended extends MenuItem {
       .layout-topbar-menu-standalone.layout-topbar-menu-menuitem-addweeklymap,
       .layout-topbar-menu-standalone.layout-topbar-menu-menuitem-addplayer,
       .layout-topbar-menu-standalone.layout-topbar-menu-menuitem-addmap,
-      .layout-topbar-menu-standalone.layout-topbar-menu-menuitem-featuretoggles {
+      .layout-topbar-menu-standalone.layout-topbar-menu-menuitem-featuretoggles,
+      .layout-topbar-menu-standalone.layout-topbar-menu-menuitem-home {
         display: none;
       }
 
@@ -527,6 +530,15 @@ export class TopBarComponent implements OnInit, OnChanges, OnDestroy {
     homeOnly: true,
     styleClass: 'layout-topbar-menu-menuitem-weeklyleague',
   }
+  homeItem: MenuItemExtended = {
+    label: 'Home',
+    icon: 'pi pi-home',
+    routerLink: '/',
+    visible: isEnabled(FeatureToggle.homepage),
+    weeklyOnly: true,
+    adminOnly: false,
+    styleClass: 'layout-topbar-menu-menuitem-home',
+  }
 
   #menuItems: MenuItemExtended[] = [
     this.weeklyLeagueItem,
@@ -537,6 +549,7 @@ export class TopBarComponent implements OnInit, OnChanges, OnDestroy {
     this.discordItem,
     this.rulesItem,
     this.githubItem,
+    this.homeItem,
     this.adminkeyItem,
     this.togglePublishedItem,
     this.createWeeklyItem,
