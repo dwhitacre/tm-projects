@@ -1,9 +1,14 @@
-import { Component, Input, OnDestroy } from '@angular/core'
+import { Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core'
 import { MenuItem } from 'primeng/api'
-import { map, Subject, takeUntil } from 'rxjs'
+import { BehaviorSubject, combineLatest, map, Subject, takeUntil } from 'rxjs'
 import { StoreService } from 'src/services/store.service'
 import { Map } from 'src/domain/map'
 import { FeatureToggleState } from 'src/services/feature.service'
+
+export interface MenuItemExtended extends MenuItem {
+  weeklyOnly: boolean
+  adminOnly: boolean
+}
 
 @Component({
   selector: 'topbar',
@@ -342,7 +347,7 @@ import { FeatureToggleState } from 'src/services/feature.service'
     `,
   ],
 })
-export class TopBarComponent implements OnDestroy {
+export class TopBarComponent implements OnInit, OnChanges, OnDestroy {
   @Input() title = 'Weekly League'
   @Input() showWeeklyLeagueMenuItems = true
 
@@ -365,147 +370,184 @@ export class TopBarComponent implements OnDestroy {
   featureTogglesVisible = false
   featureToggles: FeatureToggleState[] = []
 
+  showWeeklyLeagueMenuItemsSource = new BehaviorSubject<boolean>(this.showWeeklyLeagueMenuItems)
+  showWeeklyLeagueMenuItems$ = this.showWeeklyLeagueMenuItemsSource.asObservable()
+
   destroy$ = new Subject<void>()
 
   noop = () => {
     /*noop*/
   }
 
-  standingsItem: MenuItem = {
+  standingsItem: MenuItemExtended = {
     label: 'Standings',
     icon: 'pi pi-crown',
     routerLink: '/standings',
-    visible: this.showWeeklyLeagueMenuItems,
+    visible: true,
+    weeklyOnly: true,
+    adminOnly: false,
     styleClass: 'layout-topbar-menu-menuitem-standings',
   }
-  statsItem: MenuItem = {
+  statsItem: MenuItemExtended = {
     label: 'Stats',
     icon: 'pi pi-chart-bar',
     routerLink: '/stats',
-    visible: this.showWeeklyLeagueMenuItems,
+    visible: true,
+    weeklyOnly: true,
+    adminOnly: false,
     styleClass: 'layout-topbar-menu-menuitem-stats',
   }
-  weeklyItem: MenuItem = {
+  weeklyItem: MenuItemExtended = {
     label: 'Weekly',
     icon: 'pi pi-calendar',
     routerLink: '/weekly',
-    visible: this.showWeeklyLeagueMenuItems,
+    visible: true,
+    weeklyOnly: true,
+    adminOnly: false,
     styleClass: 'layout-topbar-menu-menuitem-weekly',
   }
-  discordItem: MenuItem = {
+  separatorItem: MenuItemExtended = {
+    separator: true,
+    visible: false,
+    weeklyOnly: true,
+    adminOnly: false,
+  }
+  discordItem: MenuItemExtended = {
     label: 'Join',
     icon: 'pi pi-discord',
     command: () => window.open('https://join.holydynasty.events'),
     visible: true,
+    weeklyOnly: false,
+    adminOnly: false,
     styleClass: 'layout-topbar-menu-menuitem-discord',
   }
-  rulesItem: MenuItem = {
+  rulesItem: MenuItemExtended = {
     label: 'Rules',
     icon: 'pi pi-book',
     routerLink: '/rules',
-    visible: this.showWeeklyLeagueMenuItems,
+    visible: true,
+    weeklyOnly: true,
+    adminOnly: false,
     styleClass: 'layout-topbar-menu-menuitem-rules',
   }
-  githubItem: MenuItem = {
+  githubItem: MenuItemExtended = {
     label: 'Github',
     icon: 'pi pi-github',
     command: () => window.open('https://github.com/dwhitacre/tm-projects'),
     visible: true,
+    weeklyOnly: false,
+    adminOnly: false,
     styleClass: 'layout-topbar-menu-menuitem-github',
   }
-  adminkeyItem: MenuItem = {
+  adminkeyItem: MenuItemExtended = {
     label: 'Enter Admin Key',
     icon: 'pi pi-lock',
     command: () => (this.adminkeyVisible = true),
     visible: true,
+    weeklyOnly: false,
+    adminOnly: false,
     styleClass: 'layout-topbar-menu-menuitem-adminkey',
   }
-  togglePublishedItem: MenuItem = {
+  togglePublishedItem: MenuItemExtended = {
     label: 'Toggle Published',
     icon: 'pi pi-pencil',
     command: () => {
       this.storeService.toggleLeaderboardPublished()
       this.storeService.fetchLeaderboard()
     },
-    visible: this.showWeeklyLeagueMenuItems,
+    visible: true,
+    weeklyOnly: true,
+    adminOnly: true,
     styleClass: 'layout-topbar-menu-menuitem-published',
   }
-  createWeeklyItem: MenuItem = {
+  createWeeklyItem: MenuItemExtended = {
     label: 'Create Weekly',
     icon: 'pi pi-calendar-plus',
     command: () => (this.createWeeklyVisible = true),
-    visible: this.showWeeklyLeagueMenuItems,
+    visible: true,
+    weeklyOnly: true,
+    adminOnly: true,
     styleClass: 'layout-topbar-menu-menuitem-createweekly',
   }
-  publishWeeklyItem: MenuItem = {
+  publishWeeklyItem: MenuItemExtended = {
     label: 'Publish Weekly',
     icon: 'pi pi-cloud-upload',
     command: () => (this.publishWeeklyVisible = true),
-    visible: this.showWeeklyLeagueMenuItems,
+    visible: true,
+    weeklyOnly: true,
+    adminOnly: true,
     styleClass: 'layout-topbar-menu-menuitem-publishweekly',
   }
-  addWeeklyMapItem: MenuItem = {
+  addWeeklyMapItem: MenuItemExtended = {
     label: 'Add Weekly Map',
     icon: 'pi pi-map',
     command: () => (this.addWeeklyMapVisible = true),
-    visible: this.showWeeklyLeagueMenuItems,
+    visible: true,
+    weeklyOnly: true,
+    adminOnly: true,
     styleClass: 'layout-topbar-menu-menuitem-addweeklymap',
   }
-  addPlayerItem: MenuItem = {
+  addPlayerItem: MenuItemExtended = {
     label: 'Add Player',
     icon: 'pi pi-user-plus',
     command: () => (this.addPlayerVisible = true),
-    visible: this.showWeeklyLeagueMenuItems,
+    visible: true,
+    weeklyOnly: true,
+    adminOnly: true,
     styleClass: 'layout-topbar-menu-menuitem-addplayer',
   }
-  addMapItem: MenuItem = {
+  addMapItem: MenuItemExtended = {
     label: 'Add Map',
     icon: 'pi pi-map',
     command: () => (this.addMapVisible = true),
-    visible: this.showWeeklyLeagueMenuItems,
+    visible: true,
+    weeklyOnly: true,
+    adminOnly: true,
     styleClass: 'layout-topbar-menu-menuitem-addmap',
   }
-  featureTogglesItem: MenuItem = {
+  featureTogglesItem: MenuItemExtended = {
     label: 'Feature Toggles',
     icon: 'pi pi-code',
     command: () => (this.featureTogglesVisible = true),
     visible: true,
+    weeklyOnly: false,
+    adminOnly: true,
     styleClass: 'layout-topbar-menu-menuitem-featuretoggles',
   }
 
-  menuItems$ = this.storeService.isAdmin$.pipe(
-    map((isAdmin) => {
-      const adminMenuItems = isAdmin
-        ? [
-            this.togglePublishedItem,
-            this.createWeeklyItem,
-            this.publishWeeklyItem,
-            this.addWeeklyMapItem,
-            this.addPlayerItem,
-            this.addMapItem,
-            this.featureTogglesItem,
-          ]
-        : []
+  #menuItems: MenuItemExtended[] = [
+    this.standingsItem,
+    this.statsItem,
+    this.weeklyItem,
+    this.separatorItem,
+    this.discordItem,
+    this.rulesItem,
+    this.githubItem,
+    this.adminkeyItem,
+    this.togglePublishedItem,
+    this.createWeeklyItem,
+    this.publishWeeklyItem,
+    this.addWeeklyMapItem,
+    this.addPlayerItem,
+    this.addMapItem,
+    this.featureTogglesItem,
+  ]
 
-      return [
-        this.standingsItem,
-        this.statsItem,
-        this.weeklyItem,
-        { separator: true },
-        this.discordItem,
-        this.rulesItem,
-        this.githubItem,
-        this.adminkeyItem,
-        ...adminMenuItems,
-      ]
+  menuItems$ = combineLatest([this.storeService.isAdmin$, this.showWeeklyLeagueMenuItems$]).pipe(
+    map(([isAdmin, showWeeklyLeagueMenuItems]) => {
+      return this.#menuItems.filter((item) => {
+        if (item.weeklyOnly && !showWeeklyLeagueMenuItems) {
+          return false
+        }
+        if (item.adminOnly && !isAdmin) {
+          return false
+        }
+        return true
+      })
     }),
   )
 
-  constructor(public storeService: StoreService) {
-    storeService.featureToggles$.pipe(takeUntil(this.destroy$)).subscribe((featureToggles) => {
-      this.featureToggles = featureToggles
-    })
-  }
+  constructor(public storeService: StoreService) {}
 
   createWeekly(value: string) {
     this.storeService.createWeekly(value)
@@ -530,6 +572,18 @@ export class TopBarComponent implements OnDestroy {
   addMap(value: string) {
     this.storeService.addMap(value)
     this.addMapVisible = false
+  }
+
+  ngOnInit() {
+    this.storeService.featureToggles$.pipe(takeUntil(this.destroy$)).subscribe((featureToggles) => {
+      this.featureToggles = featureToggles
+    })
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['showWeeklyLeagueMenuItems']) {
+      this.showWeeklyLeagueMenuItemsSource.next(changes['showWeeklyLeagueMenuItems'].currentValue)
+    }
   }
 
   ngOnDestroy(): void {

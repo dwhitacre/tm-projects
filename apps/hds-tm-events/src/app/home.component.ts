@@ -6,7 +6,7 @@ import { StoreService } from 'src/services/store.service'
 @Component({
   selector: 'home',
   template: `
-    <layout>
+    <layout [title]="'Holy Dynasty'" [showWeeklyLeagueMenuItems]="false">
       <div class="teams">
         <ng-container *ngIf="storeService.teams$ | async as teams">
           <div>{{ teams }}</div>
