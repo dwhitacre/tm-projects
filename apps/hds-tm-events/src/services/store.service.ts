@@ -22,6 +22,9 @@ import { FeatureToggle } from 'src/domain/feature'
 import { TeamService } from './team.service'
 import { PostService } from './post.service'
 import { EventService } from './event.service'
+import { Team } from 'src/domain/team'
+import { Post } from 'src/domain/post'
+import { Event } from 'src/domain/event'
 
 export interface StoreState {
   leaderboard: Leaderboard
@@ -41,9 +44,9 @@ export interface StoreState {
   weeklies: { [weeklyId: Weekly['weeklyId']]: Partial<Weekly> }
   rules: Array<RuleCategory>
   featureToggles: FeatureToggleState[]
-  teams: Array<unknown>
-  posts: Array<unknown>
-  events: Array<unknown>
+  teams: Array<Team>
+  posts: Array<Post>
+  events: Array<Event>
 }
 
 @Injectable({ providedIn: 'root' })
@@ -348,6 +351,9 @@ export class StoreService extends ComponentStore<StoreState> {
     })
 
     this.fetchFeatureToggles()
+    this.fetchEvents()
+    this.fetchPosts()
+    this.fetchTeams()
     this.fetchLeaderboard()
     this.fetchRules()
     this.fetchMaps()

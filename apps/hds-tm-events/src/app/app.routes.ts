@@ -5,6 +5,7 @@ import { StatsComponent } from './stats.component'
 import { RulesComponent } from './rules.component'
 import { FeatureToggle, isEnabled } from 'src/domain/feature'
 import { HomeComponent } from './home.component'
+import { PostComponent } from './post.component'
 
 const routes: Route[] = [
   {
@@ -22,6 +23,10 @@ const routes: Route[] = [
   {
     path: 'weeklyleague/rules',
     component: RulesComponent,
+  },
+  {
+    path: 'posts/:id',
+    component: PostComponent,
   },
   {
     path: 'standings',
