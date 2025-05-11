@@ -10,8 +10,8 @@ export interface Post {
   content: string
   tags: string[]
   author: Author
-  dateCreated?: Date
-  dateModified?: Date
+  dateCreated: Date
+  dateModified: Date
   visible: boolean
   sortOrder: number
 }

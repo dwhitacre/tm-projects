@@ -20,8 +20,8 @@ export interface Team {
   name: string
   description?: string
   visible: boolean
-  dateCreated?: Date
-  dateModified?: Date
+  dateCreated: Date
+  dateModified: Date
   players: TeamPlayer[]
   sortOrder: number
 }

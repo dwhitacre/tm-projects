@@ -9,11 +9,11 @@ export interface Event {
   description?: string
   dateStart?: Date
   dateEnd?: Date
-  externalUrl?: string
-  image?: string
+  externalUrl: string
+  image: string
   visible: boolean
-  dateCreated?: Date
-  dateModified?: Date
+  dateCreated: Date
+  dateModified: Date
   sortOrder: number
   players: EventPlayer[]
 }

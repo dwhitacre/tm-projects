@@ -11,10 +11,9 @@ import { Router } from '@angular/router'
     <layout [title]="'Holy Dynasty'" [showWeeklyLeagueMenuItems]="false">
       <div class="container">
         <div class="column teams">
-          <p-panel header="Teams">
-            <ng-container *ngIf="storeService.teams$ | async as teams">
-              <div *ngFor="let team of teams" class="team-group">
-                <h3>{{ team.name }}</h3>
+          <ng-container *ngIf="storeService.teams$ | async as teams">
+            <div *ngFor="let team of teams" class="team-group">
+              <p-panel [header]="team.name">
                 <ul>
                   <li *ngFor="let player of team.players">
                     {{ player.name }} - {{ player.role }}
@@ -26,35 +25,65 @@ import { Router } from '@angular/router'
                     </a>
                   </li>
                 </ul>
-              </div>
-            </ng-container>
-          </p-panel>
+              </p-panel>
+            </div>
+          </ng-container>
         </div>
         <div class="column posts">
-          <p-panel header="Posts">
-            <ng-container *ngIf="storeService.posts$ | async as posts">
-              <div *ngFor="let post of posts" class="post-preview" (click)="navigateToPost(post.id)">
+          <ng-container *ngIf="storeService.posts$ | async as posts">
+            <div *ngFor="let post of posts" class="post-preview" (click)="navigateToPost(post.id)">
+              <p-panel [header]="post.title">
                 <img [src]="post.image" alt="Post Image" class="post-image" />
                 <div class="post-summary">
-                  <h3>{{ post.title }}</h3>
                   <p>{{ post.description }}</p>
                 </div>
                 <div class="post-footer">
-                  <span>By {{ post.author }}</span>
-                  <span>{{ post.dateModified | date }}</span>
+                  <span>
+                    By {{ post.author.name }}
+                    <a *ngIf="post.author.twitch" [href]="'https://twitch.tv/' + post.author.twitch" target="_blank">
+                      <i class="pi pi-twitch"></i>
+                    </a>
+                    <a
+                      *ngIf="post.author.discord"
+                      [href]="'https://discord.com/users/' + post.author.discord"
+                      target="_blank"
+                    >
+                      <i class="pi pi-discord"></i>
+                    </a>
+                  </span>
+                  <span>{{ post.dateModified | date: 'short' : 'UTC' }}</span>
                 </div>
-              </div>
-            </ng-container>
-          </p-panel>
+              </p-panel>
+            </div>
+          </ng-container>
         </div>
         <div class="column events">
-          <p-panel header="Events">
-            <ng-container *ngIf="storeService.events$ | async as events">
-              <div *ngFor="let event of events">
-                {{ event }}
-              </div>
-            </ng-container>
-          </p-panel>
+          <ng-container *ngIf="storeService.events$ | async as events">
+            <div *ngFor="let event of events" class="event-card">
+              <p-panel [header]="event.name" (click)="openExternalUrl(event.externalUrl)" class="clickable-panel">
+                <img [src]="event.image" alt="{{ event.name }}" class="event-image" />
+                <p *ngFor="let player of event.players">
+                  {{ player.name }} - {{ player.eventRole }}
+                  <a *ngIf="player.twitch" [href]="'https://twitch.tv/' + player.twitch" target="_blank">
+                    <i class="pi pi-twitch"></i>
+                  </a>
+                  <a *ngIf="player.discord" [href]="'https://discord.com/users/' + player.discord" target="_blank">
+                    <i class="pi pi-discord"></i>
+                  </a>
+                </p>
+                <div class="event-footer">
+                  <span>
+                    <div><small>Starts</small></div>
+                    {{ event.dateStart ? (event.dateStart | date: 'short' : 'UTC') : 'TBD' }}
+                  </span>
+                  <span>
+                    <div><small>Ends</small></div>
+                    {{ event.dateEnd ? (event.dateEnd | date: 'short' : 'UTC') : 'TBD' }}
+                  </span>
+                </div>
+              </p-panel>
+            </div>
+          </ng-container>
         </div>
       </div>
     </layout>
@@ -65,7 +94,6 @@ import { Router } from '@angular/router'
         display: flex;
         flex-direction: row;
         gap: 16px;
-        background-color: #121212;
         color: #ffffff;
       }
       .column {
@@ -80,6 +108,15 @@ import { Router } from '@angular/router'
       }
       .events {
         flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+      }
+      .event-image {
+        width: 100%;
+        height: 200px; /* Fixed height for event images */
+        object-fit: cover;
+        margin: 0 auto;
       }
       .team-group {
         margin-bottom: 16px;
@@ -118,6 +155,15 @@ import { Router } from '@angular/router'
         font-size: 0.9em;
         color: #aaaaaa;
       }
+      .event-footer {
+        display: flex;
+        justify-content: space-between;
+        font-size: 0.9em;
+        color: #aaaaaa;
+      }
+      .event-card p {
+        margin: 4px 0;
+      }
       @media (max-width: 768px) {
         .container {
           flex-direction: column;
@@ -125,6 +171,18 @@ import { Router } from '@angular/router'
         .column {
           flex: 1 1 100%;
         }
+      }
+      .clickable-panel {
+        cursor: pointer;
+        transition:
+          background-color 0.3s ease,
+          transform 0.2s ease,
+          box-shadow 0.2s ease;
+      }
+      .clickable-panel:hover {
+        background-color: #f0f0f0;
+        transform: scale(1.05);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
       }
     `,
   ],
@@ -139,5 +197,9 @@ export class HomeComponent {
 
   navigateToPost(postId: string) {
     this.router.navigate(['/posts', postId])
+  }
+
+  openExternalUrl(url: string) {
+    if (url) window.open(url, '_blank')
   }
 }

@@ -15,8 +15,8 @@ export class TeamService {
           name: 'Speed Demons',
           description: 'A team of the fastest players.',
           visible: true,
-          dateCreated: new Date(),
-          dateModified: new Date(),
+          dateCreated: new Date('2025-01-01'),
+          dateModified: new Date('2025-05-01'),
           players: [
             {
               accountId: '12345',
@@ -66,8 +66,8 @@ export class TeamService {
           name: 'Turbo Titans',
           description: 'Masters of turbo tracks.',
           visible: true,
-          dateCreated: new Date(),
-          dateModified: new Date(),
+          dateCreated: new Date('2025-01-01'),
+          dateModified: new Date('2025-05-01'),
           players: [
             {
               accountId: '11223',
@@ -117,8 +117,8 @@ export class TeamService {
           name: 'Nitro Ninjas',
           description: 'Stealthy and fast.',
           visible: true,
-          dateCreated: new Date(),
-          dateModified: new Date(),
+          dateCreated: new Date('2025-01-01'),
+          dateModified: new Date('2025-05-01'),
           players: [
             {
               accountId: '77889',
@@ -168,8 +168,8 @@ export class TeamService {
           name: 'Velocity Vipers',
           description: 'Striking with speed.',
           visible: true,
-          dateCreated: new Date(),
-          dateModified: new Date(),
+          dateCreated: new Date('2025-01-01'),
+          dateModified: new Date('2025-05-01'),
           players: [
             {
               accountId: '22334',
@@ -226,8 +226,8 @@ export class TeamService {
           name: 'Rocket Racers',
           description: 'Blazing through the tracks.',
           visible: true,
-          dateCreated: new Date(),
-          dateModified: new Date(),
+          dateCreated: new Date('2025-01-01'),
+          dateModified: new Date('2025-05-01'),
           players: [
             {
               accountId: '33445',

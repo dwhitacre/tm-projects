@@ -12,7 +12,7 @@ import { StoreService } from 'src/services/store.service'
       <img [src]="post.image" alt="Post Image" class="post-image" />
       <div class="post-content">
         <h1>{{ post.title }}</h1>
-        <p>By {{ post.author }} on {{ post.dateModified | date }}</p>
+        <p>By {{ post.author.name }} on {{ post.dateModified | date }}</p>
         <div>{{ post.content }}</div>
       </div>
     </div>
