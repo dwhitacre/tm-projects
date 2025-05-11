@@ -13,19 +13,7 @@ import { Router } from '@angular/router'
         <div class="column teams">
           <ng-container *ngIf="storeService.teams$ | async as teams">
             <div *ngFor="let team of teams" class="team-group">
-              <p-panel [header]="team.name">
-                <ul>
-                  <li *ngFor="let player of team.players">
-                    {{ player.name }} - {{ player.role }}
-                    <a *ngIf="player.twitch" [href]="'https://twitch.tv/' + player.twitch" target="_blank">
-                      <i class="pi pi-twitch"></i>
-                    </a>
-                    <a *ngIf="player.discord" [href]="'https://discord.com/users/' + player.discord" target="_blank">
-                      <i class="pi pi-discord"></i>
-                    </a>
-                  </li>
-                </ul>
-              </p-panel>
+              <team-panel [team]="team"></team-panel>
             </div>
           </ng-container>
         </div>
@@ -62,15 +50,7 @@ import { Router } from '@angular/router'
             <div *ngFor="let event of events" class="event-card">
               <p-panel [header]="event.name" (click)="openExternalUrl(event.externalUrl)" class="clickable-panel">
                 <img [src]="event.image" alt="{{ event.name }}" class="event-image" />
-                <p *ngFor="let player of event.players">
-                  {{ player.name }} - {{ player.eventRole }}
-                  <a *ngIf="player.twitch" [href]="'https://twitch.tv/' + player.twitch" target="_blank">
-                    <i class="pi pi-twitch"></i>
-                  </a>
-                  <a *ngIf="player.discord" [href]="'https://discord.com/users/' + player.discord" target="_blank">
-                    <i class="pi pi-discord"></i>
-                  </a>
-                </p>
+                <players-list [players]="event.players"></players-list>
                 <div class="event-footer">
                   <span>
                     <div><small>Starts</small></div>
@@ -99,51 +79,29 @@ import { Router } from '@angular/router'
       .column {
         flex: 1;
         min-width: 200px;
-      }
-      .teams {
-        flex: 1;
-      }
-      .posts {
-        flex: 2;
-      }
-      .events {
-        flex: 1;
         display: flex;
         flex-direction: column;
         gap: 16px;
       }
-      .event-image {
-        width: 100%;
-        height: 200px; /* Fixed height for event images */
-        object-fit: cover;
-        margin: 0 auto;
-      }
-      .team-group {
-        margin-bottom: 16px;
+
+      .teams {
+        flex: 1;
       }
       .team-group h3 {
         margin: 0 0 8px 0;
       }
-      .team-group ul {
-        list-style: none;
-        padding: 0;
-      }
-      .team-group li {
-        margin: 4px 0;
-      }
-      .pi {
-        margin-left: 8px;
-        font-size: 1.2em;
+
+      .posts {
+        flex: 3;
       }
       .post-preview {
         cursor: pointer;
-        margin-bottom: 16px;
       }
       .post-image {
         width: 100%;
         max-width: 100%;
         height: auto;
-        max-height: 300px;
+        max-height: 400px;
         object-fit: cover;
       }
       .post-summary {
@@ -155,6 +113,16 @@ import { Router } from '@angular/router'
         font-size: 0.9em;
         color: #aaaaaa;
       }
+
+      .events {
+        flex: 1;
+      }
+      .event-image {
+        width: 100%;
+        height: 176px;
+        object-fit: cover;
+        margin: 0 auto;
+      }
       .event-footer {
         display: flex;
         justify-content: space-between;
@@ -164,13 +132,10 @@ import { Router } from '@angular/router'
       .event-card p {
         margin: 4px 0;
       }
-      @media (max-width: 768px) {
-        .container {
-          flex-direction: column;
-        }
-        .column {
-          flex: 1 1 100%;
-        }
+
+      .pi {
+        margin-left: 8px;
+        font-size: 1.2em;
       }
       .clickable-panel {
         cursor: pointer;
@@ -183,6 +148,15 @@ import { Router } from '@angular/router'
         background-color: #f0f0f0;
         transform: scale(1.05);
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      }
+
+      @media (max-width: 768px) {
+        .container {
+          flex-direction: column;
+        }
+        .column {
+          flex: 1 1 100%;
+        }
       }
     `,
   ],

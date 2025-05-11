@@ -27,6 +27,9 @@ import { MatchBracketComponent } from './match-bracket.component'
 import { TmPipe } from 'src/pipes/tm.pipe'
 import { SafeHtmlPipe } from 'src/pipes/safe-html.pipe'
 import { CheckboxModule } from 'primeng/checkbox'
+import { TeamPanelComponent } from './team-panel.component'
+import { PanelModule } from 'primeng/panel'
+import { PlayersListComponent } from './players-list.component'
 
 @NgModule({
   declarations: [
@@ -38,6 +41,8 @@ import { CheckboxModule } from 'primeng/checkbox'
     TopCardPlayerComponent,
     StatsTableComponent,
     MatchBracketComponent,
+    TeamPanelComponent,
+    PlayersListComponent,
   ],
   exports: [
     LayoutComponent,
@@ -48,6 +53,8 @@ import { CheckboxModule } from 'primeng/checkbox'
     TopCardComponent,
     StatsTableComponent,
     MatchBracketComponent,
+    TeamPanelComponent,
+    PlayersListComponent,
   ],
   imports: [
     ButtonModule,
@@ -70,6 +77,7 @@ import { CheckboxModule } from 'primeng/checkbox'
     SafeHtmlPipe,
     RouterModule,
     CheckboxModule,
+    PanelModule,
   ],
 })
 export class ComponentsModule {}
