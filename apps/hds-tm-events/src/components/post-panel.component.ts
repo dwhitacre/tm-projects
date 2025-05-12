@@ -6,7 +6,7 @@ import { Post } from 'src/domain/post'
   selector: 'post-panel',
   standalone: false,
   template: `
-    <p-panel [header]="post.title" (click)="navigateToPost(post.id)" class="clickable-panel">
+    <p-panel [header]="post.title" (click)="navigateToPost(post.id)" [styleClass]="'clickable-panel'">
       <img [src]="post.image" [alt]="post.title" class="post-image" />
       <div class="post-summary">
         <p>{{ post.description }}</p>
@@ -36,17 +36,15 @@ import { Post } from 'src/domain/post'
         color: #aaaaaa;
       }
 
-      .clickable-panel {
+      :host ::ng-deep .clickable-panel {
         cursor: pointer;
         transition:
-          background-color 0.3s ease,
-          transform 0.2s ease,
-          box-shadow 0.2s ease;
+          transform 0.3s ease,
+          box-shadow 0.3s ease;
       }
-      .clickable-panel:hover {
-        background-color: #f0f0f0;
-        transform: scale(1.05);
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      :host ::ng-deep .clickable-panel:hover {
+        transform: scale(1.01);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
       }
     `,
   ],

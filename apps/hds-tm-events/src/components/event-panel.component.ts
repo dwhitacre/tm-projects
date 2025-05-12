@@ -5,7 +5,7 @@ import { Event } from 'src/domain/event'
   selector: 'event-panel',
   standalone: false,
   template: `
-    <p-panel [header]="event.name" (click)="openExternalUrl(event.externalUrl)" class="clickable-panel">
+    <p-panel [header]="event.name" (click)="openExternalUrl(event.externalUrl)" [styleClass]="'clickable-panel'">
       <img [src]="event.image" alt="{{ event.name }}" class="event-image" />
       <players-list [players]="event.players"></players-list>
       <div class="event-footer">
@@ -34,17 +34,16 @@ import { Event } from 'src/domain/event'
         font-size: 0.9em;
         color: #aaaaaa;
       }
-      .clickable-panel {
+
+      :host ::ng-deep .clickable-panel {
         cursor: pointer;
         transition:
-          background-color 0.3s ease,
-          transform 0.2s ease,
-          box-shadow 0.2s ease;
+          transform 0.3s ease,
+          box-shadow 0.3s ease;
       }
-      .clickable-panel:hover {
-        background-color: #f0f0f0;
-        transform: scale(1.05);
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      :host ::ng-deep .clickable-panel:hover {
+        transform: scale(1.02);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
       }
     `,
   ],
