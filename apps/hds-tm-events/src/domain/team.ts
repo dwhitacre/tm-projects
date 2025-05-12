@@ -1,14 +1,14 @@
 import { Player } from './player'
 
 export enum TeamRole {
+  OWNER = 'OWNER',
+  COACH = 'COACH',
+  CAPTAIN = 'CAPTAIN',
   PLAYER = 'PLAYER',
   SUBSTITUTE = 'SUBSTITUTE',
-  CAPTAIN = 'CAPTAIN',
-  COACH = 'COACH',
-  JUSTWORKSHERE = 'JUSTWORKSHERE',
   CASTER = 'CASTER',
   ADMIN = 'ADMIN',
-  OWNER = 'OWNER',
+  JUSTWORKSHERE = 'JUSTWORKSHERE',
   UNKNOWN = 'UNKNOWN',
 }
 

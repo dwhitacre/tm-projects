@@ -1,6 +1,6 @@
-import { Component, Input } from '@angular/core'
+import { Component, Input, OnInit } from '@angular/core'
 import { EventPlayer } from 'src/domain/event'
-import { TeamPlayer } from 'src/domain/team'
+import { TeamPlayer, TeamRole } from 'src/domain/team'
 
 @Component({
   selector: 'players-list',
@@ -37,6 +37,15 @@ import { TeamPlayer } from 'src/domain/team'
     `,
   ],
 })
-export class PlayersListComponent {
+export class PlayersListComponent implements OnInit {
   @Input() players: (EventPlayer | (TeamPlayer & { eventRole?: undefined }))[] = []
+
+  ngOnInit() {
+    const roleOrder = Object.values(TeamRole)
+    this.players.sort((a, b) => {
+      const roleA = roleOrder.indexOf(a.role || TeamRole.UNKNOWN)
+      const roleB = roleOrder.indexOf(b.role || TeamRole.UNKNOWN)
+      return roleA - roleB
+    })
+  }
 }
