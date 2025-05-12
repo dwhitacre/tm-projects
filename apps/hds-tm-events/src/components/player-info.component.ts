@@ -7,10 +7,20 @@ import { Player } from 'src/domain/player'
   template: `
     <div class="player-info">
       {{ prefix }}{{ player.name }}
-      <a *ngIf="player.twitch" [href]="'https://twitch.tv/' + player.twitch" target="_blank">
+      <a
+        *ngIf="player.twitch"
+        [href]="'https://twitch.tv/' + player.twitch"
+        target="_blank"
+        (click)="stopClickPropagation($event)"
+      >
         <i class="pi pi-twitch twitch-icon"></i>
       </a>
-      <a *ngIf="player.discord" [href]="'https://discord.com/users/' + player.discord" target="_blank">
+      <a
+        *ngIf="player.discord"
+        [href]="'https://discord.com/users/' + player.discord"
+        target="_blank"
+        (click)="stopClickPropagation($event)"
+      >
         <i class="pi pi-discord discord-icon"></i>
       </a>
     </div>
@@ -40,4 +50,8 @@ import { Player } from 'src/domain/player'
 export class PlayerInfoComponent {
   @Input() player!: Player
   @Input() prefix: string = ''
+
+  stopClickPropagation(event: MouseEvent) {
+    event.stopPropagation()
+  }
 }
