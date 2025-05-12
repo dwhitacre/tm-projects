@@ -76,22 +76,6 @@ import { Router } from '@angular/router'
       .post-preview {
         cursor: pointer;
       }
-      .post-image {
-        width: 100%;
-        max-width: 100%;
-        height: auto;
-        max-height: 400px;
-        object-fit: cover;
-      }
-      .post-summary {
-        margin: 8px 0;
-      }
-      .post-footer {
-        display: flex;
-        justify-content: space-between;
-        font-size: 0.9em;
-        color: #aaaaaa;
-      }
 
       .events {
         flex: 1;
@@ -112,10 +96,6 @@ import { Router } from '@angular/router'
         margin: 4px 0;
       }
 
-      .pi {
-        margin-left: 8px;
-        font-size: 1.2em;
-      }
       .clickable-panel {
         cursor: pointer;
         transition:
