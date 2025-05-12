@@ -32,6 +32,7 @@ import { PanelModule } from 'primeng/panel'
 import { PlayersListComponent } from './players-list.component'
 import { PostPanelComponent } from './post-panel.component'
 import { PlayerInfoComponent } from './player-info.component'
+import { EventPanelComponent } from './event-panel.component'
 
 @NgModule({
   declarations: [
@@ -47,6 +48,7 @@ import { PlayerInfoComponent } from './player-info.component'
     PlayersListComponent,
     PostPanelComponent,
     PlayerInfoComponent,
+    EventPanelComponent,
   ],
   exports: [
     LayoutComponent,
@@ -61,6 +63,7 @@ import { PlayerInfoComponent } from './player-info.component'
     PlayersListComponent,
     PostPanelComponent,
     PlayerInfoComponent,
+    EventPanelComponent,
   ],
   imports: [
     ButtonModule,

@@ -3,7 +3,6 @@ import { ComponentsModule } from 'src/components/components.module'
 import { CommonModule } from '@angular/common'
 import { StoreService } from 'src/services/store.service'
 import { PanelModule } from 'primeng/panel'
-import { Router } from '@angular/router'
 
 @Component({
   selector: 'home',
@@ -19,7 +18,7 @@ import { Router } from '@angular/router'
         </div>
         <div class="column posts">
           <ng-container *ngIf="storeService.posts$ | async as posts">
-            <div *ngFor="let post of posts" class="post-preview" (click)="navigateToPost(post.id)">
+            <div *ngFor="let post of posts">
               <post-panel [post]="post"></post-panel>
             </div>
           </ng-container>
@@ -27,20 +26,7 @@ import { Router } from '@angular/router'
         <div class="column events">
           <ng-container *ngIf="storeService.events$ | async as events">
             <div *ngFor="let event of events" class="event-card">
-              <p-panel [header]="event.name" (click)="openExternalUrl(event.externalUrl)" class="clickable-panel">
-                <img [src]="event.image" alt="{{ event.name }}" class="event-image" />
-                <players-list [players]="event.players"></players-list>
-                <div class="event-footer">
-                  <span>
-                    <div><small>Start</small></div>
-                    {{ event.dateStart ? (event.dateStart | date: 'short' : 'UTC') : 'TBD' }}
-                  </span>
-                  <span>
-                    <div><small>End</small></div>
-                    {{ event.dateEnd ? (event.dateEnd | date: 'short' : 'UTC') : 'TBD' }}
-                  </span>
-                </div>
-              </p-panel>
+              <event-panel [event]="event"></event-panel>
             </div>
           </ng-container>
         </div>
@@ -73,40 +59,9 @@ import { Router } from '@angular/router'
       .posts {
         flex: 3;
       }
-      .post-preview {
-        cursor: pointer;
-      }
 
       .events {
         flex: 1;
-      }
-      .event-image {
-        width: 100%;
-        height: 176px;
-        object-fit: cover;
-        margin: 0 auto;
-      }
-      .event-footer {
-        display: flex;
-        justify-content: space-between;
-        font-size: 0.9em;
-        color: #aaaaaa;
-      }
-      .event-card p {
-        margin: 4px 0;
-      }
-
-      .clickable-panel {
-        cursor: pointer;
-        transition:
-          background-color 0.3s ease,
-          transform 0.2s ease,
-          box-shadow 0.2s ease;
-      }
-      .clickable-panel:hover {
-        background-color: #f0f0f0;
-        transform: scale(1.05);
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
       }
 
       @media (max-width: 768px) {
@@ -123,16 +78,5 @@ import { Router } from '@angular/router'
   standalone: true,
 })
 export class HomeComponent {
-  constructor(
-    public storeService: StoreService,
-    private router: Router,
-  ) {}
-
-  navigateToPost(postId: string) {
-    this.router.navigate(['/posts', postId])
-  }
-
-  openExternalUrl(url: string) {
-    if (url) window.open(url, '_blank')
-  }
+  constructor(public storeService: StoreService) {}
 }
