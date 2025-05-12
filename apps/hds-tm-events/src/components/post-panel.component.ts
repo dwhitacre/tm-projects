@@ -1,5 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core'
 import { Router } from '@angular/router'
+import { FeatureToggle, isEnabled } from 'src/domain/feature'
 import { Post } from 'src/domain/post'
 
 @Component({
@@ -17,7 +18,7 @@ import { Post } from 'src/domain/post'
           <span>{{ post.dateModified | date: 'short' : 'UTC' }}</span>
         </div>
       </p-panel>
-      <div *ngIf="showUrl" class="url-overlay">{{ fullPostUrl }}</div>
+      <div *ngIf="overlayEnabled && showUrl" class="url-overlay">{{ fullPostUrl }}</div>
     </div>
   `,
   styles: [
@@ -77,6 +78,7 @@ export class PostPanelComponent implements OnInit {
   @Input() post!: Post
   showUrl = false
   fullPostUrl: string = ''
+  overlayEnabled = isEnabled(FeatureToggle.urlOverlay)
 
   constructor(private router: Router) {}
 

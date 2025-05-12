@@ -1,5 +1,6 @@
 export enum FeatureToggle {
   homepage = 'homepage',
+  urlOverlay = 'url-overlay',
 }
 
 export interface FeatureToggleSettings {
@@ -10,6 +11,10 @@ export interface FeatureToggleSettings {
 export const FeatureToggles: Record<FeatureToggle, FeatureToggleSettings> = {
   [FeatureToggle.homepage]: {
     description: 'Make the homepage the default page',
+    override: false,
+  },
+  [FeatureToggle.urlOverlay]: {
+    description: 'Show the URL overlay on posts and events',
     override: false,
   },
 }
