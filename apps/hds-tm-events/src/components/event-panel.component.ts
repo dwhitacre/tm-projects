@@ -12,11 +12,11 @@ import { FeatureToggle, isEnabled } from 'src/domain/feature'
         <players-list [players]="event.players"></players-list>
         <div class="event-footer">
           <span>
-            <div><small>Start</small></div>
+            <div class="event-footer-label"><small>Start</small></div>
             {{ event.dateStart ? (event.dateStart | date: 'short' : 'UTC') : 'TBD' }}
           </span>
           <span>
-            <div><small>End</small></div>
+            <div class="event-footer-label"><small>End</small></div>
             {{ event.dateEnd ? (event.dateEnd | date: 'short' : 'UTC') : 'TBD' }}
           </span>
         </div>
@@ -69,6 +69,14 @@ import { FeatureToggle, isEnabled } from 'src/domain/feature'
       }
       .event-card {
         position: relative;
+      }
+
+      .event-footer-label {
+        height: 18px;
+      }
+      .event-footer-label small {
+        font-size: 0.8em;
+        font-style: italic;
       }
     `,
   ],
