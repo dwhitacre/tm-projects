@@ -8,15 +8,7 @@ import { TeamPlayer } from 'src/domain/team'
   template: `
     <ul>
       <li *ngFor="let player of players" class="player-item">
-        <div class="player-info">
-          {{ player.name }}
-          <a *ngIf="player.twitch" [href]="'https://twitch.tv/' + player.twitch" target="_blank">
-            <i class="pi pi-twitch twitch-icon"></i>
-          </a>
-          <a *ngIf="player.discord" [href]="'https://discord.com/users/' + player.discord" target="_blank">
-            <i class="pi pi-discord discord-icon"></i>
-          </a>
-        </div>
+        <player-info [player]="player"></player-info>
         <div class="player-role">{{ player.eventRole ?? player.role }}</div>
       </li>
     </ul>
@@ -27,6 +19,7 @@ import { TeamPlayer } from 'src/domain/team'
         list-style: none;
         padding: 0;
         margin-top: 0;
+        margin-bottom: 0;
       }
 
       li {
@@ -34,24 +27,6 @@ import { TeamPlayer } from 'src/domain/team'
         display: flex;
         justify-content: space-between;
         align-items: center;
-      }
-
-      .player-info {
-        display: flex;
-        align-items: center;
-      }
-
-      .pi {
-        margin-left: 8px;
-        font-size: 0.9em;
-      }
-
-      .twitch-icon {
-        color: #9146ff;
-      }
-
-      .discord-icon {
-        color: #5865f2;
       }
 
       .player-role {

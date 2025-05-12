@@ -20,28 +20,7 @@ import { Router } from '@angular/router'
         <div class="column posts">
           <ng-container *ngIf="storeService.posts$ | async as posts">
             <div *ngFor="let post of posts" class="post-preview" (click)="navigateToPost(post.id)">
-              <p-panel [header]="post.title">
-                <img [src]="post.image" alt="Post Image" class="post-image" />
-                <div class="post-summary">
-                  <p>{{ post.description }}</p>
-                </div>
-                <div class="post-footer">
-                  <span>
-                    By {{ post.author.name }}
-                    <a *ngIf="post.author.twitch" [href]="'https://twitch.tv/' + post.author.twitch" target="_blank">
-                      <i class="pi pi-twitch"></i>
-                    </a>
-                    <a
-                      *ngIf="post.author.discord"
-                      [href]="'https://discord.com/users/' + post.author.discord"
-                      target="_blank"
-                    >
-                      <i class="pi pi-discord"></i>
-                    </a>
-                  </span>
-                  <span>{{ post.dateModified | date: 'short' : 'UTC' }}</span>
-                </div>
-              </p-panel>
+              <post-panel [post]="post"></post-panel>
             </div>
           </ng-container>
         </div>
@@ -53,11 +32,11 @@ import { Router } from '@angular/router'
                 <players-list [players]="event.players"></players-list>
                 <div class="event-footer">
                   <span>
-                    <div><small>Starts</small></div>
+                    <div><small>Start</small></div>
                     {{ event.dateStart ? (event.dateStart | date: 'short' : 'UTC') : 'TBD' }}
                   </span>
                   <span>
-                    <div><small>Ends</small></div>
+                    <div><small>End</small></div>
                     {{ event.dateEnd ? (event.dateEnd | date: 'short' : 'UTC') : 'TBD' }}
                   </span>
                 </div>

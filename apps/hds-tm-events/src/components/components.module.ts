@@ -30,6 +30,8 @@ import { CheckboxModule } from 'primeng/checkbox'
 import { TeamPanelComponent } from './team-panel.component'
 import { PanelModule } from 'primeng/panel'
 import { PlayersListComponent } from './players-list.component'
+import { PostPanelComponent } from './post-panel.component'
+import { PlayerInfoComponent } from './player-info.component'
 
 @NgModule({
   declarations: [
@@ -43,6 +45,8 @@ import { PlayersListComponent } from './players-list.component'
     MatchBracketComponent,
     TeamPanelComponent,
     PlayersListComponent,
+    PostPanelComponent,
+    PlayerInfoComponent,
   ],
   exports: [
     LayoutComponent,
@@ -55,6 +59,8 @@ import { PlayersListComponent } from './players-list.component'
     MatchBracketComponent,
     TeamPanelComponent,
     PlayersListComponent,
+    PostPanelComponent,
+    PlayerInfoComponent,
   ],
   imports: [
     ButtonModule,
