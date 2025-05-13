@@ -24,7 +24,7 @@ import { StoreService } from 'src/services/store.service'
       }
 
       :host::ng-deep .p-message:first-child {
-        margin-top: 32px;
+        margin-top: 36px;
       }
 
       .layout-wrapper {
@@ -37,7 +37,7 @@ import { StoreService } from 'src/services/store.service'
 
       .layout-main-container {
         display: flex;
-        min-height: 94vh;
+        min-height: calc(94vh - 36px - 48px);
         flex-direction: column;
         justify-content: space-between;
         padding-top: 3rem;
@@ -48,6 +48,10 @@ import { StoreService } from 'src/services/store.service'
 
       .layout-main {
         flex: 1 1 auto;
+      }
+
+      :host::ng-deep .p-message {
+        color: var(--primary-color);
       }
     `,
   ],
