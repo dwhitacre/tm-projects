@@ -23,11 +23,16 @@ import { Post } from 'src/domain/post'
   `,
   styles: [
     `
+      .post-card {
+        position: relative;
+        max-height: 650px;
+      }
       .post-image {
         width: 100%;
         max-width: 100%;
         height: auto;
-        max-height: 400px;
+        aspect-ratio: 16 / 9;
+        max-height: 445px;
         object-fit: cover;
       }
       .post-summary {
@@ -67,9 +72,6 @@ import { Post } from 'src/domain/post'
         text-overflow: ellipsis;
         border-bottom-left-radius: 4px;
         border-bottom-right-radius: 4px;
-      }
-      .post-card {
-        position: relative;
       }
     `,
   ],

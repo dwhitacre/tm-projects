@@ -40,37 +40,42 @@ import { PanelModule } from 'primeng/panel'
         flex-direction: row;
         gap: 16px;
         color: #ffffff;
+        justify-content: center;
       }
       .column {
         flex: 1;
-        min-width: 200px;
         display: flex;
         flex-direction: column;
         gap: 16px;
+        min-width: 280px;
       }
 
       .teams {
-        flex: 1;
-      }
-      .team-group h3 {
-        margin: 0 0 8px 0;
+        flex-grow: 1;
+        flex-shrink: 1;
+        max-width: 300px;
       }
 
       .posts {
-        flex: 3;
+        flex-grow: 3;
+        flex-shrink: 3;
+        max-width: 900px;
+        min-width: 450px;
       }
 
       .events {
-        flex: 1;
+        flex-grow: 1;
+        flex-shrink: 1;
+        max-width: 325px;
       }
 
-      @media (max-width: 768px) {
-        .container {
-          flex-direction: column;
-        }
-        .column {
-          flex: 1 1 100%;
-        }
+      @media (max-width: 576px) {
+      }
+
+      @media (min-width: 577px) and (max-width: 768px) {
+      }
+
+      @media (min-width: 769px) and (max-width: 992px) {
       }
     `,
   ],

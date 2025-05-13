@@ -26,9 +26,14 @@ import { FeatureToggle, isEnabled } from 'src/domain/feature'
   `,
   styles: [
     `
+      .event-card {
+        position: relative;
+      }
       .event-image {
         width: 100%;
-        height: 176px;
+        height: auto;
+        aspect-ratio: 16 / 9;
+        max-height: 176px;
         object-fit: cover;
         margin: 0 auto;
       }
@@ -66,9 +71,6 @@ import { FeatureToggle, isEnabled } from 'src/domain/feature'
         text-overflow: ellipsis;
         border-bottom-left-radius: 4px;
         border-bottom-right-radius: 4px;
-      }
-      .event-card {
-        position: relative;
       }
 
       .event-footer-label {
