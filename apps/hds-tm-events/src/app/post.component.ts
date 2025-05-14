@@ -17,7 +17,11 @@ import { StoreService } from 'src/services/store.service'
             <player-info [player]="post.author" prefix="By "></player-info>
             <span class="post-date">{{ post.dateModified | date: 'short' : 'UTC' }}</span>
           </div>
-          <div class="post-content">{{ post.content }}</div>
+          <div class="post-content">
+            <ng-container *ngFor="let paragraph of paragraphs">
+              <p>{{ paragraph }}</p>
+            </ng-container>
+          </div>
         </div>
       </div>
       <ng-template #noPost>
@@ -70,6 +74,7 @@ import { StoreService } from 'src/services/store.service'
 })
 export class PostComponent {
   post?: Post
+  paragraphs: string[] = []
 
   constructor(
     private route: ActivatedRoute,
@@ -78,6 +83,7 @@ export class PostComponent {
     const postId = this.route.snapshot.paramMap.get('id')
     this.storeService.posts$.subscribe((posts) => {
       this.post = posts.find((post) => post.id === postId)
+      this.paragraphs = this.post?.content?.split(/\n\s*\n/) || []
     })
   }
 }
