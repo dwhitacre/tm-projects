@@ -39,6 +39,9 @@ import { StoreService } from 'src/services/store.service'
       .post-container {
         padding: 16px;
         color: #ece8e1;
+        max-width: 1200px;
+        margin-left: auto;
+        margin-right: auto;
       }
       .post-image {
         width: 100%;
