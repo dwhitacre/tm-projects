@@ -1,5 +1,5 @@
 import { Component } from '@angular/core'
-import { RouterModule } from '@angular/router'
+import { RouterModule, Router, NavigationEnd } from '@angular/router'
 import { ToastModule } from 'primeng/toast'
 
 @Component({
@@ -14,4 +14,12 @@ import { ToastModule } from 'primeng/toast'
 })
 export class AppComponent {
   title = 'app'
+
+  constructor(router: Router) {
+    router.events.subscribe((event) => {
+      if (event instanceof NavigationEnd) {
+        window.scrollTo(0, 0)
+      }
+    })
+  }
 }

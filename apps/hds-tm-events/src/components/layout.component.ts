@@ -40,10 +40,10 @@ import { StoreService } from 'src/services/store.service'
         min-height: calc(94vh - 36px - 48px);
         flex-direction: column;
         justify-content: space-between;
-        padding-top: 3rem;
+        padding-top: 2rem;
         padding-left: 8%;
         padding-right: 8%;
-        padding-bottom: 3rem;
+        padding-bottom: 2rem;
       }
 
       .layout-main {
