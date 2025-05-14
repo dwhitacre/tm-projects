@@ -34,11 +34,11 @@ import { StoreService } from 'src/services/store.service'
   styles: [
     `
       h1 {
-        margin: 12px 0;
+        margin: 0 0 12px 0;
       }
       .post-container {
         padding: 16px;
-        color: #ffffff;
+        color: #ece8e1;
       }
       .post-image {
         width: 100%;
@@ -49,6 +49,11 @@ import { StoreService } from 'src/services/store.service'
       }
       .post-data {
         font-size: 1.2em;
+        background: rgba(30, 30, 30, 0.72);
+        border-radius: 12px;
+        padding: 16px 28px 16px 28px;
+        box-shadow: 0 4px 24px 0 rgba(0, 0, 0, 0.18);
+        border: 1.5px solid rgba(255, 255, 255, 0.08);
       }
       .post-meta-row {
         display: flex;
