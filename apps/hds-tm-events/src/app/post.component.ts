@@ -37,7 +37,7 @@ import { StoreService } from 'src/services/store.service'
         margin: 0 0 12px 0;
       }
       .post-container {
-        padding: 16px;
+        padding: 0 16px;
         color: #ece8e1;
         max-width: 1200px;
         margin-left: auto;
@@ -49,6 +49,12 @@ import { StoreService } from 'src/services/store.service'
         max-height: 480px;
         object-fit: cover;
         margin-bottom: 16px;
+        border-radius: 14px;
+        box-shadow: 0 4px 24px 0 rgba(0, 0, 0, 0.13);
+        border: 1.5px solid rgba(255, 255, 255, 0.1);
+        transition:
+          box-shadow 0.2s,
+          transform 0.2s;
       }
       .post-data {
         font-size: 1.2em;
