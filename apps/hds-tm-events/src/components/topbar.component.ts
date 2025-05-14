@@ -208,7 +208,11 @@ export interface MenuItemExtended extends MenuItem {
           </ng-template>
         </p-table>
       </div>
-      <div class="layout-dialog-actions">
+      <div class="layout-dialog-actions feature-toggle-footer">
+        <span class="feature-toggle-refresh-hint">
+          <i class="pi pi-exclamation-triangle"></i>
+          <span>Page refresh required for toggles to take effect.</span>
+        </span>
         <p-button label="Close" severity="secondary" (click)="featureTogglesVisible = false" />
       </div>
     </p-dialog>
@@ -349,6 +353,21 @@ export interface MenuItemExtended extends MenuItem {
         :host::ng-deep .layout-topbar-menu-menuitem .layout-topbar-menu-menuitem-discord {
           display: none;
         }
+      }
+
+      .feature-toggle-footer {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 16px;
+      }
+      .feature-toggle-refresh-hint {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        color: var(--primary-color);
+        font-size: 0.98em;
+        font-weight: 500;
       }
     `,
   ],
@@ -517,7 +536,7 @@ export class TopBarComponent implements OnInit, OnChanges, OnDestroy {
     command: () => (this.featureTogglesVisible = true),
     visible: true,
     weeklyOnly: false,
-    adminOnly: true,
+    adminOnly: false,
     styleClass: 'layout-topbar-menu-menuitem-featuretoggles',
   }
   weeklyLeagueItem: MenuItemExtended = {
