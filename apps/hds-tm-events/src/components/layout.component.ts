@@ -24,7 +24,7 @@ import { StoreService } from 'src/services/store.service'
       }
 
       :host::ng-deep .p-message:first-child {
-        margin-top: 36px;
+        margin-top: 16px;
       }
 
       .layout-wrapper {
@@ -32,7 +32,7 @@ import { StoreService } from 'src/services/store.service'
         margin-left: 0;
         padding-left: 2rem;
         padding-right: 2rem;
-        padding-top: 3rem;
+        padding-top: 64px;
       }
 
       .layout-main-container {
