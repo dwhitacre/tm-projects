@@ -7,7 +7,7 @@ import { FeatureToggle, isEnabled } from 'src/domain/feature'
   standalone: false,
   template: `
     <div class="event-card" (mouseover)="showUrl = true" (mouseleave)="showUrl = false">
-      <p-panel [header]="event.name" [styleClass]="'clickable-panel'">
+      <p-panel [header]="event.name" [styleClass]="'clickable-panel'" (click)="openExternalUrl(event.externalUrl)">
         <img [src]="event.image" alt="{{ event.name }}" class="event-image" />
         <players-list [players]="event.players"></players-list>
         <div class="event-footer">
