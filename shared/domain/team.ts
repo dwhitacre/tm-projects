@@ -1,4 +1,11 @@
 import type { ApiResponse } from "./apiresponse";
+import type { IPlayer } from "./player";
+import type { TeamRole } from "./teamrole";
+
+export interface TeamPlayer extends IPlayer {
+  teamRoleId: number;
+  teamRole?: TeamRole;
+}
 
 export interface Team {
   teamId: number;
@@ -9,6 +16,7 @@ export interface Team {
   dateCreated?: Date;
   dateModified?: Date;
   organizationId: number;
+  players: TeamPlayer[];
 }
 
 export interface TeamResponse extends ApiResponse {

@@ -1,5 +1,6 @@
-import Json, { type JsonObject } from "./json";
+import Json, { type JsonArray, type JsonObject } from "./json";
 import type { Organization } from "./organization";
+import { TeamPlayer } from "./teamplayer";
 
 export class Team {
   teamId: number = 0;
@@ -10,6 +11,7 @@ export class Team {
   dateCreated?: Date;
   dateModified?: Date;
   organizationId: Organization["organizationId"];
+  players: TeamPlayer[] = [];
 
   constructor(organizationId: Organization["organizationId"]) {
     this.organizationId = organizationId;
@@ -35,6 +37,20 @@ export class Team {
     return team;
   }
 
+  hydrateTeamPlayers(json: JsonArray) {
+    json = Json.lowercaseKeys(json);
+
+    if (json.length === 0) return this;
+    if (!json[0]?.player_accountid) return this;
+
+    this.players = json.map((ja) => {
+      return TeamPlayer.fromJson(
+        Json.onlyPrefixedKeys(ja, "player")
+      ).hydrateTeamRole(Json.onlyPrefixedKeys(ja, "teamrole"));
+    });
+    return this;
+  }
+
   toJson(): JsonObject {
     return {
       teamId: this.teamId,
@@ -45,6 +61,7 @@ export class Team {
       dateCreated: this.dateCreated,
       dateModified: this.dateModified,
       organizationId: this.organizationId,
+      players: this.players.map((player) => player.toJson()),
     };
   }
 

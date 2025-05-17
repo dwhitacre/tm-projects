@@ -81,10 +81,10 @@ export class PlayerService extends Service {
 
   async addPlayerOverrides(
     accountId: IPlayer["accountId"],
-    name: IPlayer["name"],
-    image: IPlayer["image"],
-    twitch: IPlayer["twitch"],
-    discord: IPlayer["discord"]
+    name: IPlayer["name"] = "",
+    image: IPlayer["image"] = "",
+    twitch: IPlayer["twitch"] = "",
+    discord: IPlayer["discord"] = ""
   ) {
     return this.playerOverridesRepository.insert(
       accountId,

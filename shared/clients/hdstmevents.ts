@@ -10,7 +10,7 @@ import type { RuleResponse, Rule, RuleCategory } from "../domain/rule";
 import type { Event, EventResponse } from "../domain/event";
 import type { Post, PostResponse } from "../domain/post";
 import type { Tag, TagResponse } from "../domain/tag";
-import type { Team, TeamResponse } from "../domain/team";
+import type { Team, TeamPlayer, TeamResponse } from "../domain/team";
 import type { TeamRole, TeamRoleResponse } from "../domain/teamrole";
 import type {
   Organization,
@@ -280,6 +280,18 @@ export class HdstmEventsClient extends Client {
 
   deleteTeam(teamId: Team["teamId"], organizationId: Team["organizationId"]) {
     return this.httpDelete(`/api/team`, { teamId, organizationId });
+  }
+
+  createTeamPlayer(teamId: Team["teamId"], teamPlayer: Partial<TeamPlayer>) {
+    return this.httpPut(`/api/team/${teamId}/player`, teamPlayer);
+  }
+
+  updateTeamPlayer(teamId: Team["teamId"], teamPlayer: Partial<TeamPlayer>) {
+    return this.httpPost(`/api/team/${teamId}/player`, teamPlayer);
+  }
+
+  deleteTeamPlayer(teamId: Team["teamId"], accountId: TeamPlayer["accountId"]) {
+    return this.httpDelete(`/api/team/${teamId}/player`, { accountId });
   }
 
   getTags(organizationId: Tag["organizationId"]) {
