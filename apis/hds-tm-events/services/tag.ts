@@ -29,26 +29,17 @@ export class TagService {
     return result.map(Tag.fromJson);
   }
 
-  async get(
-    tagId: Tag["tagId"],
-    organizationId: Tag["organizationId"]
-  ): Promise<Tag | undefined> {
+  async exists(tagId: Tag["tagId"]) {
     const row = await this.db.selectOne(
       `
         select
-          Tag.TagId,
-          Tag.Name,
-          Tag.SortOrder,
-          Tag.IsVisible,
-          Tag.DateCreated,
-          Tag.DateModified,
-          Tag.OrganizationId
+          Tag.TagId
         from Tag
-        where Tag.TagId = $1 and Tag.OrganizationId
+        where Tag.TagId = $1
       `,
-      [tagId, organizationId]
+      [tagId]
     );
-    return row ? Tag.fromJson(row) : undefined;
+    return row !== undefined;
   }
 
   insert(tag: Tag) {

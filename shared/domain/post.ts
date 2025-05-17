@@ -1,4 +1,5 @@
 import type { ApiResponse } from "./apiresponse";
+import type { Tag } from "./tag";
 
 export interface Post {
   postId: number;
@@ -12,6 +13,7 @@ export interface Post {
   dateCreated?: Date;
   dateModified?: Date;
   organizationId: number;
+  tags: Tag[];
 }
 
 export interface PostResponse extends ApiResponse {

@@ -1,7 +1,7 @@
-import Json, { type JsonObject } from "./json";
+import Json, { type JsonArray, type JsonObject } from "./json";
 import type { Organization } from "./organization";
 import { Player } from "./player";
-import type { Tag } from "./tag";
+import { Tag } from "./tag";
 
 export class Post {
   postId: number = 0;
@@ -53,6 +53,18 @@ export class Post {
     json = Json.lowercaseKeys(json);
     json = Json.merge(json, Json.onlyPrefixedKeys(json, "player"));
     this.author = Player.fromJson(json);
+    return this;
+  }
+
+  hydrateTags(json: JsonArray) {
+    json = Json.lowercaseKeys(json);
+
+    if (json.length === 0) return this;
+    if (!json[0]?.tag_tagid) return this;
+
+    this.tags = json.map((ja) => {
+      return Tag.fromJson(Json.onlyPrefixedKeys(ja, "tag"));
+    });
     return this;
   }
 

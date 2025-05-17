@@ -328,6 +328,18 @@ export class HdstmEventsClient extends Client {
     return this.httpDelete(`/api/post`, { postId, organizationId });
   }
 
+  createPostTag(postId: Post["postId"], tagId: Tag["tagId"]) {
+    return this.httpPut(`/api/post/${postId}/tag/${tagId}`, {});
+  }
+
+  updatePostTag(postId: Post["postId"], tagId: Tag["tagId"]) {
+    return this.httpPost(`/api/post/${postId}/tag/${tagId}`, {});
+  }
+
+  deletePostTag(postId: Post["postId"], tagId: Tag["tagId"]) {
+    return this.httpDelete(`/api/post/${postId}/tag/${tagId}`, {});
+  }
+
   getEvents(organizationId: Event["organizationId"]) {
     return this.httpGet<EventResponse>(
       `/api/organization/${organizationId}/event`

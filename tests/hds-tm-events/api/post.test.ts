@@ -3,6 +3,8 @@ import { faker } from "@faker-js/faker";
 import { HdstmEventsClient } from "shared/clients/hdstmevents";
 import type { Post } from "shared/domain/post";
 import type { Organization } from "shared/domain/organization";
+import type { Tag } from "shared/domain/tag";
+import type { JsonAny } from "shared/domain/json";
 
 const client = new HdstmEventsClient({
   baseUrl: "http://localhost:8081",
@@ -34,6 +36,25 @@ async function createTestOrganization(): Promise<Organization> {
 async function createTestPlayer(accountId: string) {
   const resp = await adminClient.createPlayer(accountId);
   expect([200, 201]).toContain(resp.status);
+}
+
+async function createTestTag(
+  organizationId: number,
+  name?: string
+): Promise<Tag> {
+  const tag: Partial<Tag> = {
+    name: name || faker.lorem.word(),
+    organizationId,
+    isVisible: true,
+    sortOrder: 0,
+  };
+  const resp = await adminClient.createTag(tag);
+  expect(resp.status).toBe(201);
+  const getResp = await client.getTags(organizationId);
+  const json = await getResp.json();
+  const created = json.tags.find((t: Tag) => t.name === tag.name);
+  expect(created).toBeDefined();
+  return created!;
 }
 
 describe("/api/post", () => {
@@ -129,7 +150,10 @@ describe("/api/post", () => {
     const json = await getResp.json();
     const created = json.posts.find((p: Post) => p.content === post.content);
     expect(created).toBeDefined();
-    const resp = await adminClient.httpPatch("/api/post", created as any);
+    const resp = await adminClient.httpPatch(
+      "/api/post",
+      created as unknown as JsonAny
+    );
     expect(resp.status).toBe(405);
   });
 
@@ -209,7 +233,7 @@ describe("/api/post", () => {
     const resp = await adminClient.httpPatch("/api/post", {
       postId: created!.postId,
       organizationId: org.organizationId,
-    } as any);
+    });
     expect(resp.status).toBe(405);
   });
 
@@ -327,6 +351,439 @@ describe("/api/post", () => {
       true
     );
     expect(json2.posts.some((p: Post) => p.content === post1.content)).toBe(
+      false
+    );
+  });
+});
+
+describe("/api/post/{postId}/tag/{tagId}", () => {
+  test("create post tag not admin", async () => {
+    const org = await createTestOrganization();
+    const accountId = faker.string.uuid();
+    await createTestPlayer(accountId);
+    const post: Partial<Post> = {
+      accountId,
+      organizationId: org.organizationId,
+      content: faker.lorem.sentence(),
+    };
+    const postResp = await adminClient.createPost(post);
+    expect(postResp.status).toBe(201);
+    const getResp = await client.getPosts(org.organizationId);
+    const json = await getResp.json();
+    const createdPost = json.posts.find(
+      (p: Post) => p.content === post.content
+    );
+    expect(createdPost).toBeDefined();
+    const tag = await createTestTag(org.organizationId);
+    const response = await client.createPostTag(createdPost!.postId, tag.tagId);
+    expect(response.status).toBe(403);
+  });
+
+  test("create post tag bad method", async () => {
+    const org = await createTestOrganization();
+    const accountId = faker.string.uuid();
+    await createTestPlayer(accountId);
+    const post: Partial<Post> = {
+      accountId,
+      organizationId: org.organizationId,
+      content: faker.lorem.sentence(),
+    };
+    const postResp = await adminClient.createPost(post);
+    expect(postResp.status).toBe(201);
+    const getResp = await client.getPosts(org.organizationId);
+    const json = await getResp.json();
+    const createdPost = json.posts.find(
+      (p: Post) => p.content === post.content
+    );
+    expect(createdPost).toBeDefined();
+    const tag = await createTestTag(org.organizationId);
+    const response = await adminClient.httpPatch(
+      `/api/post/${createdPost!.postId}/tag/${tag.tagId}`,
+      {}
+    );
+    expect(response.status).toBe(405);
+  });
+
+  test("create post tag bad postId or tagId", async () => {
+    const org = await createTestOrganization();
+    const tag = await createTestTag(org.organizationId);
+    const createResp = await adminClient.createPostTag(99999999, tag.tagId);
+    expect(createResp.status).toBe(400);
+    const accountId = faker.string.uuid();
+    await createTestPlayer(accountId);
+    const post: Partial<Post> = {
+      accountId,
+      organizationId: org.organizationId,
+      content: faker.lorem.sentence(),
+    };
+    const postResp = await adminClient.createPost(post);
+    expect(postResp.status).toBe(201);
+    const getResp = await client.getPosts(org.organizationId);
+    const json = await getResp.json();
+    const createdPost = json.posts.find(
+      (p: Post) => p.content === post.content
+    );
+    expect(createdPost).toBeDefined();
+    const badTagResp = await adminClient.createPostTag(
+      createdPost!.postId,
+      99999999
+    );
+    expect(badTagResp.status).toBe(400);
+  });
+
+  test("create post tag with non-numeric postId or tagId returns 400", async () => {
+    const org = await createTestOrganization();
+    const tag = await createTestTag(org.organizationId);
+    const resp1 = await adminClient.createPostTag(
+      "notanumber" as unknown as Post["postId"],
+      tag.tagId
+    );
+    expect(resp1.status).toBe(400);
+    const accountId = faker.string.uuid();
+    await createTestPlayer(accountId);
+    const post: Partial<Post> = {
+      accountId,
+      organizationId: org.organizationId,
+      content: faker.lorem.sentence(),
+    };
+    const postResp = await adminClient.createPost(post);
+    expect(postResp.status).toBe(201);
+    const getResp = await client.getPosts(org.organizationId);
+    const json = await getResp.json();
+    const createdPost = json.posts.find(
+      (p: Post) => p.content === post.content
+    );
+    expect(createdPost).toBeDefined();
+    const resp2 = await adminClient.createPostTag(
+      createdPost!.postId,
+      "notanumber" as unknown as Tag["tagId"]
+    );
+    expect(resp2.status).toBe(400);
+  });
+
+  test("create post tag", async () => {
+    const org = await createTestOrganization();
+    const accountId = faker.string.uuid();
+    await createTestPlayer(accountId);
+    const post: Partial<Post> = {
+      accountId,
+      organizationId: org.organizationId,
+      content: faker.lorem.sentence(),
+    };
+    const postResp = await adminClient.createPost(post);
+    expect(postResp.status).toBe(201);
+    const getResp = await client.getPosts(org.organizationId);
+    const json = await getResp.json();
+    const createdPost = json.posts.find(
+      (p: Post) => p.content === post.content
+    );
+    expect(createdPost).toBeDefined();
+    const tag = await createTestTag(org.organizationId);
+    const createResp = await adminClient.createPostTag(
+      createdPost!.postId,
+      tag.tagId
+    );
+    expect(createResp.status).toBe(201);
+    const getPostResp2 = await client.getPosts(org.organizationId);
+    const getPostJson2 = await getPostResp2.json();
+    const postWithTag = getPostJson2.posts.find(
+      (p: Post) => p.postId === createdPost!.postId
+    );
+    expect(postWithTag).toBeDefined();
+    expect(postWithTag!.tags).toBeDefined();
+    expect(postWithTag!.tags!.some((t: Tag) => t.tagId === tag.tagId)).toBe(
+      true
+    );
+  });
+
+  test("update post tag not admin", async () => {
+    const org = await createTestOrganization();
+    const accountId = faker.string.uuid();
+    await createTestPlayer(accountId);
+    const post: Partial<Post> = {
+      accountId,
+      organizationId: org.organizationId,
+      content: faker.lorem.sentence(),
+    };
+    const postResp = await adminClient.createPost(post);
+    expect(postResp.status).toBe(201);
+    const getResp = await client.getPosts(org.organizationId);
+    const json = await getResp.json();
+    const createdPost = json.posts.find(
+      (p: Post) => p.content === post.content
+    );
+    expect(createdPost).toBeDefined();
+    const tag = await createTestTag(org.organizationId);
+    await adminClient.createPostTag(createdPost!.postId, tag.tagId);
+    const response = await client.updatePostTag(createdPost!.postId, tag.tagId);
+    expect(response.status).toBe(403);
+  });
+
+  test("update post tag bad method", async () => {
+    const org = await createTestOrganization();
+    const accountId = faker.string.uuid();
+    await createTestPlayer(accountId);
+    const post: Partial<Post> = {
+      accountId,
+      organizationId: org.organizationId,
+      content: faker.lorem.sentence(),
+    };
+    const postResp = await adminClient.createPost(post);
+    expect(postResp.status).toBe(201);
+    const getResp = await client.getPosts(org.organizationId);
+    const json = await getResp.json();
+    const createdPost = json.posts.find(
+      (p: Post) => p.content === post.content
+    );
+    expect(createdPost).toBeDefined();
+    const tag = await createTestTag(org.organizationId);
+    await adminClient.createPostTag(createdPost!.postId, tag.tagId);
+    const response = await adminClient.httpPatch(
+      `/api/post/${createdPost!.postId}/tag/${tag.tagId}`,
+      {}
+    );
+    expect(response.status).toBe(405);
+  });
+
+  test("update post tag bad postId or tagId", async () => {
+    const org = await createTestOrganization();
+    const tag = await createTestTag(org.organizationId);
+    const updateResp = await adminClient.updatePostTag(99999999, tag.tagId);
+    expect(updateResp.status).toBe(400);
+    const accountId = faker.string.uuid();
+    await createTestPlayer(accountId);
+    const post: Partial<Post> = {
+      accountId,
+      organizationId: org.organizationId,
+      content: faker.lorem.sentence(),
+    };
+    const postResp = await adminClient.createPost(post);
+    expect(postResp.status).toBe(201);
+    const getResp = await client.getPosts(org.organizationId);
+    const json = await getResp.json();
+    const createdPost = json.posts.find(
+      (p: Post) => p.content === post.content
+    );
+    expect(createdPost).toBeDefined();
+    await adminClient.createPostTag(createdPost!.postId, tag.tagId);
+    const badTagResp = await adminClient.updatePostTag(
+      createdPost!.postId,
+      99999999
+    );
+    expect(badTagResp.status).toBe(400);
+  });
+
+  test("update post tag with non-numeric postId or tagId returns 400", async () => {
+    const org = await createTestOrganization();
+    const tag = await createTestTag(org.organizationId);
+    const resp1 = await adminClient.updatePostTag(
+      "notanumber" as unknown as Post["postId"],
+      tag.tagId
+    );
+    expect(resp1.status).toBe(400);
+    const accountId = faker.string.uuid();
+    await createTestPlayer(accountId);
+    const post: Partial<Post> = {
+      accountId,
+      organizationId: org.organizationId,
+      content: faker.lorem.sentence(),
+    };
+    const postResp = await adminClient.createPost(post);
+    expect(postResp.status).toBe(201);
+    const getResp = await client.getPosts(org.organizationId);
+    const json = await getResp.json();
+    const createdPost = json.posts.find(
+      (p: Post) => p.content === post.content
+    );
+    expect(createdPost).toBeDefined();
+    await adminClient.createPostTag(createdPost!.postId, tag.tagId);
+    const resp2 = await adminClient.updatePostTag(
+      createdPost!.postId,
+      "notanumber" as unknown as Tag["tagId"]
+    );
+    expect(resp2.status).toBe(400);
+  });
+
+  test("update post tag", async () => {
+    const org = await createTestOrganization();
+    const accountId = faker.string.uuid();
+    await createTestPlayer(accountId);
+    const post: Partial<Post> = {
+      accountId,
+      organizationId: org.organizationId,
+      content: faker.lorem.sentence(),
+    };
+    const postResp = await adminClient.createPost(post);
+    expect(postResp.status).toBe(201);
+    const getResp = await client.getPosts(org.organizationId);
+    const json = await getResp.json();
+    const createdPost = json.posts.find(
+      (p: Post) => p.content === post.content
+    );
+    expect(createdPost).toBeDefined();
+    const tag = await createTestTag(org.organizationId);
+    await adminClient.createPostTag(createdPost!.postId, tag.tagId);
+    const updateResp = await adminClient.updatePostTag(
+      createdPost!.postId,
+      tag.tagId
+    );
+    expect(updateResp.status).toBe(200);
+    // Confirm tag is still attached
+    const getPostResp2 = await client.getPosts(org.organizationId);
+    const getPostJson2 = await getPostResp2.json();
+    const postWithTag = getPostJson2.posts.find(
+      (p: Post) => p.postId === createdPost!.postId
+    );
+    expect(postWithTag).toBeDefined();
+    expect(postWithTag!.tags).toBeDefined();
+    expect(postWithTag!.tags!.some((t: Tag) => t.tagId === tag.tagId)).toBe(
+      true
+    );
+  });
+
+  test("delete post tag not admin", async () => {
+    const org = await createTestOrganization();
+    const accountId = faker.string.uuid();
+    await createTestPlayer(accountId);
+    const post: Partial<Post> = {
+      accountId,
+      organizationId: org.organizationId,
+      content: faker.lorem.sentence(),
+    };
+    const postResp = await adminClient.createPost(post);
+    expect(postResp.status).toBe(201);
+    const getResp = await client.getPosts(org.organizationId);
+    const json = await getResp.json();
+    const createdPost = json.posts.find(
+      (p: Post) => p.content === post.content
+    );
+    expect(createdPost).toBeDefined();
+    const tag = await createTestTag(org.organizationId);
+    await adminClient.createPostTag(createdPost!.postId, tag.tagId);
+    const response = await client.deletePostTag(createdPost!.postId, tag.tagId);
+    expect(response.status).toBe(403);
+  });
+
+  test("delete post tag bad method", async () => {
+    const org = await createTestOrganization();
+    const accountId = faker.string.uuid();
+    await createTestPlayer(accountId);
+    const post: Partial<Post> = {
+      accountId,
+      organizationId: org.organizationId,
+      content: faker.lorem.sentence(),
+    };
+    const postResp = await adminClient.createPost(post);
+    expect(postResp.status).toBe(201);
+    const getResp = await client.getPosts(org.organizationId);
+    const json = await getResp.json();
+    const createdPost = json.posts.find(
+      (p: Post) => p.content === post.content
+    );
+    expect(createdPost).toBeDefined();
+    const tag = await createTestTag(org.organizationId);
+    await adminClient.createPostTag(createdPost!.postId, tag.tagId);
+    const response = await adminClient.httpPatch(
+      `/api/post/${createdPost!.postId}/tag/${tag.tagId}`,
+      {}
+    );
+    expect(response.status).toBe(405);
+  });
+
+  test("delete post tag bad postId or tagId", async () => {
+    const org = await createTestOrganization();
+    const tag = await createTestTag(org.organizationId);
+    // Bad postId
+    const deleteResp = await adminClient.deletePostTag(99999999, tag.tagId);
+    expect(deleteResp.status).toBe(400);
+    // Bad tagId
+    const accountId = faker.string.uuid();
+    await createTestPlayer(accountId);
+    const post: Partial<Post> = {
+      accountId,
+      organizationId: org.organizationId,
+      content: faker.lorem.sentence(),
+    };
+    const postResp = await adminClient.createPost(post);
+    expect(postResp.status).toBe(201);
+    const getResp = await client.getPosts(org.organizationId);
+    const json = await getResp.json();
+    const createdPost = json.posts.find(
+      (p: Post) => p.content === post.content
+    );
+    expect(createdPost).toBeDefined();
+    await adminClient.createPostTag(createdPost!.postId, tag.tagId);
+    const badTagResp = await adminClient.deletePostTag(
+      createdPost!.postId,
+      99999999
+    );
+    expect(badTagResp.status).toBe(400);
+  });
+
+  test("delete post tag with non-numeric postId or tagId returns 400", async () => {
+    const org = await createTestOrganization();
+    const tag = await createTestTag(org.organizationId);
+    const resp1 = await adminClient.deletePostTag(
+      "notanumber" as unknown as Post["postId"],
+      tag.tagId
+    );
+    expect(resp1.status).toBe(400);
+    const accountId = faker.string.uuid();
+    await createTestPlayer(accountId);
+    const post: Partial<Post> = {
+      accountId,
+      organizationId: org.organizationId,
+      content: faker.lorem.sentence(),
+    };
+    const postResp = await adminClient.createPost(post);
+    expect(postResp.status).toBe(201);
+    const getResp = await client.getPosts(org.organizationId);
+    const json = await getResp.json();
+    const createdPost = json.posts.find(
+      (p: Post) => p.content === post.content
+    );
+    expect(createdPost).toBeDefined();
+    await adminClient.createPostTag(createdPost!.postId, tag.tagId);
+    const resp2 = await adminClient.deletePostTag(
+      createdPost!.postId,
+      "notanumber" as unknown as Tag["tagId"]
+    );
+    expect(resp2.status).toBe(400);
+  });
+
+  test("delete post tag", async () => {
+    const org = await createTestOrganization();
+    const accountId = faker.string.uuid();
+    await createTestPlayer(accountId);
+    const post: Partial<Post> = {
+      accountId,
+      organizationId: org.organizationId,
+      content: faker.lorem.sentence(),
+    };
+    const postResp = await adminClient.createPost(post);
+    expect(postResp.status).toBe(201);
+    const getResp = await client.getPosts(org.organizationId);
+    const json = await getResp.json();
+    const createdPost = json.posts.find(
+      (p: Post) => p.content === post.content
+    );
+    expect(createdPost).toBeDefined();
+    const tag = await createTestTag(org.organizationId);
+    await adminClient.createPostTag(createdPost!.postId, tag.tagId);
+    const deleteResp = await adminClient.deletePostTag(
+      createdPost!.postId,
+      tag.tagId
+    );
+    expect(deleteResp.status).toBe(200);
+    // Confirm tag is removed
+    const getPostResp2 = await client.getPosts(org.organizationId);
+    const getPostJson2 = await getPostResp2.json();
+    const postAfterDelete = getPostJson2.posts.find(
+      (p: Post) => p.postId === createdPost!.postId
+    );
+    expect(postAfterDelete).toBeDefined();
+    expect(postAfterDelete!.tags).toBeDefined();
+    expect(postAfterDelete!.tags!.some((t: Tag) => t.tagId === tag.tagId)).toBe(
       false
     );
   });

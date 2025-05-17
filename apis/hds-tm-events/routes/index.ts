@@ -60,8 +60,11 @@ function getHandle(req: ApiRequest): (req: ApiRequest) => Promise<ApiResponse> {
 
   if (req.checkPath("/api/teamrole")) return teamrole.handle;
   if (req.checkPath("/api/event")) return event.handle;
-  if (req.checkPath("/api/post")) return post.handle;
+
   if (req.checkPath("/api/tag")) return tag.handle;
+
+  if (req.checkPath("/api/post/{postId}/tag/{tagId}")) return post.tagHandle;
+  if (req.checkPath("/api/post")) return post.handle;
 
   if (req.checkPath("/join")) return join.handle;
   if (req.checkPath("/")) return direct.handle;

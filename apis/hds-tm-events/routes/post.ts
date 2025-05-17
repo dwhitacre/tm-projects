@@ -36,6 +36,46 @@ class PostRoute extends Route {
     const posts = await req.services.post.getAll(organizationId);
     return ApiResponse.ok(req, { posts: posts.map((p) => p.toJson()) });
   }
+
+  async tagHandle(req: ApiRequest): Promise<ApiResponse> {
+    if (!req.checkPermission("admin")) return ApiResponse.forbidden(req);
+    if (!req.checkMethod(["put", "post", "delete"]))
+      return ApiResponse.methodNotAllowed(req);
+
+    const postIdParam = req.getPathParam("postId");
+    if (!postIdParam) return ApiResponse.badRequest(req);
+
+    const postId = parseInt(postIdParam);
+    if (isNaN(postId)) return ApiResponse.badRequest(req);
+
+    const exists = await req.services.post.exists(postId);
+    if (!exists) return ApiResponse.badRequest(req);
+
+    const tagIdParam = req.getPathParam("tagId");
+    if (!tagIdParam) return ApiResponse.badRequest(req);
+
+    const tagId = parseInt(tagIdParam);
+    if (isNaN(tagId)) return ApiResponse.badRequest(req);
+
+    const tagExists = await req.services.tag.exists(tagId);
+    if (!tagExists) return ApiResponse.badRequest(req);
+
+    if (req.checkMethod("put")) {
+      await req.services.post.insertTag(postId, tagId);
+      return ApiResponse.created(req);
+    }
+
+    const existsTag = await req.services.post.existsTag(postId, tagId);
+    if (!existsTag) return ApiResponse.badRequest(req);
+
+    if (req.checkMethod("post")) {
+      await req.services.post.updateTag(postId, tagId);
+      return ApiResponse.ok(req);
+    }
+
+    await req.services.post.deleteTag(postId, tagId);
+    return ApiResponse.ok(req);
+  }
 }
 
 export default new PostRoute();
