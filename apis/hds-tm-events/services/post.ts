@@ -28,8 +28,8 @@ export class PostService {
           PlayerOverrides.Name as PlayerOverrides_Name,
           PlayerOverrides.Image as PlayerOverrides_Image,
           PlayerOverrides.Twitch as PlayerOverrides_Twitch,
-          PlayerOverrides.Discord as PlayerOverrides_Discord,
-        from Post p
+          PlayerOverrides.Discord as PlayerOverrides_Discord
+        from Post
         left join Player on Post.accountId = Player.accountId
         left join PlayerOverrides on Player.AccountId = PlayerOverrides.AccountId
         where Post.organizationId = $1
