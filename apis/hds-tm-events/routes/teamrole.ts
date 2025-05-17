@@ -34,7 +34,7 @@ class TeamRoleRoute extends Route {
     if (isNaN(organizationId)) return ApiResponse.badRequest(req);
 
     const roles = await req.services.teamrole.getAll(organizationId);
-    return ApiResponse.ok(req, { roles: roles.map((r) => r.toJson()) });
+    return ApiResponse.ok(req, { teamRoles: roles.map((r) => r.toJson()) });
   }
 }
 

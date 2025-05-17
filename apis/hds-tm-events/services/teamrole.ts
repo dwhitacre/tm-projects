@@ -76,7 +76,7 @@ export class TeamRoleService {
     return this.db.delete(
       `
         delete from TeamRole
-        where TeamRoleId = $1 and OrganizationId = $4
+        where TeamRoleId = $1 and OrganizationId = $2
       `,
       [teamRole.teamRoleId, teamRole.organizationId]
     );

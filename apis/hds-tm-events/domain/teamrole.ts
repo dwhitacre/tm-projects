@@ -20,6 +20,8 @@ export class TeamRole {
 
     const role = new TeamRole(json.organizationid);
 
+    if (json.teamroleid && isNaN(json.teamroleid))
+      throw new Error("Failed to get teamRoleId");
     if (json.teamroleid) role.teamRoleId = json.teamroleid;
     if (json.name) role.name = json.name;
     if (json.sortorder) role.sortOrder = json.sortorder;
