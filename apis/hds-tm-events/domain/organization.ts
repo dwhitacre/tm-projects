@@ -15,6 +15,8 @@ export class Organization {
 
     const org = new Organization();
 
+    if (json.organizationid && isNaN(json.organizationid))
+      throw new Error("Failed to get organizationId");
     if (json.organizationid) org.organizationId = json.organizationid;
     if (json.name) org.name = json.name;
     if (json.description) org.description = json.description;

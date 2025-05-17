@@ -7,6 +7,15 @@ import type { Leaderboard } from "../domain/leaderboard";
 import type { AdminResponse } from "../domain/admin";
 import type { ReadyResponse } from "../domain/ready";
 import type { RuleResponse, Rule, RuleCategory } from "../domain/rule";
+import type { Event, EventResponse } from "../domain/event";
+import type { Post, PostResponse } from "../domain/post";
+import type { Tag, TagResponse } from "../domain/tag";
+import type { Team, TeamResponse } from "../domain/team";
+import type { TeamRole, TeamRoleResponse } from "../domain/teamrole";
+import type {
+  Organization,
+  OrganizationResponse,
+} from "../domain/organization";
 
 export class HdstmEventsClient extends Client {
   constructor(options: Partial<ClientOptions>) {
@@ -216,5 +225,115 @@ export class HdstmEventsClient extends Client {
 
   getRules(leaderboardId: Leaderboard["leaderboardId"]) {
     return this.httpGet<RuleResponse>(`/api/leaderboard/${leaderboardId}/rule`);
+  }
+
+  getOrganizations() {
+    return this.httpGet<OrganizationResponse>(`/api/organization`);
+  }
+
+  createOrganization(organization: Partial<Organization>) {
+    return this.httpPut(`/api/organization`, organization);
+  }
+
+  updateOrganization(organization: Partial<Organization>) {
+    return this.httpPost(`/api/organization`, organization);
+  }
+
+  deleteOrganization(organizationId: Organization["organizationId"]) {
+    return this.httpDelete(`/api/organization`, { organizationId });
+  }
+
+  getTeamRoles(organizationId: TeamRole["organizationId"]) {
+    return this.httpGet<TeamRoleResponse>(
+      `/api/organization/${organizationId}/teamrole`
+    );
+  }
+
+  createTeamRole(role: Partial<TeamRole>) {
+    return this.httpPut(`/api/teamrole`, role);
+  }
+
+  updateTeamRole(role: Partial<TeamRole>) {
+    return this.httpPost(`/api/teamrole`, role);
+  }
+
+  deleteTeamRole(
+    teamRoleId: TeamRole["teamRoleId"],
+    organizationId: TeamRole["organizationId"]
+  ) {
+    return this.httpDelete(`/api/teamrole`, { teamRoleId, organizationId });
+  }
+
+  getTeams(organizationId: Team["organizationId"]) {
+    return this.httpGet<TeamResponse>(
+      `/api/organization/${organizationId}/team`
+    );
+  }
+
+  createTeam(team: Partial<Team>) {
+    return this.httpPut(`/api/team`, team);
+  }
+
+  updateTeam(team: Partial<Team>) {
+    return this.httpPost(`/api/team`, team);
+  }
+
+  deleteTeam(teamId: Team["teamId"], organizationId: Team["organizationId"]) {
+    return this.httpDelete(`/api/team`, { teamId, organizationId });
+  }
+
+  getTags(organizationId: Tag["organizationId"]) {
+    return this.httpGet<TagResponse>(`/api/organization/${organizationId}/tag`);
+  }
+
+  createTag(tag: Partial<Tag>) {
+    return this.httpPut(`/api/tag`, tag);
+  }
+
+  updateTag(tag: Partial<Tag>) {
+    return this.httpPost(`/api/tag`, tag);
+  }
+
+  deleteTag(tagId: Tag["tagId"], organizationId: Tag["organizationId"]) {
+    return this.httpDelete(`/api/tag`, { tagId, organizationId });
+  }
+
+  getPosts(organizationId: Post["organizationId"]) {
+    return this.httpGet<PostResponse>(
+      `/api/organization/${organizationId}/post`
+    );
+  }
+
+  createPost(post: Partial<Post>) {
+    return this.httpPut(`/api/post`, post);
+  }
+
+  updatePost(post: Partial<Post>) {
+    return this.httpPost(`/api/post`, post);
+  }
+
+  deletePost(postId: Post["postId"], organizationId: Post["organizationId"]) {
+    return this.httpDelete(`/api/post`, { postId, organizationId });
+  }
+
+  getEvents(organizationId: Event["organizationId"]) {
+    return this.httpGet<EventResponse>(
+      `/api/organization/${organizationId}/event`
+    );
+  }
+
+  createEvent(event: Partial<Event>) {
+    return this.httpPut(`/api/event`, event);
+  }
+
+  updateEvent(event: Partial<Event>) {
+    return this.httpPost(`/api/event`, event);
+  }
+
+  deleteEvent(
+    eventId: Event["eventId"],
+    organizationId: Event["organizationId"]
+  ) {
+    return this.httpDelete(`/api/event`, { eventId, organizationId });
   }
 }
