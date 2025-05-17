@@ -21,6 +21,7 @@ export class Tag {
 
     const tag = new Tag(json.organizationid);
 
+    if (json.tagid && isNaN(json.tagid)) throw new Error("Failed to get tagId");
     if (json.tagid) tag.tagId = json.tagid;
     if (json.name) tag.name = json.name;
     if (json.sortorder) tag.sortOrder = json.sortorder;
