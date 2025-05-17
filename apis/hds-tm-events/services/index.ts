@@ -7,6 +7,12 @@ import player from "./player";
 import tmio from "./tmio";
 import weekly from "./weekly";
 import rule from "./rule";
+import post from "./post";
+import tag from "./tag";
+import teamrole from "./teamrole";
+import team from "./team";
+import event from "./event";
+import organization from "./organization";
 
 const services = {
   logger,
@@ -18,6 +24,13 @@ const services = {
   weekly: weekly(db),
   leaderboard: leaderboard(db),
   rule: rule(db),
+  post: post(db),
+  tag: tag(db),
+  teamrole: teamrole(db),
+  team: team(db),
+  event: event(db),
+  organization: organization(db),
 };
+
 export type Services = typeof services;
 export default services;

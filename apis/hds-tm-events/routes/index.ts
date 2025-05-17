@@ -11,6 +11,12 @@ import ready from "./ready";
 import Route from "./route";
 import rule from "./rule";
 import weekly from "./weekly";
+import post from "./post";
+import tag from "./tag";
+import teamrole from "./teamrole";
+import team from "./team";
+import event from "./event";
+import organization from "./organization";
 
 function getHandle(req: ApiRequest): (req: ApiRequest) => Promise<ApiResponse> {
   if (req.checkPath(["/ready", "/api/ready"])) return ready.handle;
@@ -36,6 +42,24 @@ function getHandle(req: ApiRequest): (req: ApiRequest) => Promise<ApiResponse> {
 
   if (req.checkPath("/api/rulecategory")) return rule.categoryHandle;
   if (req.checkPath("/api/rule")) return rule.handle;
+
+  if (req.checkPath("/api/organization/{organizationId}/teamrole"))
+    return teamrole.organizationHandle;
+  if (req.checkPath("/api/organization/{organizationId}/team"))
+    return team.organizationHandle;
+  if (req.checkPath("/api/organization/{organizationId}/event"))
+    return event.organizationHandle;
+  if (req.checkPath("/api/organization/{organizationId}/post"))
+    return post.organizationHandle;
+  if (req.checkPath("/api/organization/{organizationId}/tag"))
+    return tag.organizationHandle;
+  if (req.checkPath("/api/organization")) return organization.handle;
+
+  if (req.checkPath("/api/teamrole")) return teamrole.handle;
+  if (req.checkPath("/api/team")) return team.handle;
+  if (req.checkPath("/api/event")) return event.handle;
+  if (req.checkPath("/api/post")) return post.handle;
+  if (req.checkPath("/api/tag")) return tag.handle;
 
   if (req.checkPath("/join")) return join.handle;
   if (req.checkPath("/")) return direct.handle;
