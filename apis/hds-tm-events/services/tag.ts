@@ -20,8 +20,8 @@ export class TagService {
           Tag.DateModified,
           Tag.OrganizationId
         from Tag
-        order by Tag.SortOrder, Tag.Name, Tag.DateModified desc
         where Tag.OrganizationId = $1
+        order by Tag.SortOrder, Tag.Name, Tag.DateModified desc
       `,
       [organizationId]
     );

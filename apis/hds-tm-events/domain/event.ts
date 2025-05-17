@@ -22,10 +22,12 @@ export class Event {
   static fromJson(json: JsonObject): Event {
     json = Json.lowercaseKeys(json);
 
-    if (!json?.organizationId) throw new Error("Failed to get organizationId");
+    if (!json?.organizationid) throw new Error("Failed to get organizationId");
 
     const event = new Event(json.organizationid);
 
+    if (json.eventid && isNaN(json.eventid))
+      throw new Error("Failed to get eventId");
     if (json.eventid) event.eventId = json.eventid;
     if (json.name) event.name = json.name;
     if (json.description) event.description = json.description;

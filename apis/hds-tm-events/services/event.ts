@@ -25,8 +25,8 @@ export class EventService {
           Event.DateModified,
           Event.OrganizationId
         from Event
-        order by Event.SortOrder, Event.DateStart, Event.DateModified desc
         where Event.OrganizationId = $1
+        order by Event.SortOrder, Event.DateStart, Event.DateModified desc
       `,
       [organizationId]
     );
@@ -54,8 +54,7 @@ export class EventService {
           Event.DateModified,
           Event.OrganizationId
         from Event
-        order by Event.SortOrder, Event.DateStart, Event.DateModified desc
-        where Event.OrganizationId = $1 abd Event.EventId = $2
+        where Event.OrganizationId = $1 and Event.EventId = $2
       `,
       [organizationId, eventId]
     );

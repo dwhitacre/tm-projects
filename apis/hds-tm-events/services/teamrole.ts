@@ -21,8 +21,8 @@ export class TeamRoleService {
           TeamRole.DateModified,
           TeamRole.OrganizationId
         from TeamRole
-        order by TeamRole.SortOrder, TeamRole.Name, TeamRole.DateModified desc
         where TeamRole.OrganizationId = $1
+        order by TeamRole.SortOrder, TeamRole.Name, TeamRole.DateModified desc
       `,
       [organizationId]
     );

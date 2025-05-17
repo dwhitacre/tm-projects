@@ -32,8 +32,8 @@ export class PostService {
         from Post p
         left join Player on Post.accountId = Player.accountId
         left join PlayerOverrides on Player.AccountId = PlayerOverrides.AccountId
-        order by Post.sortOrder, Post.dateModified desc
         where Post.organizationId = $1
+        order by Post.sortOrder, Post.dateModified desc
       `,
       [organizationId]
     );
