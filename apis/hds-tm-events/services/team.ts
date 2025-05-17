@@ -57,15 +57,13 @@ export class TeamService {
     return this.db.insert(
       `
         insert into Team (Name, Description, SortOrder, IsVisible, DateCreated, DateModified, OrganizationId)
-        values ($1, $2, $3, $4, $5, $6, $7)
+        values ($1, $2, $3, $4, NOW(), NOW(), $5)
       `,
       [
         team.name,
         team.description,
         team.sortOrder,
         team.isVisible,
-        team.dateCreated,
-        team.dateModified,
         team.organizationId,
       ]
     );
@@ -75,16 +73,14 @@ export class TeamService {
     return this.db.update(
       `
         update Team
-        set Name = $1, Description = $2, SortOrder = $3, IsVisible = $4, DateCreated = $5, DateModified = $6
-        where TeamId = $7 and OrganizationId = $8
+        set Name = $1, Description = $2, SortOrder = $3, IsVisible = $4, DateModified = NOW()
+        where TeamId = $5 and OrganizationId = $6
       `,
       [
         team.name,
         team.description,
         team.sortOrder,
         team.isVisible,
-        team.dateCreated,
-        team.dateModified,
         team.teamId,
         team.organizationId,
       ]

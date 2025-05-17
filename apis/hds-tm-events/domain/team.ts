@@ -22,6 +22,8 @@ export class Team {
 
     const team = new Team(json.organizationid);
 
+    if (json.teamid && isNaN(json.teamid))
+      throw new Error("Failed to get teamId");
     if (json.teamid) team.teamId = json.teamid;
     if (json.name) team.name = json.name;
     if (json.description) team.description = json.description;
