@@ -7,7 +7,7 @@ import type { Leaderboard } from "../domain/leaderboard";
 import type { AdminResponse } from "../domain/admin";
 import type { ReadyResponse } from "../domain/ready";
 import type { RuleResponse, Rule, RuleCategory } from "../domain/rule";
-import type { Event, EventResponse } from "../domain/event";
+import type { Event, EventPlayer, EventResponse } from "../domain/event";
 import type { Post, PostResponse } from "../domain/post";
 import type { Tag, TagResponse } from "../domain/tag";
 import type { Team, TeamPlayer, TeamResponse } from "../domain/team";
@@ -359,5 +359,26 @@ export class HdstmEventsClient extends Client {
     organizationId: Event["organizationId"]
   ) {
     return this.httpDelete(`/api/event`, { eventId, organizationId });
+  }
+
+  createEventPlayer(
+    eventId: Team["teamId"],
+    eventPlayer: Partial<EventPlayer>
+  ) {
+    return this.httpPut(`/api/event/${eventId}/player`, eventPlayer);
+  }
+
+  updateEventPlayer(
+    eventId: Team["teamId"],
+    eventPlayer: Partial<EventPlayer>
+  ) {
+    return this.httpPost(`/api/event/${eventId}/player`, eventPlayer);
+  }
+
+  deleteEventPlayer(
+    eventId: Team["teamId"],
+    accountId: EventPlayer["accountId"]
+  ) {
+    return this.httpDelete(`/api/event/${eventId}/player`, { accountId });
   }
 }

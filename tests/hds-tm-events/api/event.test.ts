@@ -30,6 +30,52 @@ async function createTestOrganization(): Promise<Organization> {
   return created!;
 }
 
+async function createTestTeam(organizationId: number, name?: string) {
+  const team: Partial<any> = {
+    name:
+      name ||
+      "team-" + faker.company.name() + "-" + faker.string.alphanumeric(8),
+    organizationId,
+  };
+  const resp = await adminClient.createTeam(team);
+  expect(resp.status).toBe(201);
+  const getResp = await client.getTeams(organizationId);
+  const json = await getResp.json();
+  const created = json.teams.find((t: any) => t.name === team.name);
+  expect(created).toBeDefined();
+  return created!;
+}
+
+async function createTestTeamRole(organizationId: number) {
+  const role = {
+    name: "role-" + faker.string.alphanumeric(8),
+    sortOrder: 0,
+    organizationId,
+  };
+  const resp = await adminClient.createTeamRole(role);
+  expect(resp.status).toBe(201);
+  const getResp = await client.getTeamRoles(organizationId);
+  const json = await getResp.json();
+  const created = json.teamRoles.find((r: any) => r.name === role.name);
+  expect(created).toBeDefined();
+  return created;
+}
+
+async function createTestPlayer(accountId: string) {
+  const resp = await adminClient.createPlayer(accountId);
+  expect([200, 201]).toContain(resp.status);
+}
+
+async function addPlayerToTeam(
+  teamId: number,
+  accountId: string,
+  teamRoleId: number
+) {
+  const teamPlayer = { accountId, teamRoleId };
+  const resp = await adminClient.createTeamPlayer(teamId, teamPlayer);
+  expect(resp.status).toBe(201);
+}
+
 describe("/api/event", () => {
   test("create event not admin", async () => {
     const org = await createTestOrganization();
@@ -312,5 +358,429 @@ describe("/api/event", () => {
     const json2 = await resp2.json();
     expect(json2.events.some((e: Event) => e.name === event2.name)).toBe(true);
     expect(json2.events.some((e: Event) => e.name === event1.name)).toBe(false);
+  });
+});
+
+describe("/api/event/{eventId}/player", () => {
+  test("create event player not admin", async () => {
+    const org = await createTestOrganization();
+    const teamRole = await createTestTeamRole(org.organizationId);
+    const event: Partial<Event> = {
+      name: faker.lorem.words(2),
+      description: faker.lorem.sentence(),
+      image: faker.image.url(),
+      organizationId: org.organizationId,
+    };
+    const eventResp = await adminClient.createEvent(event);
+    expect(eventResp.status).toBe(201);
+    const getResp = await client.getEvents(org.organizationId);
+    const json = await getResp.json();
+    const createdEvent = json.events.find((e: Event) => e.name === event.name);
+    expect(createdEvent).toBeDefined();
+    const eventPlayer = {
+      accountId: faker.string.uuid(),
+      eventRoleId: teamRole!.teamRoleId,
+    };
+    const resp = await client.createEventPlayer(
+      createdEvent!.eventId,
+      eventPlayer
+    );
+    expect(resp.status).toBe(403);
+  });
+
+  test("create event player bad method", async () => {
+    const org = await createTestOrganization();
+    const teamRole = await createTestTeamRole(org.organizationId);
+    const event: Partial<Event> = {
+      name: faker.lorem.words(2),
+      description: faker.lorem.sentence(),
+      image: faker.image.url(),
+      organizationId: org.organizationId,
+    };
+    const eventResp = await adminClient.createEvent(event);
+    expect(eventResp.status).toBe(201);
+    const getResp = await client.getEvents(org.organizationId);
+    const json = await getResp.json();
+    const createdEvent = json.events.find((e: Event) => e.name === event.name);
+    expect(createdEvent).toBeDefined();
+    const eventPlayer = {
+      accountId: faker.string.uuid(),
+      eventRoleId: teamRole!.teamRoleId,
+    };
+    const resp = await adminClient.httpPatch(
+      `/api/event/${createdEvent!.eventId}/player`,
+      eventPlayer
+    );
+    expect(resp.status).toBe(405);
+  });
+
+  test("create event player bad body", async () => {
+    const org = await createTestOrganization();
+    const event: Partial<Event> = {
+      name: faker.lorem.words(2),
+      description: faker.lorem.sentence(),
+      image: faker.image.url(),
+      organizationId: org.organizationId,
+    };
+    const eventResp = await adminClient.createEvent(event);
+    expect(eventResp.status).toBe(201);
+    const getResp = await client.getEvents(org.organizationId);
+    const json = await getResp.json();
+    const createdEvent = json.events.find((e: Event) => e.name === event.name);
+    expect(createdEvent).toBeDefined();
+    const resp = await adminClient.httpPut(
+      `/api/event/${createdEvent!.eventId}/player`,
+      undefined as any
+    );
+    expect(resp.status).toBe(400);
+  });
+
+  test("create event player bad eventId", async () => {
+    const teamRoleId = 1;
+    const eventPlayer = { accountId: faker.string.uuid(), teamRoleId };
+    const resp = await adminClient.createEventPlayer(99999999, eventPlayer);
+    expect(resp.status).toBe(400);
+  });
+
+  test("create event player with non-numeric eventId returns 400", async () => {
+    const teamRoleId = 1;
+    const eventPlayer = { accountId: faker.string.uuid(), teamRoleId };
+    const resp = await adminClient.createEventPlayer(
+      "notanumber" as any,
+      eventPlayer
+    );
+    expect(resp.status).toBe(400);
+  });
+
+  test("create event player", async () => {
+    const org = await createTestOrganization();
+    const team = await createTestTeam(org.organizationId);
+    const teamRole = await createTestTeamRole(org.organizationId);
+    const accountId = faker.string.uuid();
+    await createTestPlayer(accountId);
+    await addPlayerToTeam(team.teamId, accountId, teamRole!.teamRoleId);
+    const event: Partial<Event> = {
+      name: faker.lorem.words(2),
+      description: faker.lorem.sentence(),
+      image: faker.image.url(),
+      organizationId: org.organizationId,
+    };
+    const eventResp = await adminClient.createEvent(event);
+    expect(eventResp.status).toBe(201);
+    const getResp = await client.getEvents(org.organizationId);
+    const json = await getResp.json();
+    const createdEvent = json.events.find((e: Event) => e.name === event.name);
+    expect(createdEvent).toBeDefined();
+    const eventPlayer = { accountId, eventRoleId: teamRole!.teamRoleId };
+    const resp = await adminClient.createEventPlayer(
+      createdEvent!.eventId,
+      eventPlayer
+    );
+    expect(resp.status).toBe(201);
+    // Verify player is attached to event
+    const getResp2 = await client.getEvents(org.organizationId);
+    const json2 = await getResp2.json();
+    const eventWithPlayer = json2.events.find(
+      (e: Event) => e.eventId === createdEvent!.eventId
+    );
+    expect(eventWithPlayer).toBeDefined();
+    const players = (eventWithPlayer as any).players;
+    expect(Array.isArray(players)).toBe(true);
+    expect(players.some((p: any) => p.accountId === accountId)).toBe(true);
+  });
+
+  test("update event player", async () => {
+    const org = await createTestOrganization();
+    const team = await createTestTeam(org.organizationId);
+    const teamRole = await createTestTeamRole(org.organizationId);
+    const accountId = faker.string.uuid();
+    await createTestPlayer(accountId);
+    await addPlayerToTeam(team.teamId, accountId, teamRole!.teamRoleId);
+    const event: Partial<Event> = {
+      name: faker.lorem.words(2),
+      description: faker.lorem.sentence(),
+      image: faker.image.url(),
+      organizationId: org.organizationId,
+    };
+    const eventResp = await adminClient.createEvent(event);
+    expect(eventResp.status).toBe(201);
+    const getResp = await client.getEvents(org.organizationId);
+    const json = await getResp.json();
+    const createdEvent = json.events.find((e: Event) => e.name === event.name);
+    expect(createdEvent).toBeDefined();
+    const eventPlayer = { accountId, eventRoleId: teamRole!.teamRoleId };
+    await adminClient.createEventPlayer(createdEvent!.eventId, eventPlayer);
+    const resp = await adminClient.updateEventPlayer(
+      createdEvent!.eventId,
+      eventPlayer
+    );
+    expect(resp.status).toBe(200);
+    // Verify player is still attached to event
+    const getResp2 = await client.getEvents(org.organizationId);
+    const json2 = await getResp2.json();
+    const eventWithPlayer = json2.events.find(
+      (e: Event) => e.eventId === createdEvent!.eventId
+    );
+    expect(eventWithPlayer).toBeDefined();
+    const players = (eventWithPlayer as any).players;
+    expect(Array.isArray(players)).toBe(true);
+    expect(players.some((p: any) => p.accountId === accountId)).toBe(true);
+  });
+
+  test("update event player not admin", async () => {
+    const org = await createTestOrganization();
+    const team = await createTestTeam(org.organizationId);
+    const teamRole = await createTestTeamRole(org.organizationId);
+    const accountId = faker.string.uuid();
+    await createTestPlayer(accountId);
+    await addPlayerToTeam(team.teamId, accountId, teamRole!.teamRoleId);
+    const event: Partial<Event> = {
+      name: faker.lorem.words(2),
+      description: faker.lorem.sentence(),
+      image: faker.image.url(),
+      organizationId: org.organizationId,
+    };
+    const eventResp = await adminClient.createEvent(event);
+    expect(eventResp.status).toBe(201);
+    const getResp = await client.getEvents(org.organizationId);
+    const json = await getResp.json();
+    const createdEvent = json.events.find((e: Event) => e.name === event.name);
+    expect(createdEvent).toBeDefined();
+    const eventPlayer = { accountId, eventRoleId: teamRole!.teamRoleId };
+    await adminClient.createEventPlayer(createdEvent!.eventId, eventPlayer);
+    const resp = await client.updateEventPlayer(
+      createdEvent!.eventId,
+      eventPlayer
+    );
+    expect(resp.status).toBe(403);
+  });
+
+  test("update event player bad method", async () => {
+    const org = await createTestOrganization();
+    const team = await createTestTeam(org.organizationId);
+    const teamRole = await createTestTeamRole(org.organizationId);
+    const accountId = faker.string.uuid();
+    await createTestPlayer(accountId);
+    await addPlayerToTeam(team.teamId, accountId, teamRole!.teamRoleId);
+    const event: Partial<Event> = {
+      name: faker.lorem.words(2),
+      description: faker.lorem.sentence(),
+      image: faker.image.url(),
+      organizationId: org.organizationId,
+    };
+    const eventResp = await adminClient.createEvent(event);
+    expect(eventResp.status).toBe(201);
+    const getResp = await client.getEvents(org.organizationId);
+    const json = await getResp.json();
+    const createdEvent = json.events.find((e: Event) => e.name === event.name);
+    expect(createdEvent).toBeDefined();
+    const eventPlayer = { accountId, eventRoleId: teamRole!.teamRoleId };
+    await adminClient.createEventPlayer(createdEvent!.eventId, eventPlayer);
+    const resp = await adminClient.httpPatch(
+      `/api/event/${createdEvent!.eventId}/player`,
+      eventPlayer
+    );
+    expect(resp.status).toBe(405);
+  });
+
+  test("update event player bad body", async () => {
+    const org = await createTestOrganization();
+    const team = await createTestTeam(org.organizationId);
+    const teamRole = await createTestTeamRole(org.organizationId);
+    const accountId = faker.string.uuid();
+    await createTestPlayer(accountId);
+    await addPlayerToTeam(team.teamId, accountId, teamRole!.teamRoleId);
+    const event: Partial<Event> = {
+      name: faker.lorem.words(2),
+      description: faker.lorem.sentence(),
+      image: faker.image.url(),
+      organizationId: org.organizationId,
+    };
+    const eventResp = await adminClient.createEvent(event);
+    expect(eventResp.status).toBe(201);
+    const getResp = await client.getEvents(org.organizationId);
+    const json = await getResp.json();
+    const createdEvent = json.events.find((e: Event) => e.name === event.name);
+    expect(createdEvent).toBeDefined();
+    const eventPlayer = { accountId, eventRoleId: teamRole!.teamRoleId };
+    await adminClient.createEventPlayer(createdEvent!.eventId, eventPlayer);
+    const resp = await adminClient.httpPost(
+      `/api/event/${createdEvent!.eventId}/player`,
+      undefined as any
+    );
+    expect(resp.status).toBe(400);
+  });
+
+  test("update event player bad eventId", async () => {
+    const teamRoleId = 1;
+    const eventPlayer = { accountId: faker.string.uuid(), teamRoleId };
+    const resp = await adminClient.updateEventPlayer(99999999, eventPlayer);
+    expect(resp.status).toBe(400);
+  });
+
+  test("update event player with non-numeric eventId returns 400", async () => {
+    const teamRoleId = 1;
+    const eventPlayer = { accountId: faker.string.uuid(), teamRoleId };
+    const resp = await adminClient.updateEventPlayer(
+      "notanumber" as any,
+      eventPlayer
+    );
+    expect(resp.status).toBe(400);
+  });
+
+  test("update event player bad eventPlayer (not exists)", async () => {
+    const org = await createTestOrganization();
+    const team = await createTestTeam(org.organizationId);
+    const teamRole = await createTestTeamRole(org.organizationId);
+    const accountId = faker.string.uuid();
+    await createTestPlayer(accountId);
+    await addPlayerToTeam(team.teamId, accountId, teamRole!.teamRoleId);
+    const event: Partial<Event> = {
+      name: faker.lorem.words(2),
+      description: faker.lorem.sentence(),
+      image: faker.image.url(),
+      organizationId: org.organizationId,
+    };
+    const eventResp = await adminClient.createEvent(event);
+    expect(eventResp.status).toBe(201);
+    const getResp = await client.getEvents(org.organizationId);
+    const json = await getResp.json();
+    const createdEvent = json.events.find((e: Event) => e.name === event.name);
+    expect(createdEvent).toBeDefined();
+    const eventPlayer = { accountId };
+    // Not created first
+    const resp = await adminClient.updateEventPlayer(
+      createdEvent!.eventId,
+      eventPlayer
+    );
+    expect(resp.status).toBe(400);
+  });
+
+  test("delete event player not admin", async () => {
+    const org = await createTestOrganization();
+    const team = await createTestTeam(org.organizationId);
+    const teamRole = await createTestTeamRole(org.organizationId);
+    const accountId = faker.string.uuid();
+    await createTestPlayer(accountId);
+    await addPlayerToTeam(team.teamId, accountId, teamRole!.teamRoleId);
+    const event: Partial<Event> = {
+      name: faker.lorem.words(2),
+      description: faker.lorem.sentence(),
+      image: faker.image.url(),
+      organizationId: org.organizationId,
+    };
+    const eventResp = await adminClient.createEvent(event);
+    expect(eventResp.status).toBe(201);
+    const getResp = await client.getEvents(org.organizationId);
+    const json = await getResp.json();
+    const createdEvent = json.events.find((e: Event) => e.name === event.name);
+    expect(createdEvent).toBeDefined();
+    const eventPlayer = { accountId };
+    await adminClient.createEventPlayer(createdEvent!.eventId, eventPlayer);
+    const resp = await client.deleteEventPlayer(
+      createdEvent!.eventId,
+      accountId
+    );
+    expect(resp.status).toBe(403);
+  });
+
+  test("delete event player bad method", async () => {
+    const org = await createTestOrganization();
+    const team = await createTestTeam(org.organizationId);
+    const teamRole = await createTestTeamRole(org.organizationId);
+    const accountId = faker.string.uuid();
+    await createTestPlayer(accountId);
+    await addPlayerToTeam(team.teamId, accountId, teamRole!.teamRoleId);
+    const event: Partial<Event> = {
+      name: faker.lorem.words(2),
+      description: faker.lorem.sentence(),
+      image: faker.image.url(),
+      organizationId: org.organizationId,
+    };
+    const eventResp = await adminClient.createEvent(event);
+    expect(eventResp.status).toBe(201);
+    const getResp = await client.getEvents(org.organizationId);
+    const json = await getResp.json();
+    const createdEvent = json.events.find((e: Event) => e.name === event.name);
+    expect(createdEvent).toBeDefined();
+    const eventPlayer = { accountId };
+    await adminClient.createEventPlayer(createdEvent!.eventId, eventPlayer);
+    const resp = await adminClient.httpPatch(
+      `/api/event/${createdEvent!.eventId}/player`,
+      { accountId }
+    );
+    expect(resp.status).toBe(405);
+  });
+
+  test("delete event player bad body", async () => {
+    const org = await createTestOrganization();
+    const team = await createTestTeam(org.organizationId);
+    const teamRole = await createTestTeamRole(org.organizationId);
+    const accountId = faker.string.uuid();
+    await createTestPlayer(accountId);
+    await addPlayerToTeam(team.teamId, accountId, teamRole!.teamRoleId);
+    const event: Partial<Event> = {
+      name: faker.lorem.words(2),
+      description: faker.lorem.sentence(),
+      image: faker.image.url(),
+      organizationId: org.organizationId,
+    };
+    const eventResp = await adminClient.createEvent(event);
+    expect(eventResp.status).toBe(201);
+    const getResp = await client.getEvents(org.organizationId);
+    const json = await getResp.json();
+    const createdEvent = json.events.find((e: Event) => e.name === event.name);
+    expect(createdEvent).toBeDefined();
+    await adminClient.createEventPlayer(createdEvent!.eventId, { accountId });
+    const resp = await adminClient.httpDelete(
+      `/api/event/${createdEvent!.eventId}/player`,
+      {}
+    );
+    expect(resp.status).toBe(400);
+  });
+
+  test("delete event player bad eventId", async () => {
+    const eventPlayer = { accountId: faker.string.uuid() };
+    const resp = await adminClient.deleteEventPlayer(
+      99999999,
+      eventPlayer.accountId
+    );
+    expect(resp.status).toBe(400);
+  });
+
+  test("delete event player with non-numeric eventId returns 400", async () => {
+    const eventPlayer = { accountId: faker.string.uuid() };
+    const resp = await adminClient.deleteEventPlayer(
+      "notanumber" as any,
+      eventPlayer.accountId
+    );
+    expect(resp.status).toBe(400);
+  });
+
+  test("delete event player bad eventPlayer (not exists)", async () => {
+    const org = await createTestOrganization();
+    const team = await createTestTeam(org.organizationId);
+    const teamRole = await createTestTeamRole(org.organizationId);
+    const accountId = faker.string.uuid();
+    await createTestPlayer(accountId);
+    await addPlayerToTeam(team.teamId, accountId, teamRole!.teamRoleId);
+    const event: Partial<Event> = {
+      name: faker.lorem.words(2),
+      description: faker.lorem.sentence(),
+      image: faker.image.url(),
+      organizationId: org.organizationId,
+    };
+    const eventResp = await adminClient.createEvent(event);
+    expect(eventResp.status).toBe(201);
+    const getResp = await client.getEvents(org.organizationId);
+    const json = await getResp.json();
+    const createdEvent = json.events.find((e: Event) => e.name === event.name);
+    expect(createdEvent).toBeDefined();
+    // Not created first
+    const resp = await adminClient.deleteEventPlayer(
+      createdEvent!.eventId,
+      accountId
+    );
+    expect(resp.status).toBe(400);
   });
 });

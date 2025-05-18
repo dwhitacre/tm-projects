@@ -1,4 +1,11 @@
 import type { ApiResponse } from "./apiresponse";
+import type { TeamPlayer } from "./team";
+import type { TeamRole } from "./teamrole";
+
+export interface EventPlayer extends TeamPlayer {
+  eventRoleId: number;
+  eventRole?: TeamRole;
+}
 
 export interface Event {
   eventId: number;
@@ -13,6 +20,7 @@ export interface Event {
   dateCreated?: Date;
   dateModified?: Date;
   organizationId: number;
+  players: EventPlayer[];
 }
 
 export interface EventResponse extends ApiResponse {

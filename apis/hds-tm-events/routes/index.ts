@@ -55,10 +55,12 @@ function getHandle(req: ApiRequest): (req: ApiRequest) => Promise<ApiResponse> {
     return tag.organizationHandle;
   if (req.checkPath("/api/organization")) return organization.handle;
 
+  if (req.checkPath("/api/teamrole")) return teamrole.handle;
+
   if (req.checkPath("/api/team/{teamId}/player")) return team.playerHandle;
   if (req.checkPath("/api/team")) return team.handle;
 
-  if (req.checkPath("/api/teamrole")) return teamrole.handle;
+  if (req.checkPath("/api/event/{eventId}/player")) return event.playerHandle;
   if (req.checkPath("/api/event")) return event.handle;
 
   if (req.checkPath("/api/tag")) return tag.handle;
