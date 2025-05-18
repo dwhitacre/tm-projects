@@ -1,9 +1,14 @@
-import { describe, expect, test } from "bun:test";
+import { afterAll, beforeAll, describe, expect, test } from "bun:test";
 import { faker } from "@faker-js/faker";
 import { HdstmEventsClient } from "shared/clients/hdstmevents";
 import type { Event } from "shared/domain/event";
 import type { Organization } from "shared/domain/organization";
+import { Db } from "shared/domain/db";
+import { PlayerService } from "shared/services/player";
+import type { IPlayer } from "shared/domain/player";
 
+let db: Db;
+let playerService: PlayerService;
 const client = new HdstmEventsClient({
   baseUrl: "http://localhost:8081",
   apikeyHeader: "x-hdstmevents-adminkey",
@@ -61,9 +66,21 @@ async function createTestTeamRole(organizationId: number) {
   return created;
 }
 
-async function createTestPlayer(accountId: string) {
+async function createTestPlayer(
+  accountId: string,
+  overrides?: Partial<IPlayer>
+) {
   const resp = await adminClient.createPlayer(accountId);
   expect([200, 201]).toContain(resp.status);
+  if (overrides) {
+    await playerService.addPlayerOverrides(
+      accountId,
+      overrides.name,
+      overrides.image,
+      overrides.twitch,
+      overrides.discord
+    );
+  }
 }
 
 async function addPlayerToTeam(
@@ -75,6 +92,18 @@ async function addPlayerToTeam(
   const resp = await adminClient.createTeamPlayer(teamId, teamPlayer);
   expect(resp.status).toBe(201);
 }
+
+beforeAll(async () => {
+  db = new Db({
+    connectionString:
+      "postgres://hdstmevents:Passw0rd!@localhost:5432/hdstmevents?pool_max_conns=10",
+  });
+  playerService = PlayerService.getInstance({ db });
+});
+
+afterAll(async () => {
+  await db.close();
+});
 
 describe("/api/event", () => {
   test("create event not admin", async () => {
@@ -358,6 +387,199 @@ describe("/api/event", () => {
     const json2 = await resp2.json();
     expect(json2.events.some((e: Event) => e.name === event2.name)).toBe(true);
     expect(json2.events.some((e: Event) => e.name === event1.name)).toBe(false);
+  });
+
+  test("get events returns events with players attached", async () => {
+    const org = await createTestOrganization();
+    const event: Partial<Event> = {
+      name: "event-with-players-" + faker.string.alphanumeric(8),
+      description: "desc",
+      image: "img",
+      organizationId: org.organizationId,
+    };
+    const eventResp = await adminClient.createEvent(event);
+    expect(eventResp.status).toBe(201);
+    const createdEvent = (
+      await (await client.getEvents(org.organizationId)).json()
+    ).events.find((e: Event) => e.name === event.name);
+    expect(createdEvent).toBeDefined();
+    // Add player
+    const team = await createTestTeam(org.organizationId);
+    const teamRole = await createTestTeamRole(org.organizationId);
+    const accountId = faker.string.uuid();
+    await createTestPlayer(accountId);
+    await addPlayerToTeam(team.teamId, accountId, teamRole!.teamRoleId);
+    const eventPlayer = { accountId, eventRoleId: teamRole!.teamRoleId };
+    await adminClient.createEventPlayer(createdEvent!.eventId, eventPlayer);
+    // Fetch and check
+    const resp = await client.getEvents(org.organizationId);
+    expect(resp.status).toBe(200);
+    const json = await resp.json();
+    const found = json.events.find(
+      (e: Event) => e.eventId === createdEvent!.eventId
+    );
+    expect(found).toBeDefined();
+    expect(Array.isArray(found!.players)).toBe(true);
+    expect(found!.players.length).toBe(1);
+    expect(found!.players[0].accountId).toBe(accountId);
+    expect(found!.players[0].eventRoleId).toBe(teamRole!.teamRoleId);
+  });
+
+  test("get events returns events with and without players", async () => {
+    const org = await createTestOrganization();
+    // Event with players
+    const eventWithPlayers: Partial<Event> = {
+      name: "event-has-players-" + faker.string.alphanumeric(8),
+      description: "desc",
+      image: "img",
+      organizationId: org.organizationId,
+    };
+    // Event without players
+    const eventNoPlayers: Partial<Event> = {
+      name: "event-no-players-" + faker.string.alphanumeric(8),
+      description: "desc",
+      image: "img",
+      organizationId: org.organizationId,
+    };
+    await adminClient.createEvent(eventWithPlayers);
+    await adminClient.createEvent(eventNoPlayers);
+    const events = (await (await client.getEvents(org.organizationId)).json())
+      .events;
+    const eWith = events.find((e: Event) => e.name === eventWithPlayers.name);
+    const eNone = events.find((e: Event) => e.name === eventNoPlayers.name);
+    expect(eWith).toBeDefined();
+    expect(eNone).toBeDefined();
+    // Add player to eventWithPlayers
+    const team = await createTestTeam(org.organizationId);
+    const teamRole = await createTestTeamRole(org.organizationId);
+    const accountId = faker.string.uuid();
+    await createTestPlayer(accountId);
+    await addPlayerToTeam(team.teamId, accountId, teamRole!.teamRoleId);
+    await adminClient.createEventPlayer(eWith!.eventId, {
+      accountId,
+      eventRoleId: teamRole!.teamRoleId,
+    });
+    // Fetch and check
+    const json2 = await (await client.getEvents(org.organizationId)).json();
+    const foundWith = json2.events.find(
+      (e: Event) => e.eventId === eWith!.eventId
+    );
+    const foundNone = json2.events.find(
+      (e: Event) => e.eventId === eNone!.eventId
+    );
+    expect(foundWith).toBeDefined();
+    expect(foundNone).toBeDefined();
+    expect(Array.isArray(foundWith!.players)).toBe(true);
+    expect(foundWith!.players.length).toBe(1);
+    expect(foundWith!.players[0].accountId).toBe(accountId);
+    expect(
+      !foundNone!.players ||
+        (Array.isArray(foundNone!.players) && foundNone!.players.length === 0)
+    ).toBe(true);
+  });
+
+  test("get events returns correct players for multiple events", async () => {
+    const org = await createTestOrganization();
+    // Event 1
+    const event1: Partial<Event> = {
+      name: "event1-multi-" + faker.string.alphanumeric(8),
+      description: "desc1",
+      image: "img1",
+      organizationId: org.organizationId,
+    };
+    // Event 2
+    const event2: Partial<Event> = {
+      name: "event2-multi-" + faker.string.alphanumeric(8),
+      description: "desc2",
+      image: "img2",
+      organizationId: org.organizationId,
+    };
+    await adminClient.createEvent(event1);
+    await adminClient.createEvent(event2);
+    const events = (await (await client.getEvents(org.organizationId)).json())
+      .events;
+    const e1 = events.find((e: Event) => e.name === event1.name);
+    const e2 = events.find((e: Event) => e.name === event2.name);
+    expect(e1).toBeDefined();
+    expect(e2).toBeDefined();
+    // Add players to both events
+    const team = await createTestTeam(org.organizationId);
+    const teamRole1 = await createTestTeamRole(org.organizationId);
+    const teamRole2 = await createTestTeamRole(org.organizationId);
+    const accountId1 = faker.string.uuid();
+    const accountId2 = faker.string.uuid();
+    await createTestPlayer(accountId1);
+    await createTestPlayer(accountId2);
+    await addPlayerToTeam(team.teamId, accountId1, teamRole1!.teamRoleId);
+    await addPlayerToTeam(team.teamId, accountId2, teamRole2!.teamRoleId);
+    await adminClient.createEventPlayer(e1!.eventId, {
+      accountId: accountId1,
+      eventRoleId: teamRole1!.teamRoleId,
+    });
+    await adminClient.createEventPlayer(e2!.eventId, {
+      accountId: accountId2,
+      eventRoleId: teamRole2!.teamRoleId,
+    });
+    // Fetch and check
+    const json2 = await (await client.getEvents(org.organizationId)).json();
+    const found1 = json2.events.find((e: Event) => e.eventId === e1!.eventId);
+    const found2 = json2.events.find((e: Event) => e.eventId === e2!.eventId);
+    expect(found1).toBeDefined();
+    expect(found2).toBeDefined();
+    expect(found1!.players.length).toBe(1);
+    expect(found2!.players.length).toBe(1);
+    expect(found1!.players[0].accountId).toBe(accountId1);
+    expect(found2!.players[0].accountId).toBe(accountId2);
+    expect(found1!.players[0].eventRoleId).toBe(teamRole1!.teamRoleId);
+    expect(found2!.players[0].eventRoleId).toBe(teamRole2!.teamRoleId);
+  });
+
+  test("get events returns event players with player overrides", async () => {
+    const org = await createTestOrganization();
+    const event: Partial<Event> = {
+      name: "event-player-overrides-" + faker.string.alphanumeric(8),
+      description: "desc",
+      image: "img",
+      organizationId: org.organizationId,
+    };
+    await adminClient.createEvent(event);
+    const createdEvent = (
+      await (await client.getEvents(org.organizationId)).json()
+    ).events.find((e: Event) => e.name === event.name);
+    expect(createdEvent).toBeDefined();
+    const team = await createTestTeam(org.organizationId);
+    const teamRole = await createTestTeamRole(org.organizationId);
+    const accountId = faker.string.uuid();
+    const playerOverrides = {
+      name: "Override Name",
+      image: "override-img.png",
+      twitch: "overrideTwitch",
+      discord: "override#1234",
+    };
+    await createTestPlayer(accountId, playerOverrides);
+    await addPlayerToTeam(team.teamId, accountId, teamRole!.teamRoleId);
+    await adminClient.createEventPlayer(createdEvent!.eventId, {
+      accountId,
+      eventRoleId: teamRole!.teamRoleId,
+    });
+    // Fetch and check
+    const resp = await client.getEvents(org.organizationId);
+    expect(resp.status).toBe(200);
+    const json = await resp.json();
+    const found = json.events.find(
+      (e: Event) => e.eventId === createdEvent!.eventId
+    );
+    expect(found).toBeDefined();
+    expect(Array.isArray(found!.players)).toBe(true);
+    expect(found!.players.length).toBe(1);
+    const player = found!.players[0];
+    expect(player.accountId).toBe(accountId);
+    // The following checks will only work if player overrides are supported in this test context
+    expect(player.name).toBe(playerOverrides.name);
+    expect(player.image).toBe(playerOverrides.image);
+    expect(player.twitch).toBe(playerOverrides.twitch);
+    expect(player.discord).toBe(playerOverrides.discord);
+    expect(player.eventRoleId).toBe(teamRole!.teamRoleId);
   });
 });
 

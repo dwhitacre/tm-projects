@@ -142,7 +142,7 @@ export class TeamService {
     return this.db.update(
       `
         update TeamPlayer
-        TeamRoleId = $2, DateModified = NOW()
+        set TeamRoleId = $2, DateModified = NOW()
         where TeamId = $3 and AccountId = $1
       `,
       [teamPlayer.accountId, teamPlayer.teamRoleId, teamId]
