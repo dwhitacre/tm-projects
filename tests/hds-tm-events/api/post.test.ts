@@ -1,11 +1,16 @@
-import { describe, expect, test } from "bun:test";
+import { afterAll, beforeAll, describe, expect, test } from "bun:test";
 import { faker } from "@faker-js/faker";
 import { HdstmEventsClient } from "shared/clients/hdstmevents";
 import type { Post } from "shared/domain/post";
 import type { Organization } from "shared/domain/organization";
 import type { Tag } from "shared/domain/tag";
 import type { JsonAny } from "shared/domain/json";
+import { PlayerService } from "shared/services/player";
+import { Db } from "shared/domain/db";
+import type { IPlayer } from "shared/domain/player";
 
+let db: Db;
+let playerService: PlayerService;
 const client = new HdstmEventsClient({
   baseUrl: "http://localhost:8081",
   apikeyHeader: "x-hdstmevents-adminkey",
@@ -33,9 +38,21 @@ async function createTestOrganization(): Promise<Organization> {
   return created!;
 }
 
-async function createTestPlayer(accountId: string) {
+async function createTestPlayer(
+  accountId: string,
+  overrides?: Partial<IPlayer>
+) {
   const resp = await adminClient.createPlayer(accountId);
   expect([200, 201]).toContain(resp.status);
+  if (overrides) {
+    await playerService.addPlayerOverrides(
+      accountId,
+      overrides.name,
+      overrides.image,
+      overrides.twitch,
+      overrides.discord
+    );
+  }
 }
 
 async function createTestTag(
@@ -56,6 +73,18 @@ async function createTestTag(
   expect(created).toBeDefined();
   return created!;
 }
+
+beforeAll(async () => {
+  db = new Db({
+    connectionString:
+      "postgres://hdstmevents:Passw0rd!@localhost:5432/hdstmevents?pool_max_conns=10",
+  });
+  playerService = PlayerService.getInstance({ db });
+});
+
+afterAll(async () => {
+  await db.close();
+});
 
 describe("/api/post", () => {
   test("create post not admin", async () => {
@@ -297,7 +326,14 @@ describe("/api/post", () => {
   test("get posts returns multiple posts", async () => {
     const org = await createTestOrganization();
     const accountId = faker.string.uuid();
-    await createTestPlayer(accountId);
+    // Add player with overrides
+    const overrides = {
+      name: "Override Name",
+      image: "https://override.example/avatar.png",
+      twitch: "override_twitch",
+      discord: "override#1234",
+    };
+    await createTestPlayer(accountId, overrides);
     const post1: Partial<Post> = {
       accountId,
       organizationId: org.organizationId,
@@ -318,6 +354,15 @@ describe("/api/post", () => {
     const contents = json.posts.map((p: Post) => p.content);
     expect(contents).toContain(post1.content);
     expect(contents).toContain(post2.content);
+    // Assert author is returned and matches player with overrides
+    for (const post of json.posts as Post[]) {
+      expect(post.author).toBeDefined();
+      expect(post.author!.accountId).toBe(post.accountId);
+      expect(post.author!.name).toBe(overrides.name);
+      expect(post.author!.image).toBe(overrides.image);
+      expect(post.author!.twitch).toBe(overrides.twitch);
+      expect(post.author!.discord).toBe(overrides.discord);
+    }
   });
 
   test("get posts only returns posts for that org", async () => {
@@ -696,7 +741,6 @@ describe("/api/post/{postId}/tag/{tagId}", () => {
     // Bad postId
     const deleteResp = await adminClient.deletePostTag(99999999, tag.tagId);
     expect(deleteResp.status).toBe(400);
-    // Bad tagId
     const accountId = faker.string.uuid();
     await createTestPlayer(accountId);
     const post: Partial<Post> = {

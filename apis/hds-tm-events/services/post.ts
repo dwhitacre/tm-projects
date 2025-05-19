@@ -52,7 +52,7 @@ export class PostService {
 
     const postsJson = Json.groupBy(result, "postid");
     const posts = Object.values(postsJson).map((post) =>
-      Post.fromJson(post[0]).hydrateTags(post)
+      Post.fromJson(post[0]).hydratePlayer(post[0]).hydrateTags(post)
     );
 
     return posts;

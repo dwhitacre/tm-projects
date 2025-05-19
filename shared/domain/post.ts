@@ -1,4 +1,5 @@
 import type { ApiResponse } from "./apiresponse";
+import type { IPlayer } from "./player";
 import type { Tag } from "./tag";
 
 export interface Post {
@@ -14,6 +15,7 @@ export interface Post {
   dateModified?: Date;
   organizationId: number;
   tags: Tag[];
+  author: IPlayer;
 }
 
 export interface PostResponse extends ApiResponse {
