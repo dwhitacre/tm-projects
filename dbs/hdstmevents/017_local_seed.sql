@@ -47,6 +47,18 @@ all_player AS (
   SELECT AccountId FROM Player
 )
 
+-- Seed PlayerOverrides (twitch/discord for some players)
+, ins_playeroverrides AS (
+  INSERT INTO PlayerOverrides (AccountId, Twitch, Discord)
+  VALUES
+    ('794a286c-44d9-4276-83ce-431cba7bab74', 'player1_ttv', 'player1#1234'),
+    ('89894a9a-957c-4c88-8d88-3149283ca2bd', 'player2_ttv', ''),
+    ('09747490-4eeb-410c-aa49-58ee38481760', '', 'player3#5678'),
+    ('83b5f677-3296-4d2a-ad6b-5a100565de22', 'player5_ttv', 'player5#9999')
+  ON CONFLICT (AccountId) DO NOTHING
+  RETURNING AccountId, Twitch, Discord
+)
+
 -- Seed Organization
 , ins_organization AS (
   INSERT INTO Organization (Name, Description, DateCreated, DateModified)
