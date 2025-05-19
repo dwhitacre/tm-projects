@@ -6,6 +6,7 @@
 -- DELETE FROM Event;
 -- DELETE FROM Post;
 -- DELETE FROM Team;
+-- DELETE FROM Organization;
 -- DELETE FROM Player;
 
 -- Seed Player
@@ -146,47 +147,47 @@ all_teamrole AS (
   INSERT INTO TeamPlayer (TeamId, AccountId, TeamRoleId, DateCreated, DateModified)
   SELECT t.TeamId, p.AccountId, r.TeamRoleId, v.DateCreated::timestamp, v.DateModified::timestamp
   FROM (VALUES
-    (1, '794a286c-44d9-4276-83ce-431cba7bab74', 'PLAYER', '2024-11-15', '2025-01-10'),
-    (1, '89894a9a-957c-4c88-8d88-3149283ca2bd', 'CAPTAIN', '2024-11-16', '2025-01-11'),
-    (1, 'f5e37115-d85a-4f3e-bc5a-969d6e29fede', 'PLAYER', '2024-11-17', '2025-01-12'),
-    (1, '83b5f677-3296-4d2a-ad6b-5a100565de22', 'PLAYER', '2024-11-18', '2025-01-13'),
-    (1, 'b8c5c3a0-4cac-4eba-abd4-2f55afab04e2', 'PLAYER', '2024-11-19', '2025-01-14'),
-    (1, '3d11c8f8-258b-433f-9395-7c6f42f7784e', 'PLAYER', '2024-11-20', '2025-01-15'),
-    (2, '09747490-4eeb-410c-aa49-58ee38481760', 'PLAYER', '2024-12-01', '2025-02-01'),
-    (2, 'fcad7ce0-49ac-4c56-ac19-ecfca890a451', 'COACH', '2024-12-02', '2025-02-02'),
-    (2, 'a16a44f5-dc0-47e1-bf00-6174fec76bf1', 'PLAYER', '2024-12-03', '2025-02-03'),
-    (2, '943245e6-cc01-40ec-80f9-77bb2cbb5914', 'PLAYER', '2024-12-04', '2025-02-04'),
-    (2, 'd85fd2cc-bf6a-44a7-88cc-9d8695b82b88', 'PLAYER', '2024-12-05', '2025-02-05'),
-    (2, '70d7c4d4-ff63-4579-9069-05eaf5e60399', 'PLAYER', '2024-12-06', '2025-02-06'),
-    (3, 'a1accb5b-a4f1-43a7-ada7-119a890b12f1', 'PLAYER', '2025-01-05', '2025-03-05'),
-    (3, 'dae72d20-d7d1-4908-ac8b-9ae1994cb3b4', 'SUBSTITUTE', '2025-01-06', '2025-03-06'),
-    (3, '7886c8e0-902c-4b63-b9c4-59153d98aaaa', 'PLAYER', '2025-01-07', '2025-03-07'),
-    (3, 'c7818ba0-5e85-408e-a852-f658e8b90eec', 'PLAYER', '2025-01-08', '2025-03-08'),
-    (3, '6b9a48bf-a0b4-452a-9151-1e3b53133faf', 'PLAYER', '2025-01-09', '2025-03-09'),
-    (3, '62687d40-1291-484b-be06-d6810bf78606', 'PLAYER', '2025-01-10', '2025-03-10'),
-    (4, 'd2f9cf26-60c2-4e5e-8770-c1a78cad1124', 'PLAYER', '2025-01-20', '2025-04-01'),
-    (4, 'f77223ad-cddc-466e-8680-38edc9057f2d', 'CASTER', '2025-01-21', '2025-04-02'),
-    (4, '4d9676aa-4bd0-4120-b9e5-9b727b697108', 'PLAYER', '2025-01-22', '2025-04-03'),
-    (4, '53d6f5df-7a48-437f-aa3c-ced48894826e', 'PLAYER', '2025-01-23', '2025-04-04'),
-    (4, '7886c8e0-902c-4b63-b9c4-59153d98aaaa', 'PLAYER', '2025-01-24', '2025-04-05'),
-    (4, 'b8c5c3a0-4cac-4eba-abd4-2f55afab04e2', 'PLAYER', '2025-01-25', '2025-04-06'),
-    (5, '3da84e95-ec21-4635-bc0c-47dc0dbbc62c', 'PLAYER', '2025-02-10', '2025-05-01'),
-    (5, '6e3bf3f9-7dcb-47d4-bdae-037ab66628f2', 'OWNER', '2025-02-11', '2025-05-02'),
-    (5, '83b5f677-3296-4d2a-ad6b-5a100565de22', 'PLAYER', '2025-02-12', '2025-05-03'),
-    (5, 'a6d27eb1-55ff-4c54-a8da-6fd5fb064f95', 'PLAYER', '2025-02-13', '2025-05-04'),
-    (5, '09747490-4eeb-410c-aa49-58ee38481760', 'PLAYER', '2025-02-14', '2025-05-05'),
-    (5, 'f5e37115-d85a-4f3e-bc5a-969d6e29fede', 'PLAYER', '2025-02-15', '2025-05-06')
-  ) AS v(TeamNum, AccountId, RoleName, DateCreated, DateModified)
-  JOIN all_team t ON t.TeamId = v.TeamNum
+    ('Speed Demons', '794a286c-44d9-4276-83ce-431cba7bab74', 'PLAYER', '2024-11-15', '2025-01-10'),
+    ('Speed Demons', '89894a9a-957c-4c88-8d88-3149283ca2bd', 'CAPTAIN', '2024-11-16', '2025-01-11'),
+    ('Speed Demons', 'f5e37115-d85a-4f3e-bc5a-969d6e29fede', 'PLAYER', '2024-11-17', '2025-01-12'),
+    ('Speed Demons', '83b5f677-3296-4d2a-ad6b-5a100565de22', 'PLAYER', '2024-11-18', '2025-01-13'),
+    ('Speed Demons', 'b8c5c3a0-4cac-4eba-abd4-2f55afab04e2', 'PLAYER', '2024-11-19', '2025-01-14'),
+    ('Speed Demons', '3d11c8f8-258b-433f-9395-7c6f42f7784e', 'PLAYER', '2024-11-20', '2025-01-15'),
+    ('Turbo Titans', '09747490-4eeb-410c-aa49-58ee38481760', 'PLAYER', '2024-12-01', '2025-02-01'),
+    ('Turbo Titans', 'fcad7ce0-49ac-4c56-ac19-ecfca890a451', 'COACH', '2024-12-02', '2025-02-02'),
+    ('Turbo Titans', 'a16a44f5-dc0-47e1-bf00-6174fec76bf1', 'PLAYER', '2024-12-03', '2025-02-03'),
+    ('Turbo Titans', '943245e6-cc01-40ec-80f9-77bb2cbb5914', 'PLAYER', '2024-12-04', '2025-02-04'),
+    ('Turbo Titans', 'd85fd2cc-bf6a-44a7-88cc-9d8695b82b88', 'PLAYER', '2024-12-05', '2025-02-05'),
+    ('Turbo Titans', '70d7c4d4-ff63-4579-9069-05eaf5e60399', 'PLAYER', '2024-12-06', '2025-02-06'),
+    ('Nitro Ninjas', 'a1accb5b-a4f1-43a7-ada7-119a890b12f1', 'PLAYER', '2025-01-05', '2025-03-05'),
+    ('Nitro Ninjas', 'dae72d20-d7d1-4908-ac8b-9ae1994cb3b4', 'SUBSTITUTE', '2025-01-06', '2025-03-06'),
+    ('Nitro Ninjas', '7886c8e0-902c-4b63-b9c4-59153d98aaaa', 'PLAYER', '2025-01-07', '2025-03-07'),
+    ('Nitro Ninjas', 'c7818ba0-5e85-408e-a852-f658e8b90eec', 'PLAYER', '2025-01-08', '2025-03-08'),
+    ('Nitro Ninjas', '6b9a48bf-a0b4-452a-9151-1e3b53133faf', 'PLAYER', '2025-01-09', '2025-03-09'),
+    ('Nitro Ninjas', '62687d40-1291-484b-be06-d6810bf78606', 'PLAYER', '2025-01-10', '2025-03-10'),
+    ('Velocity Vipers', 'd2f9cf26-60c2-4e5e-8770-c1a78cad1124', 'PLAYER', '2025-01-20', '2025-04-01'),
+    ('Velocity Vipers', 'f77223ad-cddc-466e-8680-38edc9057f2d', 'CASTER', '2025-01-21', '2025-04-02'),
+    ('Velocity Vipers', '4d9676aa-4bd0-4120-b9e5-9b727b697108', 'PLAYER', '2025-01-22', '2025-04-03'),
+    ('Velocity Vipers', '53d6f5df-7a48-437f-aa3c-ced48894826e', 'PLAYER', '2025-01-23', '2025-04-04'),
+    ('Velocity Vipers', '7886c8e0-902c-4b63-b9c4-59153d98aaaa', 'PLAYER', '2025-01-24', '2025-04-05'),
+    ('Velocity Vipers', 'b8c5c3a0-4cac-4eba-abd4-2f55afab04e2', 'PLAYER', '2025-01-25', '2025-04-06'),
+    ('Rocket Racers', '3da84e95-ec21-4635-bc0c-47dc0dbbc62c', 'PLAYER', '2025-02-10', '2025-05-01'),
+    ('Rocket Racers', '6e3bf3f9-7dcb-47d4-bdae-037ab66628f2', 'OWNER', '2025-02-11', '2025-05-02'),
+    ('Rocket Racers', '83b5f677-3296-4d2a-ad6b-5a100565de22', 'PLAYER', '2025-02-12', '2025-05-03'),
+    ('Rocket Racers', 'a6d27eb1-55ff-4c54-a8da-6fd5fb064f95', 'PLAYER', '2025-02-13', '2025-05-04'),
+    ('Rocket Racers', '09747490-4eeb-410c-aa49-58ee38481760', 'PLAYER', '2025-02-14', '2025-05-05'),
+    ('Rocket Racers', 'f5e37115-d85a-4f3e-bc5a-969d6e29fede', 'PLAYER', '2025-02-15', '2025-05-06')
+  ) AS v(TeamName, AccountId, RoleName, DateCreated, DateModified)
+  JOIN all_team t ON t.Name = v.TeamName
   JOIN all_player p ON p.AccountId = v.AccountId
   JOIN all_teamrole r ON r.Name = v.RoleName
   ON CONFLICT (TeamId, AccountId, TeamRoleId) DO NOTHING
-  RETURNING TeamPlayerId, TeamId, AccountId
+  RETURNING TeamPlayerId, TeamId, AccountId, TeamRoleId
 ),
 all_teamplayer AS (
-  SELECT TeamPlayerId, TeamId, AccountId FROM ins_teamplayer
+  SELECT TeamPlayerId, TeamId, AccountId, TeamRoleId FROM ins_teamplayer
   UNION
-  SELECT TeamPlayerId, TeamId, AccountId FROM TeamPlayer
+  SELECT TeamPlayerId, TeamId, AccountId, TeamRoleId FROM TeamPlayer
 )
 
 -- Seed Tag (add OrganizationId)
@@ -229,18 +230,80 @@ all_tag AS (
 -- Seed EventPlayer
 , ins_eventplayer1 AS (
   INSERT INTO EventPlayer (EventId, TeamPlayerId, EventRoleId, DateCreated, DateModified)
-  SELECT e.EventId, tp.TeamPlayerId, 4, '2024-12-16'::timestamp, '2025-01-21'::timestamp
+  SELECT e.EventId, tp.TeamPlayerId, er.TeamRoleId, '2024-12-16'::timestamp, '2025-01-21'::timestamp
   FROM all_event e
-  JOIN all_teamplayer tp ON tp.TeamPlayerId IN (1,2)
+  JOIN all_team t ON t.Name = 'Speed Demons'
+  JOIN all_player p ON p.AccountId = '794a286c-44d9-4276-83ce-431cba7bab74'
+  JOIN all_teamrole tr ON tr.Name = 'PLAYER'
+  JOIN all_teamplayer tp ON tp.TeamId = t.TeamId AND tp.AccountId = p.AccountId AND tp.TeamRoleId = tr.TeamRoleId
+  JOIN all_teamrole er ON er.Name = 'PLAYER'
+  WHERE e.Name = 'Trackmania World Championship 2025'
+  UNION ALL
+  SELECT e.EventId, tp.TeamPlayerId, er.TeamRoleId, '2024-12-17'::timestamp, '2025-01-22'::timestamp
+  FROM all_event e
+  JOIN all_team t ON t.Name = 'Speed Demons'
+  JOIN all_player p ON p.AccountId = '89894a9a-957c-4c88-8d88-3149283ca2bd'
+  JOIN all_teamrole tr ON tr.Name = 'CAPTAIN'
+  JOIN all_teamplayer tp ON tp.TeamId = t.TeamId AND tp.AccountId = p.AccountId AND tp.TeamRoleId = tr.TeamRoleId
+  JOIN all_teamrole er ON er.Name = 'CAPTAIN'
+  WHERE e.Name = 'Trackmania World Championship 2025'
+  UNION ALL
+  SELECT e.EventId, tp.TeamPlayerId, er.TeamRoleId, '2024-12-18'::timestamp, '2025-01-23'::timestamp
+  FROM all_event e
+  JOIN all_team t ON t.Name = 'Speed Demons'
+  JOIN all_player p ON p.AccountId = 'f5e37115-d85a-4f3e-bc5a-969d6e29fede'
+  JOIN all_teamrole tr ON tr.Name = 'PLAYER'
+  JOIN all_teamplayer tp ON tp.TeamId = t.TeamId AND tp.AccountId = p.AccountId AND tp.TeamRoleId = tr.TeamRoleId
+  JOIN all_teamrole er ON er.Name = 'SUBSTITUTE'
+  WHERE e.Name = 'Trackmania World Championship 2025'
+  UNION ALL
+  SELECT e.EventId, tp.TeamPlayerId, er.TeamRoleId, '2024-12-19'::timestamp, '2025-01-24'::timestamp
+  FROM all_event e
+  JOIN all_team t ON t.Name = 'Turbo Titans'
+  JOIN all_player p ON p.AccountId = '09747490-4eeb-410c-aa49-58ee38481760'
+  JOIN all_teamrole tr ON tr.Name = 'PLAYER'
+  JOIN all_teamplayer tp ON tp.TeamId = t.TeamId AND tp.AccountId = p.AccountId AND tp.TeamRoleId = tr.TeamRoleId
+  JOIN all_teamrole er ON er.Name = 'PLAYER'
   WHERE e.Name = 'Trackmania World Championship 2025'
   ON CONFLICT (EventId, TeamPlayerId, EventRoleId) DO NOTHING
   RETURNING EventPlayerId
 ),
 ins_eventplayer2 AS (
   INSERT INTO EventPlayer (EventId, TeamPlayerId, EventRoleId, DateCreated, DateModified)
-  SELECT e.EventId, tp.TeamPlayerId, 4, '2025-01-26'::timestamp, '2025-03-11'::timestamp
+  SELECT e.EventId, tp.TeamPlayerId, er.TeamRoleId, '2025-01-26'::timestamp, '2025-03-11'::timestamp
   FROM all_event e
-  JOIN all_teamplayer tp ON tp.TeamPlayerId IN (3,4)
+  JOIN all_team t ON t.Name = 'Nitro Ninjas'
+  JOIN all_player p ON p.AccountId = 'a1accb5b-a4f1-43a7-ada7-119a890b12f1'
+  JOIN all_teamrole tr ON tr.Name = 'PLAYER'
+  JOIN all_teamplayer tp ON tp.TeamId = t.TeamId AND tp.AccountId = p.AccountId AND tp.TeamRoleId = tr.TeamRoleId
+  JOIN all_teamrole er ON er.Name = 'PLAYER'
+  WHERE e.Name = 'Trackmania Summer League'
+  UNION ALL
+  SELECT e.EventId, tp.TeamPlayerId, er.TeamRoleId, '2025-01-27'::timestamp, '2025-03-12'::timestamp
+  FROM all_event e
+  JOIN all_team t ON t.Name = 'Nitro Ninjas'
+  JOIN all_player p ON p.AccountId = 'dae72d20-d7d1-4908-ac8b-9ae1994cb3b4'
+  JOIN all_teamrole tr ON tr.Name = 'SUBSTITUTE'
+  JOIN all_teamplayer tp ON tp.TeamId = t.TeamId AND tp.AccountId = p.AccountId AND tp.TeamRoleId = tr.TeamRoleId
+  JOIN all_teamrole er ON er.Name = 'PLAYER'
+  WHERE e.Name = 'Trackmania Summer League'
+  UNION ALL
+  SELECT e.EventId, tp.TeamPlayerId, er.TeamRoleId, '2025-01-28'::timestamp, '2025-03-13'::timestamp
+  FROM all_event e
+  JOIN all_team t ON t.Name = 'Velocity Vipers'
+  JOIN all_player p ON p.AccountId = 'd2f9cf26-60c2-4e5e-8770-c1a78cad1124'
+  JOIN all_teamrole tr ON tr.Name = 'PLAYER'
+  JOIN all_teamplayer tp ON tp.TeamId = t.TeamId AND tp.AccountId = p.AccountId AND tp.TeamRoleId = tr.TeamRoleId
+  JOIN all_teamrole er ON er.Name = 'CASTER'
+  WHERE e.Name = 'Trackmania Summer League'
+  UNION ALL
+  SELECT e.EventId, tp.TeamPlayerId, er.TeamRoleId, '2025-01-29'::timestamp, '2025-03-14'::timestamp
+  FROM all_event e
+  JOIN all_team t ON t.Name = 'Rocket Racers'
+  JOIN all_player p ON p.AccountId = '3da84e95-ec21-4635-bc0c-47dc0dbbc62c'
+  JOIN all_teamrole tr ON tr.Name = 'PLAYER'
+  JOIN all_teamplayer tp ON tp.TeamId = t.TeamId AND tp.AccountId = p.AccountId AND tp.TeamRoleId = tr.TeamRoleId
+  JOIN all_teamrole er ON er.Name = 'OWNER'
   WHERE e.Name = 'Trackmania Summer League'
   ON CONFLICT (EventId, TeamPlayerId, EventRoleId) DO NOTHING
   RETURNING EventPlayerId
@@ -258,4 +321,5 @@ DELETE FROM TeamRole;
 DELETE FROM Event;
 DELETE FROM Post;
 DELETE FROM Team;
+DELETE FROM Organization;
 DELETE FROM Player;

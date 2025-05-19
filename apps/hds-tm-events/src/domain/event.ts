@@ -1,23 +1,28 @@
-import { TeamPlayer, TeamRole } from './team'
+import { ApiResponse } from './apiresponse'
+import { TeamPlayer } from './team'
+import { TeamRole } from './teamrole'
 
 export interface EventPlayer extends TeamPlayer {
+  eventRoleId: number
   eventRole: TeamRole
 }
 
 export interface Event {
+  eventId: number
   name: string
-  description?: string
+  description: string
   dateStart?: Date
   dateEnd?: Date
   externalUrl: string
   image: string
-  visible: boolean
-  dateCreated: Date
-  dateModified: Date
+  isVisible: boolean
   sortOrder: number
+  dateCreated?: Date
+  dateModified?: Date
+  organizationId: number
   players: EventPlayer[]
 }
 
-export interface EventResponse {
+export interface EventResponse extends ApiResponse {
   events: Event[]
 }

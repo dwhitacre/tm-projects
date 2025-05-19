@@ -25,6 +25,12 @@ import { EventService } from './event.service'
 import { Team } from 'src/domain/team'
 import { Post } from 'src/domain/post'
 import { Event } from 'src/domain/event'
+import { Tag } from 'src/domain/tag'
+import { TeamRole } from 'src/domain/teamrole'
+import { Organization } from 'src/domain/organization'
+import { TeamRoleService } from './teamrole.service'
+import { TagService } from './tag.service'
+import { OrganizationService } from './organization.service'
 
 export interface StoreState {
   leaderboard: Leaderboard
@@ -44,9 +50,13 @@ export interface StoreState {
   weeklies: { [weeklyId: Weekly['weeklyId']]: Partial<Weekly> }
   rules: Array<RuleCategory>
   featureToggles: FeatureToggleState[]
+  // organizations: Array<Organization>
+  selectedOrganization: Organization['organizationId']
   teams: Array<Team>
   posts: Array<Post>
   events: Array<Event>
+  tags: Array<Tag>
+  teamRoles: Array<TeamRole>
 }
 
 @Injectable({ providedIn: 'root' })
@@ -64,6 +74,10 @@ export class StoreService extends ComponentStore<StoreState> {
   readonly weeklies$ = this.select((state) => state.weeklies)
   readonly rules$ = this.select((state) => state.rules)
   readonly featureToggles$ = this.select((state) => state.featureToggles)
+  // readonly organizations$ = this.select((state) => state.organizations)
+  readonly selectedOrganization$ = this.select((state) => state.selectedOrganization)
+  readonly tags$ = this.select((state) => state.tags)
+  readonly teamRoles$ = this.select((state) => state.teamRoles)
   readonly teams$ = this.select((state) => state.teams)
   readonly posts$ = this.select((state) => state.posts)
   readonly events$ = this.select((state) => state.events)
@@ -319,6 +333,9 @@ export class StoreService extends ComponentStore<StoreState> {
     private teamService: TeamService,
     private postService: PostService,
     private eventService: EventService,
+    private teamRoleService: TeamRoleService,
+    private tagService: TagService,
+    private organizationService: OrganizationService,
   ) {
     super({
       leaderboard: {
@@ -345,15 +362,17 @@ export class StoreService extends ComponentStore<StoreState> {
       weeklies: {},
       rules: [],
       featureToggles: [],
+      // organizations: [],
+      selectedOrganization: 0,
       teams: [],
       posts: [],
       events: [],
+      tags: [],
+      teamRoles: [],
     })
 
     this.fetchFeatureToggles()
-    this.fetchEvents()
-    this.fetchPosts()
-    this.fetchTeams()
+    this.fetchOrganizations()
     this.fetchLeaderboard()
     this.fetchRules()
     this.fetchMaps()
@@ -615,10 +634,60 @@ export class StoreService extends ComponentStore<StoreState> {
     )
   })
 
-  readonly fetchTeams = this.effect<void>((trigger$) => {
+  readonly fetchOrganizations = this.effect<void>((trigger$) => {
     return trigger$.pipe(
       switchMap(() =>
-        this.teamService.getAll().pipe(
+        this.organizationService.getAll().pipe(
+          tapResponse({
+            next: (res) => {
+              // this.patchState({ organizations: res.organizations })
+              if (this.state().selectedOrganization == 0) {
+                const organizationId = res.organizations.find((o) => o.name === 'Holy Dynasty')!.organizationId
+                this.patchState({ selectedOrganization: organizationId })
+                this.fetchTeams(organizationId)
+                this.fetchTags(organizationId)
+                this.fetchTeamRoles(organizationId)
+                this.fetchPosts(organizationId)
+                this.fetchEvents(organizationId)
+              }
+            },
+            error: (error: HttpErrorResponse) => this.logService.error(error),
+          }),
+        ),
+      ),
+    )
+  })
+
+  readonly fetchTeamRoles = this.effect<Organization['organizationId']>((organizationId$) => {
+    return organizationId$.pipe(
+      switchMap((organizationId) =>
+        this.teamRoleService.getAll(organizationId).pipe(
+          tapResponse({
+            next: (res) => this.patchState({ teamRoles: res.teamRoles }),
+            error: (error: HttpErrorResponse) => this.logService.error(error),
+          }),
+        ),
+      ),
+    )
+  })
+
+  readonly fetchTags = this.effect<Organization['organizationId']>((organizationId$) => {
+    return organizationId$.pipe(
+      switchMap((organizationId) =>
+        this.tagService.getAll(organizationId).pipe(
+          tapResponse({
+            next: (res) => this.patchState({ tags: res.tags }),
+            error: (error: HttpErrorResponse) => this.logService.error(error),
+          }),
+        ),
+      ),
+    )
+  })
+
+  readonly fetchTeams = this.effect<Organization['organizationId']>((organizationId$) => {
+    return organizationId$.pipe(
+      switchMap((organizationId) =>
+        this.teamService.getAll(organizationId).pipe(
           tapResponse({
             next: (res) => this.patchState({ teams: res.teams }),
             error: (error: HttpErrorResponse) => this.logService.error(error),
@@ -628,10 +697,10 @@ export class StoreService extends ComponentStore<StoreState> {
     )
   })
 
-  readonly fetchPosts = this.effect<void>((trigger$) => {
-    return trigger$.pipe(
-      switchMap(() =>
-        this.postService.getAll().pipe(
+  readonly fetchPosts = this.effect<Organization['organizationId']>((organizationId$) => {
+    return organizationId$.pipe(
+      switchMap((organizationId) =>
+        this.postService.getAll(organizationId).pipe(
           tapResponse({
             next: (res) => this.patchState({ posts: res.posts }),
             error: (error: HttpErrorResponse) => this.logService.error(error),
@@ -641,10 +710,10 @@ export class StoreService extends ComponentStore<StoreState> {
     )
   })
 
-  readonly fetchEvents = this.effect<void>((trigger$) => {
-    return trigger$.pipe(
-      switchMap(() =>
-        this.eventService.getAll().pipe(
+  readonly fetchEvents = this.effect<Organization['organizationId']>((organizationId$) => {
+    return organizationId$.pipe(
+      switchMap((organizationId) =>
+        this.eventService.getAll(organizationId).pipe(
           tapResponse({
             next: (res) => this.patchState({ events: res.events }),
             error: (error: HttpErrorResponse) => this.logService.error(error),

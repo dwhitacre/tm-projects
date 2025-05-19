@@ -96,7 +96,7 @@ export class PostComponent {
   ) {
     const postId = this.route.snapshot.paramMap.get('id')
     this.storeService.posts$.subscribe((posts) => {
-      this.post = posts.find((post) => post.id === postId)
+      this.post = posts.find((post) => post.postId + '' === postId)
       this.paragraphs = this.post?.content?.split(/\n\s*\n/) || []
     })
   }

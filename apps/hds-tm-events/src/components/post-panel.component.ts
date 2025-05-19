@@ -8,7 +8,7 @@ import { Post } from 'src/domain/post'
   standalone: false,
   template: `
     <div class="post-card" (mouseover)="showUrl = true" (mouseleave)="showUrl = false">
-      <p-panel [header]="post.title" (click)="navigateToPost(post.id)" [styleClass]="'clickable-panel'">
+      <p-panel [header]="post.title" (click)="navigateToPost(post.postId)" [styleClass]="'clickable-panel'">
         <img [src]="post.image" [alt]="post.title" class="post-image" />
         <div class="post-summary">
           <p>{{ post.description }}</p>
@@ -85,10 +85,10 @@ export class PostPanelComponent implements OnInit {
   constructor(private router: Router) {}
 
   ngOnInit() {
-    this.fullPostUrl = `${window.location.origin}/posts/${this.post.id}`
+    this.fullPostUrl = `${window.location.origin}/posts/${this.post.postId}`
   }
 
-  navigateToPost(postId: string) {
+  navigateToPost(postId: Post['postId']) {
     this.router.navigate(['/posts', postId])
   }
 }

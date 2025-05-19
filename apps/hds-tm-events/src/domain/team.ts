@@ -1,31 +1,24 @@
-import { Player } from './player'
-
-export enum TeamRole {
-  OWNER = 'OWNER',
-  COACH = 'COACH',
-  CAPTAIN = 'CAPTAIN',
-  PLAYER = 'PLAYER',
-  SUBSTITUTE = 'SUBSTITUTE',
-  CASTER = 'CASTER',
-  ADMIN = 'ADMIN',
-  JUSTWORKSHERE = 'JUSTWORKSHERE',
-  UNKNOWN = 'UNKNOWN',
-}
+import type { ApiResponse } from './apiresponse'
+import type { Player } from './player'
+import type { TeamRole } from './teamrole'
 
 export interface TeamPlayer extends Player {
-  role: TeamRole
+  teamRoleId: number
+  teamRole?: TeamRole
 }
 
 export interface Team {
+  teamId: number
   name: string
-  description?: string
-  visible: boolean
-  dateCreated: Date
-  dateModified: Date
-  players: TeamPlayer[]
+  description: string
   sortOrder: number
+  isVisible: boolean
+  dateCreated?: Date
+  dateModified?: Date
+  organizationId: number
+  players: TeamPlayer[]
 }
 
-export interface TeamResponse {
+export interface TeamResponse extends ApiResponse {
   teams: Team[]
 }

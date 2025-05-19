@@ -23,6 +23,9 @@ import { FeatureService } from 'src/services/feature.service'
 import { PostService } from 'src/services/post.service'
 import { RuleService } from 'src/services/rule.service'
 import { TeamService } from 'src/services/team.service'
+import { TagService } from 'src/services/tag.service'
+import { TeamRoleService } from 'src/services/teamrole.service'
+import { OrganizationService } from 'src/services/organization.service'
 
 export const adminkeyInterceptor: HttpInterceptorFn = (req, next) => {
   const adminService = inject(AdminService)
@@ -54,11 +57,14 @@ export const appConfig: ApplicationConfig = {
     MapService,
     MatchService,
     MessageService,
+    OrganizationService,
     PlayerService,
     PostService,
     RuleService,
     StoreService,
+    TagService,
     TeamService,
+    TeamRoleService,
     WeeklyService,
     PositionPipe,
     SafeHtmlPipe,
