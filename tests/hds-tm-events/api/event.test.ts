@@ -581,6 +581,47 @@ describe("/api/event", () => {
     expect(player.discord).toBe(playerOverrides.discord);
     expect(player.eventRoleId).toBe(teamRole!.teamRoleId);
   });
+
+  test("get events returns event player with eventRoleId different from teamRoleId", async () => {
+    const org = await createTestOrganization();
+    const event: Partial<Event> = {
+      name: "event-role-override-" + faker.string.alphanumeric(8),
+      description: "desc",
+      image: "img",
+      organizationId: org.organizationId,
+    };
+    await adminClient.createEvent(event);
+    const createdEvent = (
+      await (await client.getEvents(org.organizationId)).json()
+    ).events.find((e: Event) => e.name === event.name);
+    expect(createdEvent).toBeDefined();
+    const team = await createTestTeam(org.organizationId);
+    const teamRole = await createTestTeamRole(org.organizationId);
+    const eventRole = await createTestTeamRole(org.organizationId);
+    const accountId = faker.string.uuid();
+    await createTestPlayer(accountId);
+    await addPlayerToTeam(team.teamId, accountId, teamRole!.teamRoleId);
+    // Add player to event with a different eventRoleId than their teamRoleId
+    await adminClient.createEventPlayer(createdEvent!.eventId, {
+      accountId,
+      eventRoleId: eventRole!.teamRoleId,
+    });
+    // Fetch and check
+    const resp = await client.getEvents(org.organizationId);
+    expect(resp.status).toBe(200);
+    const json = await resp.json();
+    const found = json.events.find(
+      (e: Event) => e.eventId === createdEvent!.eventId
+    );
+    expect(found).toBeDefined();
+    expect(Array.isArray(found!.players)).toBe(true);
+    expect(found!.players.length).toBe(1);
+    const player = found!.players[0];
+    expect(player.accountId).toBe(accountId);
+    expect(player.eventRoleId).toBe(eventRole!.teamRoleId);
+    expect(player.teamRoleId).toBe(teamRole!.teamRoleId);
+    expect(player.eventRoleId).not.toBe(player.teamRoleId);
+  });
 });
 
 describe("/api/event/{eventId}/player", () => {

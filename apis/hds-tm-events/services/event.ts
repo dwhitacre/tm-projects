@@ -26,12 +26,18 @@ export class EventService {
           Event.DateCreated,
           Event.DateModified,
           Event.OrganizationId,
-          TeamRole.OrganizationId as TeamRole_OrganizationId,
-          TeamRole.TeamRoleId as TeamRole_TeamRoleId,
-          TeamRole.Name as TeamRole_Name,
-          TeamRole.SortOrder as TeamRole_SortOrder,
-          TeamRole.DateCreated as TeamRole_DateCreated,
-          TeamRole.DateModified as TeamRole_DateModified,
+          eventrole.OrganizationId as EventRole_OrganizationId,
+          eventrole.TeamRoleId as EventRole_TeamRoleId,
+          eventrole.Name as EventRole_Name,
+          eventrole.SortOrder as EventRole_SortOrder,
+          eventrole.DateCreated as EventRole_DateCreated,
+          eventrole.DateModified as EventRole_DateModified,
+          teamrole.OrganizationId as TeamRole_OrganizationId,
+          teamrole.TeamRoleId as TeamRole_TeamRoleId,
+          teamrole.Name as TeamRole_Name,
+          teamrole.SortOrder as TeamRole_SortOrder,
+          teamrole.DateCreated as TeamRole_DateCreated,
+          teamrole.DateModified as TeamRole_DateModified,
           Player.AccountId as Player_AccountId,
           Player.TmioData as Player_TmioData,
           PlayerOverrides.Name as Player_Name,
@@ -40,8 +46,9 @@ export class EventService {
           PlayerOverrides.Discord as Player_Discord
         from Event
         left join EventPlayer on Event.EventId = EventPlayer.EventId
-        left join TeamRole on EventPlayer.EventRoleId = TeamRole.TeamRoleId
+        left join TeamRole eventrole on EventPlayer.EventRoleId = eventrole.TeamRoleId
         left join TeamPlayer on EventPlayer.TeamPlayerId = TeamPlayer.TeamPlayerId
+        left join TeamRole teamrole on TeamPlayer.TeamRoleId = teamrole.TeamRoleId
         left join Player on TeamPlayer.AccountId = Player.AccountId
         left join PlayerOverrides on Player.AccountId = PlayerOverrides.AccountId
         where Event.OrganizationId = $1

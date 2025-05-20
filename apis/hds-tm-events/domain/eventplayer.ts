@@ -35,9 +35,16 @@ export class EventPlayer extends TeamPlayer {
 
   hydrateEventRole(json: JsonObject): EventPlayer {
     json = Json.lowercaseKeys(json);
-    json = Json.merge(json, Json.onlyPrefixedKeys(json, "teamrole"));
+    json = Json.merge(json, Json.onlyPrefixedKeys(json, "eventrole"));
     this.eventRole = TeamRole.fromJson(json);
     this.eventRoleId = this.eventRole.teamRoleId || this.eventRoleId;
+    return this;
+  }
+
+  hydrateTeamRole(json: JsonObject): EventPlayer {
+    json = Json.lowercaseKeys(json);
+    json = Json.merge(json, Json.onlyPrefixedKeys(json, "teamrole"));
+    this.#teamPlayer.hydrateTeamRole(json);
     return this;
   }
 }

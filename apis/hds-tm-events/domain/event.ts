@@ -52,9 +52,9 @@ export class Event {
     if (!json[0]?.player_accountid) return this;
 
     this.players = json.map((ja) => {
-      return EventPlayer.fromJson(
-        Json.onlyPrefixedKeys(ja, "player")
-      ).hydrateEventRole(Json.onlyPrefixedKeys(ja, "teamrole"));
+      return EventPlayer.fromJson(Json.onlyPrefixedKeys(ja, "player"))
+        .hydrateEventRole(Json.onlyPrefixedKeys(ja, "eventrole"))
+        .hydrateTeamRole(Json.onlyPrefixedKeys(ja, "teamrole"));
     });
     return this;
   }
