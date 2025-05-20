@@ -36,6 +36,7 @@ import { EventPanelComponent } from './event-panel.component'
 import { NoTeamsPanelComponent } from './no-teams-panel.component'
 import { NoPostsPanelComponent } from './no-posts-panel.component'
 import { NoEventsPanelComponent } from './no-events-panel.component'
+import { TagModule } from 'primeng/tag'
 
 @NgModule({
   declarations: [
@@ -73,6 +74,7 @@ import { NoEventsPanelComponent } from './no-events-panel.component'
     NoTeamsPanelComponent,
     NoPostsPanelComponent,
     NoEventsPanelComponent,
+    TagModule,
   ],
   imports: [
     ButtonModule,
@@ -96,6 +98,7 @@ import { NoEventsPanelComponent } from './no-events-panel.component'
     RouterModule,
     CheckboxModule,
     PanelModule,
+    TagModule,
   ],
 })
 export class ComponentsModule {}

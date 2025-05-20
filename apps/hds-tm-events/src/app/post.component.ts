@@ -15,7 +15,11 @@ import { StoreService } from 'src/services/store.service'
           <h1>{{ post.title }}</h1>
           <div class="post-meta-row">
             <player-info [player]="post.author" prefix="By "></player-info>
-            <span class="post-date">{{ post.dateModified | date: 'short' : 'UTC' }}</span>
+            <span class="post-date"
+              ><ng-container *ngFor="let tag of post.tags"
+                ><p-tag [styleClass]="'post-tags'" severity="secondary" [value]="tag.name" /></ng-container
+              >{{ post.dateModified | date: 'short' : 'UTC' }}</span
+            >
           </div>
           <div class="post-content">
             <ng-container *ngFor="let paragraph of paragraphs">
@@ -78,6 +82,14 @@ import { StoreService } from 'src/services/store.service'
         font-size: 0.95em;
         margin-left: 16px;
         white-space: nowrap;
+      }
+      :host ::ng-deep .post-tags {
+        margin: 0 8px 0 0;
+        padding: 0 4px;
+        font-size: 0.8em;
+        font-weight: 400;
+        background-color: var(--primary-color);
+        color: var(--primary-color-text);
       }
       .post-content {
         margin-top: 32px;

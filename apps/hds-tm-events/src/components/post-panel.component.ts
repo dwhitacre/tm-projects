@@ -15,7 +15,12 @@ import { Post } from 'src/domain/post'
         </div>
         <div class="post-footer">
           <player-info [player]="post.author" prefix="By "></player-info>
-          <span>{{ post.dateModified | date: 'short' : 'UTC' }}</span>
+          <span>
+            <ng-container *ngFor="let tag of post.tags"
+              ><p-tag [styleClass]="'post-tags'" severity="secondary" [value]="tag.name"
+            /></ng-container>
+            {{ post.dateModified | date: 'short' : 'UTC' }}
+          </span>
         </div>
       </p-panel>
       <div *ngIf="overlayEnabled && showUrl" class="url-overlay">{{ fullPostUrl }}</div>
@@ -43,6 +48,15 @@ import { Post } from 'src/domain/post'
         justify-content: space-between;
         font-size: 0.9em;
         color: #aaaaaa;
+      }
+
+      :host ::ng-deep .post-tags {
+        margin: 0 8px 0 0;
+        padding: 0 4px;
+        font-size: 0.8em;
+        font-weight: 400;
+        background-color: var(--primary-color);
+        color: var(--primary-color-text);
       }
 
       :host ::ng-deep .clickable-panel {
