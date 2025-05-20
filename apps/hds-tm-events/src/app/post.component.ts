@@ -90,6 +90,8 @@ export class PostComponent {
   post?: Post
   paragraphs: string[] = []
 
+  #paragraphRegex = /\\n\\n/g
+
   constructor(
     private route: ActivatedRoute,
     public storeService: StoreService,
@@ -97,7 +99,7 @@ export class PostComponent {
     const postId = this.route.snapshot.paramMap.get('id')
     this.storeService.posts$.subscribe((posts) => {
       this.post = posts.find((post) => post.postId + '' === postId)
-      this.paragraphs = this.post?.content?.split(/\n\s*\n/) || []
+      this.paragraphs = this.post?.content?.split(this.#paragraphRegex) || []
     })
   }
 }
