@@ -642,13 +642,15 @@ export class StoreService extends ComponentStore<StoreState> {
             next: (res) => {
               // this.patchState({ organizations: res.organizations })
               if (this.state().selectedOrganization == 0) {
-                const organizationId = res.organizations.find((o) => o.name === 'Holy Dynasty')!.organizationId
-                this.patchState({ selectedOrganization: organizationId })
-                this.fetchTeams(organizationId)
-                this.fetchTags(organizationId)
-                this.fetchTeamRoles(organizationId)
-                this.fetchPosts(organizationId)
-                this.fetchEvents(organizationId)
+                const organization = res.organizations.find((o) => o.name === 'Holy Dynasty')
+                if (!organization) return
+
+                this.patchState({ selectedOrganization: organization.organizationId })
+                this.fetchTeams(organization.organizationId)
+                this.fetchTags(organization.organizationId)
+                this.fetchTeamRoles(organization.organizationId)
+                this.fetchPosts(organization.organizationId)
+                this.fetchEvents(organization.organizationId)
               }
             },
             error: (error: HttpErrorResponse) => this.logService.error(error),

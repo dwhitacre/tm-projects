@@ -33,6 +33,9 @@ import { PlayersListComponent } from './players-list.component'
 import { PostPanelComponent } from './post-panel.component'
 import { PlayerInfoComponent } from './player-info.component'
 import { EventPanelComponent } from './event-panel.component'
+import { NoTeamsPanelComponent } from './no-teams-panel.component'
+import { NoPostsPanelComponent } from './no-posts-panel.component'
+import { NoEventsPanelComponent } from './no-events-panel.component'
 
 @NgModule({
   declarations: [
@@ -49,6 +52,9 @@ import { EventPanelComponent } from './event-panel.component'
     PostPanelComponent,
     PlayerInfoComponent,
     EventPanelComponent,
+    NoTeamsPanelComponent,
+    NoPostsPanelComponent,
+    NoEventsPanelComponent,
   ],
   exports: [
     LayoutComponent,
@@ -64,6 +70,9 @@ import { EventPanelComponent } from './event-panel.component'
     PostPanelComponent,
     PlayerInfoComponent,
     EventPanelComponent,
+    NoTeamsPanelComponent,
+    NoPostsPanelComponent,
+    NoEventsPanelComponent,
   ],
   imports: [
     ButtonModule,

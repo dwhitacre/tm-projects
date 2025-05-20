@@ -11,24 +11,39 @@ import { PanelModule } from 'primeng/panel'
       <div class="container">
         <div class="column teams">
           <ng-container *ngIf="storeService.teams$ | async as teams">
-            <div *ngFor="let team of teams" class="team-group">
-              <team-panel [team]="team"></team-panel>
-            </div>
+            <ng-container *ngIf="teams.length > 0; else noTeams">
+              <div *ngFor="let team of teams" class="team-group">
+                <team-panel [team]="team"></team-panel>
+              </div>
+            </ng-container>
           </ng-container>
+          <ng-template #noTeams>
+            <no-teams-panel></no-teams-panel>
+          </ng-template>
         </div>
         <div class="column posts">
           <ng-container *ngIf="storeService.posts$ | async as posts">
-            <div *ngFor="let post of posts">
-              <post-panel [post]="post"></post-panel>
-            </div>
+            <ng-container *ngIf="posts.length > 0; else noPosts">
+              <div *ngFor="let post of posts">
+                <post-panel [post]="post"></post-panel>
+              </div>
+            </ng-container>
           </ng-container>
+          <ng-template #noPosts>
+            <no-posts-panel></no-posts-panel>
+          </ng-template>
         </div>
         <div class="column events">
           <ng-container *ngIf="storeService.events$ | async as events">
-            <div *ngFor="let event of events" class="event-card">
-              <event-panel [event]="event"></event-panel>
-            </div>
+            <ng-container *ngIf="events.length > 0; else noEvents">
+              <div *ngFor="let event of events" class="event-card">
+                <event-panel [event]="event"></event-panel>
+              </div>
+            </ng-container>
           </ng-container>
+          <ng-template #noEvents>
+            <no-events-panel></no-events-panel>
+          </ng-template>
         </div>
       </div>
     </layout>
