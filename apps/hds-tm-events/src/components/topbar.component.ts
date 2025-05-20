@@ -41,22 +41,7 @@ export interface MenuItemExtended extends MenuItem {
       </div>
     </div>
 
-    <p-dialog
-      header="Enter Admin Key"
-      [modal]="true"
-      [(visible)]="adminkeyVisible"
-      position="topright"
-      [draggable]="false"
-      [style]="{ width: '25rem' }"
-    >
-      <div class="layout-dialog-input">
-        <input pInputText #adminkey type="password" autocomplete="off" />
-      </div>
-      <div class="layout-dialog-actions">
-        <p-button label="Cancel" severity="secondary" (click)="adminkeyVisible = false" />
-        <p-button label="Enter" (click)="storeService.updateAdmin(adminkey.value); adminkeyVisible = false" />
-      </div>
-    </p-dialog>
+    <admin-key-dialog [(visible)]="adminkeyVisible"></admin-key-dialog>
 
     <p-dialog
       header="Enter Weekly Date"

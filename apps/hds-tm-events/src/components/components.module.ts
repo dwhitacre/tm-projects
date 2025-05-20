@@ -37,6 +37,7 @@ import { NoTeamsPanelComponent } from './no-teams-panel.component'
 import { NoPostsPanelComponent } from './no-posts-panel.component'
 import { NoEventsPanelComponent } from './no-events-panel.component'
 import { TagModule } from 'primeng/tag'
+import { AdminKeyDialogComponent } from './admin-key-dialog.component'
 
 @NgModule({
   declarations: [
@@ -56,6 +57,7 @@ import { TagModule } from 'primeng/tag'
     NoTeamsPanelComponent,
     NoPostsPanelComponent,
     NoEventsPanelComponent,
+    AdminKeyDialogComponent,
   ],
   exports: [
     LayoutComponent,
