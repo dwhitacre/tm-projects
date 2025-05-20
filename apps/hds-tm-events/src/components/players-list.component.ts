@@ -44,6 +44,7 @@ export class PlayersListComponent {
     this.players.sort((a, b) => {
       const aRoleSortOrder = a.eventRole?.sortOrder ?? a.teamRole?.sortOrder ?? 0
       const bRoleSortOrder = b.eventRole?.sortOrder ?? b.teamRole?.sortOrder ?? 0
+      if (aRoleSortOrder === bRoleSortOrder) return a.name.localeCompare(b.name)
       return aRoleSortOrder - bRoleSortOrder
     })
   }
