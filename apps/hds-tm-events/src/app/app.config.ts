@@ -4,7 +4,7 @@ import { appRoutes } from './app.routes'
 import { provideAnimations } from '@angular/platform-browser/animations'
 import { LeaderboardService } from 'src/services/leaderboard.service'
 import { LogService } from 'src/services/log.service'
-import { MessageService } from 'primeng/api'
+import { ConfirmationService, MessageService } from 'primeng/api'
 import { PositionPipe } from 'src/pipes/position.pipe'
 import { provideHttpClient, withInterceptors } from '@angular/common/http'
 import { HttpInterceptorFn } from '@angular/common/http'
@@ -50,6 +50,7 @@ export const appConfig: ApplicationConfig = {
       },
     }),
     AdminService,
+    ConfirmationService,
     EventService,
     FeatureService,
     LeaderboardService,

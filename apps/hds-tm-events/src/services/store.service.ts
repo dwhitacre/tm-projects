@@ -699,6 +699,49 @@ export class StoreService extends ComponentStore<StoreState> {
     )
   })
 
+  readonly upsertTeam = this.effect<Team>((team$) => {
+    return team$.pipe(
+      concatLatestFrom(() => [this.selectedOrganization$]),
+      switchMap(([team, selectedOrganization]) => {
+        team = { ...team, organizationId: selectedOrganization }
+
+        if (team.teamId > 0) {
+          return this.teamService.update(team).pipe(
+            tapResponse({
+              next: () => this.logService.success('Success', `Updated team: ${team.name}`),
+              error: (error: HttpErrorResponse) => this.logService.error(error),
+              finalize: () => this.fetchTeams(selectedOrganization),
+            }),
+          )
+        }
+
+        return this.teamService.create(team).pipe(
+          tapResponse({
+            next: () => this.logService.success('Success', `Created team: ${team.name}`),
+            error: (error: HttpErrorResponse) => this.logService.error(error),
+            finalize: () => this.fetchTeams(selectedOrganization),
+          }),
+        )
+      }),
+    )
+  })
+
+  readonly deleteTeam = this.effect<Team>((team$) => {
+    return team$.pipe(
+      concatLatestFrom(() => [this.selectedOrganization$]),
+      switchMap(([team, selectedOrganization]) => {
+        team = { ...team, organizationId: selectedOrganization }
+        return this.teamService.delete(team).pipe(
+          tapResponse({
+            next: () => this.logService.success('Success', `Deleted team: ${team.name}`),
+            error: (error: HttpErrorResponse) => this.logService.error(error),
+            finalize: () => this.fetchTeams(selectedOrganization),
+          }),
+        )
+      }),
+    )
+  })
+
   readonly fetchPosts = this.effect<Organization['organizationId']>((organizationId$) => {
     return organizationId$.pipe(
       switchMap((organizationId) =>

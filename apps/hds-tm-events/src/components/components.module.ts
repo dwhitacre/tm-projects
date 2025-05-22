@@ -38,6 +38,10 @@ import { NoPostsPanelComponent } from './no-posts-panel.component'
 import { NoEventsPanelComponent } from './no-events-panel.component'
 import { TagModule } from 'primeng/tag'
 import { AdminKeyDialogComponent } from './admin-key-dialog.component'
+import { TeamDialogComponent } from './team-dialog.component'
+import { NewTeamButtonComponent } from './new-team-button.component'
+import { ConfirmDialogModule } from 'primeng/confirmdialog'
+import { ToggleSwitchModule } from 'primeng/toggleswitch'
 
 @NgModule({
   declarations: [
@@ -58,6 +62,8 @@ import { AdminKeyDialogComponent } from './admin-key-dialog.component'
     NoPostsPanelComponent,
     NoEventsPanelComponent,
     AdminKeyDialogComponent,
+    TeamDialogComponent,
+    NewTeamButtonComponent,
   ],
   exports: [
     LayoutComponent,
@@ -77,6 +83,11 @@ import { AdminKeyDialogComponent } from './admin-key-dialog.component'
     NoPostsPanelComponent,
     NoEventsPanelComponent,
     TagModule,
+    TeamDialogComponent,
+    NewTeamButtonComponent,
+    ContextMenuModule,
+    ConfirmDialogModule,
+    ToggleSwitchModule,
   ],
   imports: [
     ButtonModule,
@@ -101,6 +112,8 @@ import { AdminKeyDialogComponent } from './admin-key-dialog.component'
     CheckboxModule,
     PanelModule,
     TagModule,
+    ConfirmDialogModule,
+    ToggleSwitchModule,
   ],
 })
 export class ComponentsModule {}

@@ -3,6 +3,8 @@ import { ComponentsModule } from 'src/components/components.module'
 import { CommonModule } from '@angular/common'
 import { StoreService } from 'src/services/store.service'
 import { PanelModule } from 'primeng/panel'
+import { Team } from 'src/domain/team'
+import { ConfirmationService } from 'primeng/api'
 
 @Component({
   selector: 'home',
@@ -13,13 +15,21 @@ import { PanelModule } from 'primeng/panel'
           <ng-container *ngIf="storeService.teams$ | async as teams">
             <ng-container *ngIf="teams.length > 0; else noTeams">
               <div *ngFor="let team of teams" class="team-group">
-                <team-panel [team]="team"></team-panel>
+                <team-panel
+                  [showContextMenu]="(storeService.isAdmin$ | async) ?? false"
+                  [team]="team"
+                  (edit)="showTeamDialog(team, true)"
+                  (delete)="showTeamDeleteDialog(team)"
+                ></team-panel>
               </div>
             </ng-container>
           </ng-container>
           <ng-template #noTeams>
             <no-teams-panel></no-teams-panel>
           </ng-template>
+          <ng-container *ngIf="storeService.isAdmin$ | async">
+            <new-team-button (click)="showTeamDialog()"></new-team-button>
+          </ng-container>
         </div>
         <div class="column posts">
           <ng-container *ngIf="storeService.posts$ | async as posts">
@@ -47,6 +57,17 @@ import { PanelModule } from 'primeng/panel'
         </div>
       </div>
     </layout>
+
+    <p-confirmdialog />
+
+    <team-dialog
+      [team]="selectedTeam"
+      [editMode]="selectedTeamEditMode"
+      [teamRoles]="(storeService.teamRoles$ | async) ?? []"
+      [players]="(storeService.players$ | async) ?? []"
+      [(visible)]="teamDialogVisible"
+      (save)="saveTeam($event)"
+    ></team-dialog>
   `,
   styles: [
     `
@@ -98,5 +119,54 @@ import { PanelModule } from 'primeng/panel'
   standalone: true,
 })
 export class HomeComponent {
-  constructor(public storeService: StoreService) {}
+  teamDialogVisible: boolean = false
+  selectedTeam: Team | undefined
+  selectedTeamEditMode: boolean = false
+
+  constructor(
+    public storeService: StoreService,
+    private confirmationService: ConfirmationService,
+  ) {}
+
+  showTeamDialog(team?: Team, editMode: boolean = false) {
+    this.selectedTeam =
+      team ??
+      ({
+        teamId: 0,
+        name: '',
+        description: '',
+        sortOrder: 0,
+        isVisible: true,
+        organizationId: 0,
+        players: [],
+      } as Team)
+    this.selectedTeamEditMode = editMode
+    this.teamDialogVisible = true
+  }
+
+  showTeamDeleteDialog(team: Team) {
+    this.confirmationService.confirm({
+      message: `Do you want to delete the team: ${team.name}?`,
+      header: 'Delete Team',
+      icon: 'pi pi-users',
+      closeOnEscape: true,
+      closable: true,
+      rejectLabel: 'Cancel',
+      rejectButtonProps: {
+        label: 'Cancel',
+        severity: 'secondary',
+      },
+      acceptButtonProps: {
+        label: 'Delete',
+      },
+      accept: () => {
+        this.storeService.deleteTeam(team)
+      },
+    })
+  }
+
+  saveTeam(team: Team) {
+    this.storeService.upsertTeam(team)
+    this.teamDialogVisible = false
+  }
 }
