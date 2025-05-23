@@ -42,6 +42,9 @@ import { TeamDialogComponent } from './team-dialog.component'
 import { NewTeamButtonComponent } from './new-team-button.component'
 import { ConfirmDialogModule } from 'primeng/confirmdialog'
 import { ToggleSwitchModule } from 'primeng/toggleswitch'
+import { EventDialogComponent } from './event-dialog.component'
+import { NewEventButtonComponent } from './new-event-button.component'
+import { DatePickerModule } from 'primeng/datepicker'
 
 @NgModule({
   declarations: [
@@ -64,6 +67,8 @@ import { ToggleSwitchModule } from 'primeng/toggleswitch'
     AdminKeyDialogComponent,
     TeamDialogComponent,
     NewTeamButtonComponent,
+    EventDialogComponent,
+    NewEventButtonComponent,
   ],
   exports: [
     LayoutComponent,
@@ -88,6 +93,9 @@ import { ToggleSwitchModule } from 'primeng/toggleswitch'
     ContextMenuModule,
     ConfirmDialogModule,
     ToggleSwitchModule,
+    EventDialogComponent,
+    NewEventButtonComponent,
+    DatePickerModule,
   ],
   imports: [
     ButtonModule,
@@ -114,6 +122,7 @@ import { ToggleSwitchModule } from 'primeng/toggleswitch'
     TagModule,
     ConfirmDialogModule,
     ToggleSwitchModule,
+    DatePickerModule,
   ],
 })
 export class ComponentsModule {}

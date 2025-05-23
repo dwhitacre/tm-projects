@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core'
+import { Component, EventEmitter, Input, Output } from '@angular/core'
 import { Event } from 'src/domain/event'
 import { FeatureToggle, isEnabled } from 'src/domain/feature'
 
@@ -6,22 +6,25 @@ import { FeatureToggle, isEnabled } from 'src/domain/feature'
   selector: 'event-panel',
   standalone: false,
   template: `
-    <div class="event-card" (mouseover)="showUrl = true" (mouseleave)="showUrl = false">
-      <p-panel [header]="event.name" [styleClass]="'clickable-panel'" (click)="openExternalUrl(event.externalUrl)">
-        <img [src]="event.image" alt="{{ event.name }}" class="event-image" />
-        <players-list [players]="event.players"></players-list>
-        <div class="event-footer">
-          <span>
-            <div class="event-footer-label"><small>Start</small></div>
-            {{ event.dateStart ? (event.dateStart | date: 'short' : 'UTC') : 'TBD' }}
-          </span>
-          <span>
-            <div class="event-footer-label"><small>End</small></div>
-            {{ event.dateEnd ? (event.dateEnd | date: 'short' : 'UTC') : 'TBD' }}
-          </span>
-        </div>
-      </p-panel>
-      <div *ngIf="overlayEnabled && showUrl" class="url-overlay">{{ event.externalUrl }}</div>
+    <div #eventpanel>
+      <div class="event-card" (mouseover)="showUrl = true" (mouseleave)="showUrl = false">
+        <p-panel [header]="event.name" [styleClass]="'clickable-panel'" (click)="openExternalUrl(event.externalUrl)">
+          <img [src]="event.image" alt="{{ event.name }}" class="event-image" />
+          <players-list [players]="event.players"></players-list>
+          <div class="event-footer">
+            <span>
+              <div class="event-footer-label"><small>Start</small></div>
+              {{ event.dateStart ? (event.dateStart | date: 'short') : 'TBD' }}
+            </span>
+            <span>
+              <div class="event-footer-label"><small>End</small></div>
+              {{ event.dateEnd ? (event.dateEnd | date: 'short') : 'TBD' }}
+            </span>
+          </div>
+        </p-panel>
+        <div *ngIf="overlayEnabled && showUrl" class="url-overlay">{{ event.externalUrl }}</div>
+      </div>
+      <p-contextmenu *ngIf="showContextMenu" [target]="eventpanel" [model]="menuItems" />
     </div>
   `,
   styles: [
@@ -85,8 +88,28 @@ import { FeatureToggle, isEnabled } from 'src/domain/feature'
 })
 export class EventPanelComponent {
   @Input() event!: Event
+  @Input() showContextMenu: boolean = false
+
+  @Output() edit = new EventEmitter<Event>()
+  @Output() delete = new EventEmitter<Event>()
+
   showUrl = false
   overlayEnabled = isEnabled(FeatureToggle.urlOverlay)
+
+  menuItems = [
+    {
+      label: 'Edit Event',
+      icon: 'pi pi-calendar',
+      command: () => this.edit.emit(this.event),
+      visible: true,
+    },
+    {
+      label: 'Delete Event',
+      icon: 'pi pi-trash',
+      command: () => this.delete.emit(this.event),
+      visible: true,
+    },
+  ]
 
   openExternalUrl(url: string) {
     if (url) window.open(url, '_blank')

@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http'
 import { Injectable } from '@angular/core'
-import { Team, TeamResponse } from 'src/domain/team'
+import { Team, TeamPlayer, TeamResponse } from 'src/domain/team'
 import { Observable, of } from 'rxjs'
 
 @Injectable({ providedIn: 'root' })
@@ -27,5 +27,23 @@ export class TeamService {
     console.log('delete team', team)
     return of()
     return this.httpClient.delete(`/api/team`, { body: { teamId: team.teamId, organizationId: team.organizationId } })
+  }
+
+  addPlayer(team: Team, teamPlayer: TeamPlayer) {
+    console.log('add team player', team, teamPlayer)
+    return of()
+    return this.httpClient.put(`/api/team/${team.teamId}/player`, teamPlayer)
+  }
+
+  updatePlayer(team: Team, teamPlayer: TeamPlayer) {
+    console.log('update team player', team, teamPlayer)
+    return of()
+    return this.httpClient.post(`/api/team/${team.teamId}/player`, teamPlayer)
+  }
+
+  deletePlayer(team: Team, accountId: string) {
+    console.log('delete team player', team, accountId)
+    return of()
+    return this.httpClient.delete(`/api/team/${team.teamId}/player`, { body: { accountId } })
   }
 }

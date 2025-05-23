@@ -5,6 +5,7 @@ import { StoreService } from 'src/services/store.service'
 import { PanelModule } from 'primeng/panel'
 import { Team } from 'src/domain/team'
 import { ConfirmationService } from 'primeng/api'
+import { Event } from 'src/domain/event'
 
 @Component({
   selector: 'home',
@@ -47,13 +48,21 @@ import { ConfirmationService } from 'primeng/api'
           <ng-container *ngIf="storeService.events$ | async as events">
             <ng-container *ngIf="events.length > 0; else noEvents">
               <div *ngFor="let event of events" class="event-card">
-                <event-panel [event]="event"></event-panel>
+                <event-panel
+                  [showContextMenu]="(storeService.isAdmin$ | async) ?? false"
+                  [event]="event"
+                  (edit)="showEventDialog(event, true)"
+                  (delete)="showEventDeleteDialog(event)"
+                ></event-panel>
               </div>
             </ng-container>
           </ng-container>
           <ng-template #noEvents>
             <no-events-panel></no-events-panel>
           </ng-template>
+          <ng-container *ngIf="storeService.isAdmin$ | async">
+            <new-event-button (click)="showEventDialog()"></new-event-button>
+          </ng-container>
         </div>
       </div>
     </layout>
@@ -68,6 +77,15 @@ import { ConfirmationService } from 'primeng/api'
       [(visible)]="teamDialogVisible"
       (save)="saveTeam($event)"
     ></team-dialog>
+
+    <event-dialog
+      [event]="selectedEvent"
+      [editMode]="selectedEventEditMode"
+      [teamRoles]="(storeService.teamRoles$ | async) ?? []"
+      [players]="(storeService.teamPlayers$ | async) ?? []"
+      [(visible)]="eventDialogVisible"
+      (save)="saveEvent($event)"
+    ></event-dialog>
   `,
   styles: [
     `
@@ -122,6 +140,9 @@ export class HomeComponent {
   teamDialogVisible: boolean = false
   selectedTeam: Team | undefined
   selectedTeamEditMode: boolean = false
+  eventDialogVisible: boolean = false
+  selectedEvent: Event | undefined
+  selectedEventEditMode: boolean = false
 
   constructor(
     public storeService: StoreService,
@@ -168,5 +189,51 @@ export class HomeComponent {
   saveTeam(team: Team) {
     this.storeService.upsertTeam(team)
     this.teamDialogVisible = false
+  }
+
+  showEventDialog(event?: Event, editMode: boolean = false) {
+    this.selectedEvent =
+      event ??
+      ({
+        eventId: 0,
+        name: '',
+        description: '',
+        dateStart: new Date().toISOString(),
+        dateEnd: new Date().toISOString(),
+        isVisible: true,
+        image: '',
+        externalUrl: '',
+        sortOrder: 0,
+        organizationId: 0,
+        players: [],
+      } as Event)
+    this.selectedEventEditMode = editMode
+    this.eventDialogVisible = true
+  }
+
+  showEventDeleteDialog(event: Event) {
+    this.confirmationService.confirm({
+      message: `Do you want to delete the event: ${event.name}?`,
+      header: 'Delete Event',
+      icon: 'pi pi-calendar',
+      closeOnEscape: true,
+      closable: true,
+      rejectLabel: 'Cancel',
+      rejectButtonProps: {
+        label: 'Cancel',
+        severity: 'secondary',
+      },
+      acceptButtonProps: {
+        label: 'Delete',
+      },
+      accept: () => {
+        this.storeService.deleteEvent(event)
+      },
+    })
+  }
+
+  saveEvent(event: Event) {
+    this.storeService.upsertEvent(event)
+    this.eventDialogVisible = false
   }
 }

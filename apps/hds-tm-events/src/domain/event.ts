@@ -4,15 +4,15 @@ import { TeamRole } from './teamrole'
 
 export interface EventPlayer extends TeamPlayer {
   eventRoleId: number
-  eventRole: TeamRole
+  eventRole?: TeamRole
 }
 
 export interface Event {
   eventId: number
   name: string
   description: string
-  dateStart?: Date
-  dateEnd?: Date
+  dateStart?: string
+  dateEnd?: string
   externalUrl: string
   image: string
   isVisible: boolean

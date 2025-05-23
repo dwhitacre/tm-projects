@@ -22,7 +22,7 @@ import { FeatureToggle } from 'src/domain/feature'
 import { TeamService } from './team.service'
 import { PostService } from './post.service'
 import { EventService } from './event.service'
-import { Team } from 'src/domain/team'
+import { Team, TeamPlayer } from 'src/domain/team'
 import { Post } from 'src/domain/post'
 import { Event } from 'src/domain/event'
 import { Tag } from 'src/domain/tag'
@@ -91,6 +91,21 @@ export class StoreService extends ComponentStore<StoreState> {
   readonly weeklyIds$: Observable<Array<string>> = this.select((state) =>
     state.leaderboard.weeklies.map((leaderboardWeekly) => leaderboardWeekly.weekly.weeklyId).reverse(),
   )
+  readonly teamPlayers$ = this.select(this.teams$, (teams) => {
+    const teamPlayerDict = new Map<TeamPlayer['accountId'], TeamPlayer>()
+    return teams.reduce((acc, team) => {
+      if (!team.players) return acc
+
+      for (const player of team.players) {
+        if (teamPlayerDict.has(player.accountId)) continue
+
+        teamPlayerDict.set(player.accountId, player)
+        acc.push(player)
+      }
+
+      return acc
+    }, [] as Array<TeamPlayer>)
+  })
 
   readonly stats$: Observable<Array<Stat>> = this.select(
     this.leaderboard$,
@@ -765,6 +780,49 @@ export class StoreService extends ComponentStore<StoreState> {
           }),
         ),
       ),
+    )
+  })
+
+  readonly upsertEvent = this.effect<Event>((event$) => {
+    return event$.pipe(
+      concatLatestFrom(() => [this.selectedOrganization$]),
+      switchMap(([event, selectedOrganization]) => {
+        event = { ...event, organizationId: selectedOrganization }
+
+        if (event.eventId > 0) {
+          return this.eventService.update(event).pipe(
+            tapResponse({
+              next: () => this.logService.success('Success', `Updated event: ${event.name}`),
+              error: (error: HttpErrorResponse) => this.logService.error(error),
+              finalize: () => this.fetchEvents(selectedOrganization),
+            }),
+          )
+        }
+
+        return this.eventService.create(event).pipe(
+          tapResponse({
+            next: () => this.logService.success('Success', `Created event: ${event.name}`),
+            error: (error: HttpErrorResponse) => this.logService.error(error),
+            finalize: () => this.fetchEvents(selectedOrganization),
+          }),
+        )
+      }),
+    )
+  })
+
+  readonly deleteEvent = this.effect<Event>((event$) => {
+    return event$.pipe(
+      concatLatestFrom(() => [this.selectedOrganization$]),
+      switchMap(([event, selectedOrganization]) => {
+        event = { ...event, organizationId: selectedOrganization }
+        return this.eventService.delete(event).pipe(
+          tapResponse({
+            next: () => this.logService.success('Success', `Deleted event: ${event.name}`),
+            error: (error: HttpErrorResponse) => this.logService.error(error),
+            finalize: () => this.fetchEvents(selectedOrganization),
+          }),
+        )
+      }),
     )
   })
 }
