@@ -16,7 +16,7 @@ export interface Post {
   dateCreated?: Date
   dateModified?: Date
   organizationId: number
-  author: Author
+  author?: Author
   tags: Tag[]
 }
 

@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core'
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core'
 import { Router } from '@angular/router'
 import { FeatureToggle, isEnabled } from 'src/domain/feature'
 import { Post } from 'src/domain/post'
@@ -7,23 +7,26 @@ import { Post } from 'src/domain/post'
   selector: 'post-panel',
   standalone: false,
   template: `
-    <div class="post-card" (mouseover)="showUrl = true" (mouseleave)="showUrl = false">
-      <p-panel [header]="post.title" (click)="navigateToPost(post.postId)" [styleClass]="'clickable-panel'">
-        <img [src]="post.image" [alt]="post.title" class="post-image" />
-        <div class="post-summary">
-          <p>{{ post.description }}</p>
-        </div>
-        <div class="post-footer">
-          <player-info [player]="post.author" prefix="By "></player-info>
-          <span>
-            <ng-container *ngFor="let tag of post.tags"
-              ><p-tag [styleClass]="'post-tags'" severity="secondary" [value]="tag.name"
-            /></ng-container>
-            {{ post.dateModified | date: 'short' }}
-          </span>
-        </div>
-      </p-panel>
-      <div *ngIf="overlayEnabled && showUrl" class="url-overlay">{{ fullPostUrl }}</div>
+    <div #postpanel>
+      <div class="post-card" (mouseover)="showUrl = true" (mouseleave)="showUrl = false">
+        <p-panel [header]="post.title" (click)="navigateToPost(post.postId)" [styleClass]="'clickable-panel'">
+          <img [src]="post.image" [alt]="post.title" class="post-image" />
+          <div class="post-summary">
+            <p>{{ post.description }}</p>
+          </div>
+          <div class="post-footer">
+            <player-info [player]="post.author!" prefix="By "></player-info>
+            <span>
+              <ng-container *ngFor="let tag of post.tags"
+                ><p-tag [styleClass]="'post-tags'" severity="secondary" [value]="tag.name"
+              /></ng-container>
+              {{ post.dateModified | date: 'short' }}
+            </span>
+          </div>
+        </p-panel>
+        <div *ngIf="overlayEnabled && showUrl" class="url-overlay">{{ fullPostUrl }}</div>
+      </div>
+      <p-contextmenu *ngIf="showContextMenu" [target]="postpanel" [model]="menuItems" />
     </div>
   `,
   styles: [
@@ -92,6 +95,9 @@ import { Post } from 'src/domain/post'
 })
 export class PostPanelComponent implements OnInit {
   @Input() post!: Post
+  @Input() showContextMenu: boolean = false
+  @Output() edit = new EventEmitter<Post>()
+  @Output() delete = new EventEmitter<Post>()
   showUrl = false
   fullPostUrl: string = ''
   overlayEnabled = isEnabled(FeatureToggle.urlOverlay)
@@ -105,4 +111,19 @@ export class PostPanelComponent implements OnInit {
   navigateToPost(postId: Post['postId']) {
     this.router.navigate(['/posts', postId])
   }
+
+  menuItems = [
+    {
+      label: 'Edit Post',
+      icon: 'pi pi-pencil',
+      command: () => this.edit.emit(this.post),
+      visible: true,
+    },
+    {
+      label: 'Delete Post',
+      icon: 'pi pi-trash',
+      command: () => this.delete.emit(this.post),
+      visible: true,
+    },
+  ]
 }

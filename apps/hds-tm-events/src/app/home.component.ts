@@ -6,6 +6,7 @@ import { PanelModule } from 'primeng/panel'
 import { Team } from 'src/domain/team'
 import { ConfirmationService } from 'primeng/api'
 import { Event } from 'src/domain/event'
+import { Post } from 'src/domain/post'
 
 @Component({
   selector: 'home',
@@ -36,13 +37,21 @@ import { Event } from 'src/domain/event'
           <ng-container *ngIf="storeService.posts$ | async as posts">
             <ng-container *ngIf="posts.length > 0; else noPosts">
               <div *ngFor="let post of posts">
-                <post-panel [post]="post"></post-panel>
+                <post-panel
+                  [post]="post"
+                  [showContextMenu]="(storeService.isAdmin$ | async) ?? false"
+                  (edit)="showPostDialog(post, true)"
+                  (delete)="showPostDeleteDialog(post)"
+                ></post-panel>
               </div>
             </ng-container>
           </ng-container>
           <ng-template #noPosts>
             <no-posts-panel></no-posts-panel>
           </ng-template>
+          <ng-container *ngIf="storeService.isAdmin$ | async">
+            <new-post-button (click)="showPostDialog()"></new-post-button>
+          </ng-container>
         </div>
         <div class="column events">
           <ng-container *ngIf="storeService.events$ | async as events">
@@ -86,6 +95,14 @@ import { Event } from 'src/domain/event'
       [(visible)]="eventDialogVisible"
       (save)="saveEvent($event)"
     ></event-dialog>
+
+    <post-dialog
+      [post]="selectedPost"
+      [editMode]="selectedPostEditMode"
+      [tags]="(storeService.tags$ | async) ?? []"
+      [(visible)]="postDialogVisible"
+      (save)="savePost($event)"
+    ></post-dialog>
   `,
   styles: [
     `
@@ -143,6 +160,9 @@ export class HomeComponent {
   eventDialogVisible: boolean = false
   selectedEvent: Event | undefined
   selectedEventEditMode: boolean = false
+  postDialogVisible: boolean = false
+  selectedPost: Post | undefined
+  selectedPostEditMode: boolean = false
 
   constructor(
     public storeService: StoreService,
@@ -235,5 +255,51 @@ export class HomeComponent {
   saveEvent(event: Event) {
     this.storeService.upsertEvent(event)
     this.eventDialogVisible = false
+  }
+
+  showPostDialog(post?: Post, editMode: boolean = false) {
+    this.selectedPost =
+      post ??
+      ({
+        postId: 0,
+        accountId: '',
+        title: '',
+        description: '',
+        image: '',
+        content: '',
+        sortOrder: 0,
+        isVisible: true,
+        organizationId: 0,
+        author: undefined,
+        tags: [],
+      } as Post)
+    this.selectedPostEditMode = editMode
+    this.postDialogVisible = true
+  }
+
+  showPostDeleteDialog(post: Post) {
+    this.confirmationService.confirm({
+      message: `Do you want to delete the post: ${post.title}?`,
+      header: 'Delete Post',
+      icon: 'pi pi-file',
+      closeOnEscape: true,
+      closable: true,
+      rejectLabel: 'Cancel',
+      rejectButtonProps: {
+        label: 'Cancel',
+        severity: 'secondary',
+      },
+      acceptButtonProps: {
+        label: 'Delete',
+      },
+      accept: () => {
+        this.storeService.deletePost(post)
+      },
+    })
+  }
+
+  savePost(post: Post) {
+    this.storeService.upsertPost(post)
+    this.postDialogVisible = false
   }
 }

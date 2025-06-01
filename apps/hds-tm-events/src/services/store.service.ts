@@ -783,6 +783,49 @@ export class StoreService extends ComponentStore<StoreState> {
     )
   })
 
+  readonly upsertPost = this.effect<Post>((post$) => {
+    return post$.pipe(
+      concatLatestFrom(() => [this.selectedOrganization$]),
+      switchMap(([post, selectedOrganization]) => {
+        post = { ...post, organizationId: selectedOrganization }
+
+        if (post.postId > 0) {
+          return this.postService.update(post).pipe(
+            tapResponse({
+              next: () => this.logService.success('Success', `Updated post: ${post.title}`),
+              error: (error: HttpErrorResponse) => this.logService.error(error),
+              finalize: () => this.fetchPosts(selectedOrganization),
+            }),
+          )
+        }
+
+        return this.postService.create(post).pipe(
+          tapResponse({
+            next: () => this.logService.success('Success', `Created post: ${post.title}`),
+            error: (error: HttpErrorResponse) => this.logService.error(error),
+            finalize: () => this.fetchPosts(selectedOrganization),
+          }),
+        )
+      }),
+    )
+  })
+
+  readonly deletePost = this.effect<Post>((post$) => {
+    return post$.pipe(
+      concatLatestFrom(() => [this.selectedOrganization$]),
+      switchMap(([post, selectedOrganization]) => {
+        post = { ...post, organizationId: selectedOrganization }
+        return this.postService.delete(post).pipe(
+          tapResponse({
+            next: () => this.logService.success('Success', `Deleted post: ${post.title}`),
+            error: (error: HttpErrorResponse) => this.logService.error(error),
+            finalize: () => this.fetchPosts(selectedOrganization),
+          }),
+        )
+      }),
+    )
+  })
+
   readonly upsertEvent = this.effect<Event>((event$) => {
     return event$.pipe(
       concatLatestFrom(() => [this.selectedOrganization$]),

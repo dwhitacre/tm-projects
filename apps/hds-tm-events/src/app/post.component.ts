@@ -14,7 +14,7 @@ import { StoreService } from 'src/services/store.service'
         <div class="post-data">
           <h1>{{ post.title }}</h1>
           <div class="post-meta-row">
-            <player-info [player]="post.author" prefix="By "></player-info>
+            <player-info [player]="post.author!" prefix="By "></player-info>
             <span class="post-date"
               ><ng-container *ngFor="let tag of post.tags"
                 ><p-tag [styleClass]="'post-tags'" severity="secondary" [value]="tag.name" /></ng-container

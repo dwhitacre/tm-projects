@@ -45,6 +45,10 @@ import { ToggleSwitchModule } from 'primeng/toggleswitch'
 import { EventDialogComponent } from './event-dialog.component'
 import { NewEventButtonComponent } from './new-event-button.component'
 import { DatePickerModule } from 'primeng/datepicker'
+import { PostDialogComponent } from './post-dialog.component'
+import { NewPostButtonComponent } from './new-post-button.component'
+import { TextareaModule } from 'primeng/textarea'
+import { MultiSelectModule } from 'primeng/multiselect'
 
 @NgModule({
   declarations: [
@@ -69,6 +73,8 @@ import { DatePickerModule } from 'primeng/datepicker'
     NewTeamButtonComponent,
     EventDialogComponent,
     NewEventButtonComponent,
+    PostDialogComponent,
+    NewPostButtonComponent,
   ],
   exports: [
     LayoutComponent,
@@ -96,6 +102,10 @@ import { DatePickerModule } from 'primeng/datepicker'
     EventDialogComponent,
     NewEventButtonComponent,
     DatePickerModule,
+    PostDialogComponent,
+    TextareaModule,
+    MultiSelectModule,
+    NewPostButtonComponent,
   ],
   imports: [
     ButtonModule,
@@ -123,6 +133,8 @@ import { DatePickerModule } from 'primeng/datepicker'
     ConfirmDialogModule,
     ToggleSwitchModule,
     DatePickerModule,
+    TextareaModule,
+    MultiSelectModule,
   ],
 })
 export class ComponentsModule {}
