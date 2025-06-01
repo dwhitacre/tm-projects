@@ -787,7 +787,7 @@ export class StoreService extends ComponentStore<StoreState> {
     return post$.pipe(
       concatLatestFrom(() => [this.selectedOrganization$]),
       switchMap(([post, selectedOrganization]) => {
-        post = { ...post, organizationId: selectedOrganization }
+        post = { ...post, organizationId: selectedOrganization, accountId: post.author?.accountId || '' }
 
         if (post.postId > 0) {
           return this.postService.update(post).pipe(
