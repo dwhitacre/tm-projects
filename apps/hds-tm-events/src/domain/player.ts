@@ -5,3 +5,5 @@ export interface Player {
   twitch: string
   discord: string
 }
+
+export type PlayerResponse = Array<Player>

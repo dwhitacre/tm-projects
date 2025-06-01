@@ -57,6 +57,7 @@ export interface StoreState {
   events: Array<Event>
   tags: Array<Tag>
   teamRoles: Array<TeamRole>
+  players: Array<Player>
 }
 
 @Injectable({ providedIn: 'root' })
@@ -81,8 +82,9 @@ export class StoreService extends ComponentStore<StoreState> {
   readonly teams$ = this.select((state) => state.teams)
   readonly posts$ = this.select((state) => state.posts)
   readonly events$ = this.select((state) => state.events)
+  readonly players$ = this.select((state) => state.players)
 
-  readonly players$ = this.select((state) =>
+  readonly leaderboardPlayers$ = this.select((state) =>
     state.leaderboard.players.sort((playerA, playerB) => {
       if (playerA.name == playerB.name) return playerA.accountId.localeCompare(playerB.accountId)
       return playerA.name.localeCompare(playerB.name)
@@ -384,11 +386,13 @@ export class StoreService extends ComponentStore<StoreState> {
       events: [],
       tags: [],
       teamRoles: [],
+      players: [],
     })
 
     this.fetchFeatureToggles()
     this.fetchOrganizations()
     this.fetchLeaderboard()
+    this.fetchPlayers()
     this.fetchRules()
     this.fetchMaps()
     this.fetchAdmin()
@@ -589,7 +593,7 @@ export class StoreService extends ComponentStore<StoreState> {
           tapResponse({
             next: () => this.logService.success('Success', `Added player: ${accountId}`),
             error: (error: HttpErrorResponse) => this.logService.error(error),
-            finalize: () => this.fetchLeaderboard(),
+            finalize: () => this.fetchPlayers(),
           }),
         ),
       ),
@@ -866,6 +870,25 @@ export class StoreService extends ComponentStore<StoreState> {
           }),
         )
       }),
+    )
+  })
+
+  readonly fetchPlayers = this.effect<void>((trigger$) => {
+    return trigger$.pipe(
+      switchMap(() =>
+        this.playerService.getAllPlayers().pipe(
+          tapResponse({
+            next: (res) => {
+              res.sort((playerA, playerB) => {
+                if (playerA.name == playerB.name) return playerA.accountId.localeCompare(playerB.accountId)
+                return playerA.name.localeCompare(playerB.name)
+              })
+              this.patchState({ players: res })
+            },
+            error: (error: HttpErrorResponse) => this.logService.error(error),
+          }),
+        ),
+      ),
     )
   })
 }

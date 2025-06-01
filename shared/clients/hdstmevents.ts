@@ -117,6 +117,10 @@ export class HdstmEventsClient extends Client {
     return this.httpGet<IPlayer>(`/api/player/${accountId}`);
   }
 
+  getAllPlayers() {
+    return this.httpGet<IPlayer[]>(`/api/player`);
+  }
+
   createPlayer(accountId: IPlayer["accountId"]) {
     return this.httpPut(`/api/player`, {
       accountId,

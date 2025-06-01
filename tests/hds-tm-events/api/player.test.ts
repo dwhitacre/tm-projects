@@ -206,4 +206,57 @@ describe("/api/player", () => {
     expect(getJson.twitch).toEqual(twitch);
     expect(getJson.discord).toEqual(discord);
   });
+
+  test("get all players returns array of players", async () => {
+    const accountIds = [
+      faker.string.uuid().replace(/^.{4}/, "2000"),
+      faker.string.uuid().replace(/^.{4}/, "2000"),
+      faker.string.uuid().replace(/^.{4}/, "2000"),
+    ];
+
+    for (const accountId of accountIds) {
+      const response = await adminClient.createPlayer(accountId);
+      expect(response.status).toEqual(201);
+    }
+
+    const allPlayers = await client.getAllPlayers();
+    expect(allPlayers.status).toEqual(200);
+
+    const json = await allPlayers.json();
+
+    for (const accountId of accountIds) {
+      const foundPlayer = json.find((p) => p.accountId === accountId);
+      expect(foundPlayer).toBeDefined();
+      expect(foundPlayer!.accountId).toEqual(accountId);
+    }
+  });
+
+  test("get all players with overrides", async () => {
+    const accountId = faker.string.uuid().replace(/^.{4}/, "2000");
+    const name = faker.internet.username();
+    const image = "assets/images/override.jpg";
+    const twitch = "override.tv";
+    const discord = "override.discord";
+
+    await adminClient.createPlayer(accountId);
+    await playerService.addPlayerOverrides(
+      accountId,
+      name,
+      image,
+      twitch,
+      discord
+    );
+
+    const allPlayers = await client.getAllPlayers();
+    expect(allPlayers.status).toEqual(200);
+
+    const json = await allPlayers.json();
+    const foundPlayer = json.find((p) => p.accountId === accountId);
+    expect(foundPlayer).toBeDefined();
+    expect(foundPlayer!.accountId).toEqual(accountId);
+    expect(foundPlayer!.name).toEqual(name);
+    expect(foundPlayer!.image).toEqual(image);
+    expect(foundPlayer!.twitch).toEqual(twitch);
+    expect(foundPlayer!.discord).toEqual(discord);
+  });
 });

@@ -1,5 +1,6 @@
 import { HttpClient } from '@angular/common/http'
 import { Injectable } from '@angular/core'
+import { Player, PlayerResponse } from 'src/domain/player'
 
 @Injectable({ providedIn: 'root' })
 export class PlayerService {
@@ -7,9 +8,13 @@ export class PlayerService {
 
   constructor(private httpClient: HttpClient) {}
 
-  addPlayer(accountId: string) {
+  addPlayer(accountId: Player['accountId']) {
     return this.httpClient.put(`${this.#baseUrl}`, {
       accountId,
     })
+  }
+
+  getAllPlayers() {
+    return this.httpClient.get<PlayerResponse>(`${this.#baseUrl}`)
   }
 }
