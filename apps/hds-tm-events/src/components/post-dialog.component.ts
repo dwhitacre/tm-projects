@@ -1,6 +1,7 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core'
 import { Post } from 'src/domain/post'
 import { Tag } from 'src/domain/tag'
+import { TeamPlayer } from 'src/domain/team'
 
 @Component({
   selector: 'post-dialog',
@@ -68,15 +69,28 @@ import { Tag } from 'src/domain/tag'
               name="tags"
               optionLabel="name"
               optionValue="tagId"
-              [maxSelectedLabels]="3"
               placeholder="Select tags"
               appendTo="body"
             ></p-multiselect>
           </div>
+          <div class="post-author-col col">
+            <label for="postAuthor">Author</label>
+            <p-dropdown
+              id="postAuthor"
+              [options]="players"
+              [(ngModel)]="selectedAuthorId"
+              name="author"
+              optionLabel="name"
+              optionValue="accountId"
+              placeholder="Select author..."
+              required
+              appendTo="body"
+            ></p-dropdown>
+          </div>
         </div>
         <div class="dialog-actions">
           <p-button label="Cancel" severity="secondary" type="button" (click)="visibleChange.emit(false)" />
-          <p-button label="Save" type="submit" [disabled]="!postForm.form.valid" />
+          <p-button label="Save" type="submit" [disabled]="!postForm.form.valid || !selectedAuthorId" />
         </div>
       </form>
     </p-dialog>
@@ -120,23 +134,27 @@ export class PostDialogComponent {
   @Input() editMode: boolean = false
   @Input() post?: Post
   @Input() tags: Tag[] = []
+  @Input() players: TeamPlayer[] = []
   @Input() visible: boolean = false
   @Output() visibleChange = new EventEmitter<boolean>()
   @Output() save = new EventEmitter<Post>()
 
   localPost?: Post
   selectedTags: number[] = []
+  selectedAuthorId?: string
 
   ngOnChanges() {
     if (this.post) {
       this.localPost = { ...this.post }
       this.selectedTags = this.post.tags?.map((t) => t.tagId) ?? []
+      this.selectedAuthorId = this.post.author?.accountId
     }
   }
 
   onSavePost() {
     if (this.localPost) {
       this.localPost.tags = this.tags.filter((t) => this.selectedTags.includes(t.tagId))
+      this.localPost.author = this.players.find((p) => p.accountId === this.selectedAuthorId)!
       this.save.emit(this.localPost)
     }
     this.visibleChange.emit(false)

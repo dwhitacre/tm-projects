@@ -100,6 +100,7 @@ import { Post } from 'src/domain/post'
       [post]="selectedPost"
       [editMode]="selectedPostEditMode"
       [tags]="(storeService.tags$ | async) ?? []"
+      [players]="(storeService.teamPlayers$ | async) ?? []"
       [(visible)]="postDialogVisible"
       (save)="savePost($event)"
     ></post-dialog>
