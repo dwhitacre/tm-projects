@@ -836,6 +836,34 @@ export class StoreService extends ComponentStore<StoreState> {
     )
   })
 
+  private addEventPlayer = ({ event, player }: { event: Event; player: EventPlayer }) => {
+    return this.eventService.addPlayer(event, player).pipe(
+      tapResponse({
+        next: () => this.logService.success('Success', `Added player ${player.name} to event: ${event.name}`, false),
+        error: (error: HttpErrorResponse) => this.logService.error(error),
+      }),
+    )
+  }
+
+  private updateEventPlayer = ({ event, player }: { event: Event; player: EventPlayer }) => {
+    return this.eventService.updatePlayer(event, player).pipe(
+      tapResponse({
+        next: () => this.logService.success('Success', `Updated player ${player.name} in event: ${event.name}`, false),
+        error: (error: HttpErrorResponse) => this.logService.error(error),
+      }),
+    )
+  }
+
+  private deleteEventPlayer = ({ event, player }: { event: Event; player: EventPlayer }) => {
+    return this.eventService.deletePlayer(event, player.accountId).pipe(
+      tapResponse({
+        next: () =>
+          this.logService.success('Success', `Deleted player ${player.name} from event: ${event.name}`, false),
+        error: (error: HttpErrorResponse) => this.logService.error(error),
+      }),
+    )
+  }
+
   readonly upsertEvent = this.effect<Event>((event$) => {
     return event$.pipe(
       concatLatestFrom(() => [this.selectedOrganization$, this.events$]),
@@ -899,34 +927,6 @@ export class StoreService extends ComponentStore<StoreState> {
       }),
     )
   })
-
-  private addEventPlayer = ({ event, player }: { event: Event; player: EventPlayer }) => {
-    return this.eventService.addPlayer(event, player).pipe(
-      tapResponse({
-        next: () => this.logService.success('Success', `Added player ${player.name} to event: ${event.name}`, false),
-        error: (error: HttpErrorResponse) => this.logService.error(error),
-      }),
-    )
-  }
-
-  private updateEventPlayer = ({ event, player }: { event: Event; player: EventPlayer }) => {
-    return this.eventService.updatePlayer(event, player).pipe(
-      tapResponse({
-        next: () => this.logService.success('Success', `Updated player ${player.name} in event: ${event.name}`, false),
-        error: (error: HttpErrorResponse) => this.logService.error(error),
-      }),
-    )
-  }
-
-  private deleteEventPlayer = ({ event, player }: { event: Event; player: EventPlayer }) => {
-    return this.eventService.deletePlayer(event, player.accountId).pipe(
-      tapResponse({
-        next: () =>
-          this.logService.success('Success', `Deleted player ${player.name} from event: ${event.name}`, false),
-        error: (error: HttpErrorResponse) => this.logService.error(error),
-      }),
-    )
-  }
 
   readonly deleteEvent = this.effect<Event>((event$) => {
     return event$.pipe(
