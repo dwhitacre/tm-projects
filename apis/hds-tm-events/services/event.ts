@@ -79,11 +79,12 @@ export class EventService {
     return row !== undefined;
   }
 
-  insert(event: Event) {
-    return this.db.insert(
+  async insert(event: Event) {
+    const result = await this.db.insert(
       `
         insert into Event (Name, Description, Image, DateStart, DateEnd, ExternalUrl, IsVisible, SortOrder, DateCreated, DateModified, OrganizationId)
         values ($1, $2, $3, $4, $5, $6, $7, $8, NOW(), NOW(), $9)
+        returning EventId, Name, Description, Image, DateStart, DateEnd, ExternalUrl, IsVisible, SortOrder, DateCreated, DateModified, OrganizationId
       `,
       [
         event.name,
@@ -97,6 +98,11 @@ export class EventService {
         event.organizationId,
       ]
     );
+
+    if (result === undefined) return undefined;
+    if (result.rowCount !== 1) return undefined;
+
+    return Event.fromJson(result.rows[0]);
   }
 
   update(event: Event) {
@@ -152,7 +158,7 @@ export class EventService {
     return this.db.insert(
       `
         insert into EventPlayer (EventId, TeamPlayerId, EventRoleId, DateCreated, DateModified)
-        values ($1, (select TeamPlayerId from TeamPlayer where AccountId = $2), $3, NOW(), NOW())
+        values ($1, (select TeamPlayerId from TeamPlayer where AccountId = $2 order by TeamPlayerId asc limit 1), $3, NOW(), NOW())
       `,
       [eventId, eventPlayer.accountId, eventPlayer.eventRoleId]
     );
@@ -163,7 +169,7 @@ export class EventService {
       `
         update EventPlayer
         set EventRoleId = $1, DateModified = now()
-        where EventId = $2 and TeamPlayerId = (select TeamPlayerId from TeamPlayer where AccountId = $3)
+        where EventId = $2 and TeamPlayerId = (select TeamPlayerId from TeamPlayer where AccountId = $3 order by TeamPlayerId asc limit 1)
       `,
       [eventPlayer.eventRoleId, eventId, eventPlayer.accountId]
     );
@@ -173,7 +179,7 @@ export class EventService {
     return this.db.delete(
       `
         delete from EventPlayer
-        where EventId = $1 and TeamPlayerId = (select TeamPlayerId from TeamPlayer where AccountId = $2)
+        where EventId = $1 and TeamPlayerId = (select TeamPlayerId from TeamPlayer where AccountId = $2 order by TeamPlayerId asc limit 1)
       `,
       [eventId, eventPlayer.accountId]
     );

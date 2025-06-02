@@ -14,8 +14,8 @@ class EventRoute extends Route {
     if (!event) return ApiResponse.badRequest(req);
 
     if (req.checkMethod("put")) {
-      await req.services.event.insert(event);
-      return ApiResponse.created(req);
+      const created = await req.services.event.insert(event);
+      return ApiResponse.created(req, { event: created?.toJson() });
     }
 
     if (req.checkMethod("post")) {

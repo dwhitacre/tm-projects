@@ -149,6 +149,19 @@ describe("/api/event", () => {
     const response = await adminClient.createEvent(event);
     expect(response.status).toBe(201);
 
+    const createdEvent = await response.json();
+    expect(createdEvent).toBeDefined();
+    expect(createdEvent.event).toBeDefined();
+    expect<string | undefined>(createdEvent.event.name).toBe(event.name);
+    expect<string | undefined>(createdEvent.event.description).toBe(
+      event.description
+    );
+    expect<string | undefined>(createdEvent.event.image).toBe(event.image);
+    expect(createdEvent.event.organizationId).toBe(org.organizationId);
+    expect(createdEvent.event.eventId).toBeDefined();
+    expect(createdEvent.event.dateCreated).toBeDefined();
+    expect(createdEvent.event.dateModified).toBeDefined();
+
     const getResp = await client.getEvents(org.organizationId);
     const json = await getResp.json();
     const created = json.events.find((e: Event) => e.name === event.name);
@@ -752,6 +765,52 @@ describe("/api/event/{eventId}/player", () => {
     expect(players.some((p: any) => p.accountId === accountId)).toBe(true);
   });
 
+  test("create event player thats on multiple teams", async () => {
+    const org = await createTestOrganization();
+    const team1 = await createTestTeam(
+      org.organizationId,
+      "team1-" + faker.string.alphanumeric(8)
+    );
+    const team2 = await createTestTeam(
+      org.organizationId,
+      "team2-" + faker.string.alphanumeric(8)
+    );
+    const teamRole1 = await createTestTeamRole(org.organizationId);
+    const teamRole2 = await createTestTeamRole(org.organizationId);
+    const accountId = faker.string.uuid();
+    await createTestPlayer(accountId);
+    await addPlayerToTeam(team1.teamId, accountId, teamRole1!.teamRoleId);
+    await addPlayerToTeam(team2.teamId, accountId, teamRole2!.teamRoleId);
+    const event: Partial<Event> = {
+      name: faker.lorem.words(2),
+      description: faker.lorem.sentence(),
+      image: faker.image.url(),
+      organizationId: org.organizationId,
+    };
+    const eventResp = await adminClient.createEvent(event);
+    expect(eventResp.status).toBe(201);
+    const getResp = await client.getEvents(org.organizationId);
+    const json = await getResp.json();
+    const createdEvent = json.events.find((e: Event) => e.name === event.name);
+    expect(createdEvent).toBeDefined();
+    const eventPlayer = { accountId, eventRoleId: teamRole1!.teamRoleId };
+    const resp = await adminClient.createEventPlayer(
+      createdEvent!.eventId,
+      eventPlayer
+    );
+    expect(resp.status).toBe(201);
+    // Verify player is attached to event
+    const getResp2 = await client.getEvents(org.organizationId);
+    const json2 = await getResp2.json();
+    const eventWithPlayer = json2.events.find(
+      (e: Event) => e.eventId === createdEvent!.eventId
+    );
+    expect(eventWithPlayer).toBeDefined();
+    const players = (eventWithPlayer as any).players;
+    expect(Array.isArray(players)).toBe(true);
+    expect(players.some((p: any) => p.accountId === accountId)).toBe(true);
+  });
+
   test("update event player", async () => {
     const org = await createTestOrganization();
     const team = await createTestTeam(org.organizationId);
@@ -788,6 +847,58 @@ describe("/api/event/{eventId}/player", () => {
     const players = (eventWithPlayer as any).players;
     expect(Array.isArray(players)).toBe(true);
     expect(players.some((p: any) => p.accountId === accountId)).toBe(true);
+  });
+
+  test("update event player thats on multiple teams", async () => {
+    const org = await createTestOrganization();
+    const team1 = await createTestTeam(
+      org.organizationId,
+      "team1-" + faker.string.alphanumeric(8)
+    );
+    const team2 = await createTestTeam(
+      org.organizationId,
+      "team2-" + faker.string.alphanumeric(8)
+    );
+    const teamRole1 = await createTestTeamRole(org.organizationId);
+    const teamRole2 = await createTestTeamRole(org.organizationId);
+    const accountId = faker.string.uuid();
+    await createTestPlayer(accountId);
+    await addPlayerToTeam(team1.teamId, accountId, teamRole1!.teamRoleId);
+    await addPlayerToTeam(team2.teamId, accountId, teamRole2!.teamRoleId);
+    const event: Partial<Event> = {
+      name: faker.lorem.words(2),
+      description: faker.lorem.sentence(),
+      image: faker.image.url(),
+      organizationId: org.organizationId,
+    };
+    const eventResp = await adminClient.createEvent(event);
+    expect(eventResp.status).toBe(201);
+    const getResp = await client.getEvents(org.organizationId);
+    const json = await getResp.json();
+    const createdEvent = json.events.find((e: Event) => e.name === event.name);
+    expect(createdEvent).toBeDefined();
+    const eventPlayer = { accountId, eventRoleId: teamRole2!.teamRoleId };
+    await adminClient.createEventPlayer(createdEvent!.eventId, {
+      accountId,
+      eventRoleId: teamRole1!.teamRoleId,
+    });
+    const resp = await adminClient.updateEventPlayer(
+      createdEvent!.eventId,
+      eventPlayer
+    );
+    expect(resp.status).toBe(200);
+    // Verify player is attached to event with updated eventRoleId
+    const getResp2 = await client.getEvents(org.organizationId);
+    const json2 = await getResp2.json();
+    const eventWithPlayer = json2.events.find(
+      (e: Event) => e.eventId === createdEvent!.eventId
+    );
+    expect(eventWithPlayer).toBeDefined();
+    const players = (eventWithPlayer as any).players;
+    expect(Array.isArray(players)).toBe(true);
+    const found = players.find((p: any) => p.accountId === accountId);
+    expect(found).toBeDefined();
+    expect(found.eventRoleId).toBe(teamRole2!.teamRoleId);
   });
 
   test("update event player not admin", async () => {
@@ -917,6 +1028,96 @@ describe("/api/event/{eventId}/player", () => {
       eventPlayer
     );
     expect(resp.status).toBe(400);
+  });
+
+  test("delete event player", async () => {
+    const org = await createTestOrganization();
+    const team = await createTestTeam(org.organizationId);
+    const teamRole = await createTestTeamRole(org.organizationId);
+    const accountId = faker.string.uuid();
+    await createTestPlayer(accountId);
+    await addPlayerToTeam(team.teamId, accountId, teamRole!.teamRoleId);
+    const event: Partial<Event> = {
+      name: faker.lorem.words(2),
+      description: faker.lorem.sentence(),
+      image: faker.image.url(),
+      organizationId: org.organizationId,
+    };
+    const eventResp = await adminClient.createEvent(event);
+    expect(eventResp.status).toBe(201);
+    const getResp = await client.getEvents(org.organizationId);
+    const json = await getResp.json();
+    const createdEvent = json.events.find((e: Event) => e.name === event.name);
+    expect(createdEvent).toBeDefined();
+    await adminClient.createEventPlayer(createdEvent!.eventId, {
+      accountId,
+      eventRoleId: teamRole!.teamRoleId,
+    });
+    const resp = await adminClient.deleteEventPlayer(
+      createdEvent!.eventId,
+      accountId
+    );
+    expect(resp.status).toBe(200);
+    // Verify player is removed from event
+    const getResp2 = await client.getEvents(org.organizationId);
+    const json2 = await getResp2.json();
+    const eventWithPlayer = json2.events.find(
+      (e: Event) => e.eventId === createdEvent!.eventId
+    );
+    expect(eventWithPlayer).toBeDefined();
+    const players = (eventWithPlayer as any).players;
+    expect(Array.isArray(players)).toBe(true);
+    expect(players.some((p: any) => p.accountId === accountId)).toBe(false);
+  });
+
+  test("delete event player thats on multiple teams", async () => {
+    const org = await createTestOrganization();
+    const team1 = await createTestTeam(
+      org.organizationId,
+      "team1-" + faker.string.alphanumeric(8)
+    );
+    const team2 = await createTestTeam(
+      org.organizationId,
+      "team2-" + faker.string.alphanumeric(8)
+    );
+    const teamRole1 = await createTestTeamRole(org.organizationId);
+    const teamRole2 = await createTestTeamRole(org.organizationId);
+    const accountId = faker.string.uuid();
+    await createTestPlayer(accountId);
+    await addPlayerToTeam(team1.teamId, accountId, teamRole1!.teamRoleId);
+    await addPlayerToTeam(team2.teamId, accountId, teamRole2!.teamRoleId);
+    const event: Partial<Event> = {
+      name: faker.lorem.words(2),
+      description: faker.lorem.sentence(),
+      image: faker.image.url(),
+      organizationId: org.organizationId,
+    };
+    const eventResp = await adminClient.createEvent(event);
+    expect(eventResp.status).toBe(201);
+    const getResp = await client.getEvents(org.organizationId);
+    const json = await getResp.json();
+    const createdEvent = json.events.find((e: Event) => e.name === event.name);
+    expect(createdEvent).toBeDefined();
+    await adminClient.createEventPlayer(createdEvent!.eventId, {
+      accountId,
+      eventRoleId: teamRole1!.teamRoleId,
+    });
+    // Delete the event player
+    const resp = await adminClient.deleteEventPlayer(
+      createdEvent!.eventId,
+      accountId
+    );
+    expect(resp.status).toBe(200);
+    // Verify player is removed from event
+    const getResp2 = await client.getEvents(org.organizationId);
+    const json2 = await getResp2.json();
+    const eventWithPlayer = json2.events.find(
+      (e: Event) => e.eventId === createdEvent!.eventId
+    );
+    expect(eventWithPlayer).toBeDefined();
+    const players = (eventWithPlayer as any).players;
+    expect(Array.isArray(players)).toBe(true);
+    expect(players.some((p: any) => p.accountId === accountId)).toBe(false);
   });
 
   test("delete event player not admin", async () => {

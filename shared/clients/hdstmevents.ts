@@ -7,7 +7,12 @@ import type { Leaderboard } from "../domain/leaderboard";
 import type { AdminResponse } from "../domain/admin";
 import type { ReadyResponse } from "../domain/ready";
 import type { RuleResponse, Rule, RuleCategory } from "../domain/rule";
-import type { Event, EventPlayer, EventResponse } from "../domain/event";
+import type {
+  Event,
+  EventPlayer,
+  EventResponse,
+  EventsResponse,
+} from "../domain/event";
 import type { Post, PostResponse } from "../domain/post";
 import type { Tag, TagResponse } from "../domain/tag";
 import type { Team, TeamPlayer, TeamResponse } from "../domain/team";
@@ -345,13 +350,13 @@ export class HdstmEventsClient extends Client {
   }
 
   getEvents(organizationId: Event["organizationId"]) {
-    return this.httpGet<EventResponse>(
+    return this.httpGet<EventsResponse>(
       `/api/organization/${organizationId}/event`
     );
   }
 
   createEvent(event: Partial<Event>) {
-    return this.httpPut(`/api/event`, event);
+    return this.httpPut<EventResponse>(`/api/event`, event);
   }
 
   updateEvent(event: Partial<Event>) {
@@ -366,21 +371,21 @@ export class HdstmEventsClient extends Client {
   }
 
   createEventPlayer(
-    eventId: Team["teamId"],
+    eventId: Event["eventId"],
     eventPlayer: Partial<EventPlayer>
   ) {
     return this.httpPut(`/api/event/${eventId}/player`, eventPlayer);
   }
 
   updateEventPlayer(
-    eventId: Team["teamId"],
+    eventId: Event["eventId"],
     eventPlayer: Partial<EventPlayer>
   ) {
     return this.httpPost(`/api/event/${eventId}/player`, eventPlayer);
   }
 
   deleteEventPlayer(
-    eventId: Team["teamId"],
+    eventId: Event["eventId"],
     accountId: EventPlayer["accountId"]
   ) {
     return this.httpDelete(`/api/event/${eventId}/player`, { accountId });

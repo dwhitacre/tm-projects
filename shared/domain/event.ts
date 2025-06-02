@@ -23,6 +23,10 @@ export interface Event {
   players: EventPlayer[];
 }
 
-export interface EventResponse extends ApiResponse {
+export interface EventsResponse extends ApiResponse {
   events: Event[];
+}
+
+export interface EventResponse extends ApiResponse {
+  event: Event;
 }
