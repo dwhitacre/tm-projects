@@ -102,7 +102,7 @@ import { TeamRole } from 'src/domain/teamrole'
         </div>
         <div class="dialog-actions">
           <p-button label="Cancel" severity="secondary" type="button" (click)="visibleChange.emit(false)" />
-          <p-button label="Enter" type="submit" [disabled]="!teamForm.form.valid" />
+          <p-button label="Save" type="submit" [disabled]="!teamForm.form.valid" />
         </div>
       </form>
     </p-dialog>
