@@ -1,6 +1,7 @@
 export enum FeatureToggle {
   homepage = 'homepage',
   urlOverlay = 'url-overlay',
+  developerTrace = 'developer-trace',
 }
 
 export interface FeatureToggleSettings {
@@ -15,6 +16,10 @@ export const FeatureToggles: Record<FeatureToggle, FeatureToggleSettings> = {
   },
   [FeatureToggle.urlOverlay]: {
     description: 'Show the URL overlay on posts and events',
+    override: false,
+  },
+  [FeatureToggle.developerTrace]: {
+    description: 'Enable developer trace logging',
     override: false,
   },
 }

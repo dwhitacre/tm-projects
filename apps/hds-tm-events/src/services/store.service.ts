@@ -2,7 +2,7 @@ import { HttpErrorResponse } from '@angular/common/http'
 import { Injectable } from '@angular/core'
 import { ComponentStore } from '@ngrx/component-store'
 import { concatLatestFrom, tapResponse } from '@ngrx/operators'
-import { map, Observable, switchMap, tap } from 'rxjs'
+import { defaultIfEmpty, from, last, map, mergeMap, noop, Observable, of, switchMap, take, tap } from 'rxjs'
 import { Leaderboard, Stat } from 'src/domain/leaderboard'
 import { Weekly, WeeklyResult } from 'src/domain/weekly'
 import { Map } from 'src/domain/map'
@@ -24,7 +24,7 @@ import { PostService } from './post.service'
 import { EventService } from './event.service'
 import { Team, TeamPlayer } from 'src/domain/team'
 import { Post } from 'src/domain/post'
-import { Event } from 'src/domain/event'
+import { Event, EventPlayer } from 'src/domain/event'
 import { Tag } from 'src/domain/tag'
 import { TeamRole } from 'src/domain/teamrole'
 import { Organization } from 'src/domain/organization'
@@ -95,7 +95,7 @@ export class StoreService extends ComponentStore<StoreState> {
   )
   readonly teamPlayers$ = this.select(this.teams$, (teams) => {
     const teamPlayerDict = new Map<TeamPlayer['accountId'], TeamPlayer>()
-    return teams.reduce((acc, team) => {
+    const teamPlayers = teams.reduce((acc, team) => {
       if (!team.players) return acc
 
       for (const player of team.players) {
@@ -107,6 +107,12 @@ export class StoreService extends ComponentStore<StoreState> {
 
       return acc
     }, [] as Array<TeamPlayer>)
+
+    teamPlayers.sort((playerA, playerB) => {
+      if (playerA.name == playerB.name) return playerA.accountId.localeCompare(playerB.accountId)
+      return playerA.name.localeCompare(playerB.name)
+    })
+    return teamPlayers
   })
 
   readonly stats$: Observable<Array<Stat>> = this.select(
@@ -832,42 +838,121 @@ export class StoreService extends ComponentStore<StoreState> {
 
   readonly upsertEvent = this.effect<Event>((event$) => {
     return event$.pipe(
-      concatLatestFrom(() => [this.selectedOrganization$]),
-      switchMap(([event, selectedOrganization]) => {
+      concatLatestFrom(() => [this.selectedOrganization$, this.events$]),
+      switchMap(([event, selectedOrganization, events]) => {
         event = { ...event, organizationId: selectedOrganization }
 
-        if (event.eventId > 0) {
+        const existingEvent = events.find((e) => e.eventId === event.eventId)
+
+        if (existingEvent) {
+          const existingPlayerIds = new Set(existingEvent.players.map((p) => p.accountId))
+          const newPlayerIds = new Set(event.players.map((p) => p.accountId))
+
+          const playersToAdd = event.players.filter((p) => !existingPlayerIds.has(p.accountId))
+          const playersToUpdate = event.players.filter((p) => existingPlayerIds.has(p.accountId))
+          const playersToRemove = existingEvent.players.filter((p) => !newPlayerIds.has(p.accountId))
+
           return this.eventService.update(event).pipe(
             tapResponse({
-              next: () => this.logService.success('Success', `Updated event: ${event.name}`),
+              next: () => this.logService.success('Success', `Updated event: ${event.name}`, false),
               error: (error: HttpErrorResponse) => this.logService.error(error),
-              finalize: () => this.fetchEvents(selectedOrganization),
             }),
+            switchMap(() =>
+              from([
+                ...(playersToAdd.length > 0
+                  ? [from(playersToAdd).pipe(mergeMap((player) => this.addEventPlayer({ event, player })))]
+                  : []),
+                ...(playersToUpdate.length > 0
+                  ? [from(playersToUpdate).pipe(mergeMap((player) => this.updateEventPlayer({ event, player })))]
+                  : []),
+                ...(playersToRemove.length > 0
+                  ? [from(playersToRemove).pipe(mergeMap((player) => this.deleteEventPlayer({ event, player })))]
+                  : []),
+              ]).pipe(
+                mergeMap((obs$) => obs$),
+                defaultIfEmpty(null),
+              ),
+            ),
+            last(),
+            tap(() => this.logService.success('Success', `Updated event: ${event.name}`)),
+            tap(() => this.fetchEvents(selectedOrganization)),
           )
         }
 
         return this.eventService.create(event).pipe(
           tapResponse({
-            next: () => this.logService.success('Success', `Created event: ${event.name}`),
+            next: () => this.logService.success('Success', `Created event: ${event.name}`, false),
             error: (error: HttpErrorResponse) => this.logService.error(error),
-            finalize: () => this.fetchEvents(selectedOrganization),
           }),
+          switchMap((eventResponse) =>
+            event.players.length > 0
+              ? from(event.players).pipe(
+                  mergeMap((player) => this.addEventPlayer({ event: eventResponse.event, player })),
+                  defaultIfEmpty(null),
+                )
+              : of(null),
+          ),
+          last(),
+          tap(() => this.logService.success('Success', `Created event: ${event.name}`)),
+          tap(() => this.fetchEvents(selectedOrganization)),
         )
       }),
     )
   })
+
+  private addEventPlayer = ({ event, player }: { event: Event; player: EventPlayer }) => {
+    return this.eventService.addPlayer(event, player).pipe(
+      tapResponse({
+        next: () => this.logService.success('Success', `Added player ${player.name} to event: ${event.name}`, false),
+        error: (error: HttpErrorResponse) => this.logService.error(error),
+      }),
+    )
+  }
+
+  private updateEventPlayer = ({ event, player }: { event: Event; player: EventPlayer }) => {
+    return this.eventService.updatePlayer(event, player).pipe(
+      tapResponse({
+        next: () => this.logService.success('Success', `Updated player ${player.name} in event: ${event.name}`, false),
+        error: (error: HttpErrorResponse) => this.logService.error(error),
+      }),
+    )
+  }
+
+  private deleteEventPlayer = ({ event, player }: { event: Event; player: EventPlayer }) => {
+    return this.eventService.deletePlayer(event, player.accountId).pipe(
+      tapResponse({
+        next: () =>
+          this.logService.success('Success', `Deleted player ${player.name} from event: ${event.name}`, false),
+        error: (error: HttpErrorResponse) => this.logService.error(error),
+      }),
+    )
+  }
 
   readonly deleteEvent = this.effect<Event>((event$) => {
     return event$.pipe(
       concatLatestFrom(() => [this.selectedOrganization$]),
       switchMap(([event, selectedOrganization]) => {
         event = { ...event, organizationId: selectedOrganization }
-        return this.eventService.delete(event).pipe(
-          tapResponse({
-            next: () => this.logService.success('Success', `Deleted event: ${event.name}`),
-            error: (error: HttpErrorResponse) => this.logService.error(error),
-            finalize: () => this.fetchEvents(selectedOrganization),
-          }),
+
+        const deletePlayers$ =
+          event.players.length > 0
+            ? from(event.players).pipe(
+                mergeMap((player) => this.deleteEventPlayer({ event, player })),
+                defaultIfEmpty(null),
+                last(),
+              )
+            : of(null)
+
+        return deletePlayers$.pipe(
+          switchMap(() =>
+            this.eventService.delete(event).pipe(
+              tapResponse({
+                next: () => this.logService.success('Success', `Deleted event: ${event.name}`),
+                error: (error: HttpErrorResponse) => this.logService.error(error),
+                finalize: () => this.fetchEvents(selectedOrganization),
+              }),
+            ),
+          ),
         )
       }),
     )
