@@ -724,28 +724,93 @@ export class StoreService extends ComponentStore<StoreState> {
     )
   })
 
+  private addTeamPlayer = ({ team, player }: { team: Team; player: TeamPlayer }) => {
+    return this.teamService.addPlayer(team, player).pipe(
+      tapResponse({
+        next: () => this.logService.success('Success', `Added player ${player.name} to team: ${team.name}`, false),
+        error: (error: HttpErrorResponse) => this.logService.error(error),
+      }),
+    )
+  }
+
+  private updateTeamPlayer = ({ team, player }: { team: Team; player: TeamPlayer }) => {
+    return this.teamService.updatePlayer(team, player).pipe(
+      tapResponse({
+        next: () => this.logService.success('Success', `Updated player ${player.name} in team: ${team.name}`, false),
+        error: (error: HttpErrorResponse) => this.logService.error(error),
+      }),
+    )
+  }
+
+  private deleteTeamPlayer = ({ team, player }: { team: Team; player: TeamPlayer }) => {
+    return this.teamService.deletePlayer(team, player.accountId).pipe(
+      tapResponse({
+        next: () => this.logService.success('Success', `Deleted player ${player.name} from team: ${team.name}`, false),
+        error: (error: HttpErrorResponse) => this.logService.error(error),
+      }),
+    )
+  }
+
   readonly upsertTeam = this.effect<Team>((team$) => {
     return team$.pipe(
-      concatLatestFrom(() => [this.selectedOrganization$]),
-      switchMap(([team, selectedOrganization]) => {
+      concatLatestFrom(() => [this.selectedOrganization$, this.teams$]),
+      switchMap(([team, selectedOrganization, teams]) => {
         team = { ...team, organizationId: selectedOrganization }
 
-        if (team.teamId > 0) {
+        const existingTeam = teams.find((t) => t.teamId === team.teamId)
+
+        if (existingTeam) {
+          const existingPlayerIds = new Set(existingTeam.players.map((p) => p.accountId))
+          const newPlayerIds = new Set(team.players.map((p) => p.accountId))
+
+          const playersToAdd = team.players.filter((p) => !existingPlayerIds.has(p.accountId))
+          const playersToUpdate = team.players.filter((p) => existingPlayerIds.has(p.accountId))
+          const playersToRemove = existingTeam.players.filter((p) => !newPlayerIds.has(p.accountId))
+
           return this.teamService.update(team).pipe(
             tapResponse({
-              next: () => this.logService.success('Success', `Updated team: ${team.name}`),
+              next: () => this.logService.success('Success', `Updated team: ${team.name}`, false),
               error: (error: HttpErrorResponse) => this.logService.error(error),
-              finalize: () => this.fetchTeams(selectedOrganization),
             }),
+            switchMap(() =>
+              from([
+                ...(playersToAdd.length > 0
+                  ? [from(playersToAdd).pipe(mergeMap((player) => this.addTeamPlayer({ team, player })))]
+                  : []),
+                ...(playersToUpdate.length > 0
+                  ? [from(playersToUpdate).pipe(mergeMap((player) => this.updateTeamPlayer({ team, player })))]
+                  : []),
+                ...(playersToRemove.length > 0
+                  ? [from(playersToRemove).pipe(mergeMap((player) => this.deleteTeamPlayer({ team, player })))]
+                  : []),
+              ]).pipe(
+                mergeMap((obs$) => obs$),
+                defaultIfEmpty(null),
+              ),
+            ),
+            last(),
+            tap(() => this.logService.success('Success', `Updated team: ${team.name}`)),
+            tap(() => this.fetchTeams(selectedOrganization)),
           )
         }
 
         return this.teamService.create(team).pipe(
           tapResponse({
-            next: () => this.logService.success('Success', `Created team: ${team.name}`),
+            next: () => this.logService.success('Success', `Created team: ${team.name}`, false),
             error: (error: HttpErrorResponse) => this.logService.error(error),
             finalize: () => this.fetchTeams(selectedOrganization),
           }),
+          switchMap((teamResponse) =>
+            team.players.length > 0
+              ? from(team.players).pipe(
+                  mergeMap((player) => this.addTeamPlayer({ team: teamResponse.team, player })),
+                  defaultIfEmpty(null),
+                )
+              : of(null),
+          ),
+          last(),
+          tap(() => this.logService.success('Success', `Created team: ${team.name}`)),
+          tap(() => this.fetchEvents(selectedOrganization)),
         )
       }),
     )
@@ -756,12 +821,26 @@ export class StoreService extends ComponentStore<StoreState> {
       concatLatestFrom(() => [this.selectedOrganization$]),
       switchMap(([team, selectedOrganization]) => {
         team = { ...team, organizationId: selectedOrganization }
-        return this.teamService.delete(team).pipe(
-          tapResponse({
-            next: () => this.logService.success('Success', `Deleted team: ${team.name}`),
-            error: (error: HttpErrorResponse) => this.logService.error(error),
-            finalize: () => this.fetchTeams(selectedOrganization),
-          }),
+
+        const deletePlayers$ =
+          team.players && team.players.length > 0
+            ? from(team.players).pipe(
+                mergeMap((player) => this.deleteTeamPlayer({ team, player })),
+                defaultIfEmpty(null),
+                last(),
+              )
+            : of(null)
+
+        return deletePlayers$.pipe(
+          switchMap(() =>
+            this.teamService.delete(team).pipe(
+              tapResponse({
+                next: () => this.logService.success('Success', `Deleted team: ${team.name}`),
+                error: (error: HttpErrorResponse) => this.logService.error(error),
+                finalize: () => this.fetchTeams(selectedOrganization),
+              }),
+            ),
+          ),
         )
       }),
     )
