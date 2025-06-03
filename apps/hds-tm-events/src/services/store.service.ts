@@ -872,28 +872,92 @@ export class StoreService extends ComponentStore<StoreState> {
     )
   })
 
+  private addPostTag = ({ post, tag }: { post: Post; tag: Tag }) => {
+    return this.postService.addTag(post, tag).pipe(
+      tapResponse({
+        next: () => this.logService.success('Success', `Added tag ${tag.name} to post: ${post.title}`, false),
+        error: (error: HttpErrorResponse) => this.logService.error(error),
+      }),
+    )
+  }
+
+  private updatePostTag = ({ post, tag }: { post: Post; tag: Tag }) => {
+    return this.postService.updateTag(post, tag).pipe(
+      tapResponse({
+        next: () => this.logService.success('Success', `Updated tag ${tag.name} in post: ${post.title}`, false),
+        error: (error: HttpErrorResponse) => this.logService.error(error),
+      }),
+    )
+  }
+
+  private deletePostTag = ({ post, tag }: { post: Post; tag: Tag }) => {
+    return this.postService.deleteTag(post, tag).pipe(
+      tapResponse({
+        next: () => this.logService.success('Success', `Deleted tag ${tag.name} from post: ${post.title}`, false),
+        error: (error: HttpErrorResponse) => this.logService.error(error),
+      }),
+    )
+  }
+
   readonly upsertPost = this.effect<Post>((post$) => {
     return post$.pipe(
       concatLatestFrom(() => [this.selectedOrganization$]),
       switchMap(([post, selectedOrganization]) => {
         post = { ...post, organizationId: selectedOrganization, accountId: post.author?.accountId || '' }
 
-        if (post.postId > 0) {
+        const existingPost = this.state().posts.find((p) => p.postId === post.postId)
+
+        if (existingPost) {
+          const existingPlayerIds = new Set(existingPost.tags.map((p) => p.tagId))
+          const newPlayerIds = new Set(post.tags.map((p) => p.tagId))
+
+          const tagsToAdd = post.tags.filter((p) => !existingPlayerIds.has(p.tagId))
+          const tagsToUpdate = post.tags.filter((p) => existingPlayerIds.has(p.tagId))
+          const tagsToRemove = existingPost.tags.filter((p) => !newPlayerIds.has(p.tagId))
+
           return this.postService.update(post).pipe(
             tapResponse({
-              next: () => this.logService.success('Success', `Updated post: ${post.title}`),
+              next: () => this.logService.success('Success', `Updated post: ${post.title}`, false),
               error: (error: HttpErrorResponse) => this.logService.error(error),
-              finalize: () => this.fetchPosts(selectedOrganization),
             }),
+            switchMap(() =>
+              from([
+                ...(tagsToAdd.length > 0
+                  ? [from(tagsToAdd).pipe(mergeMap((tag) => this.addPostTag({ post, tag })))]
+                  : []),
+                ...(tagsToUpdate.length > 0
+                  ? [from(tagsToUpdate).pipe(mergeMap((tag) => this.updatePostTag({ post, tag })))]
+                  : []),
+                ...(tagsToRemove.length > 0
+                  ? [from(tagsToRemove).pipe(mergeMap((tag) => this.deletePostTag({ post, tag })))]
+                  : []),
+              ]).pipe(
+                mergeMap((obs$) => obs$),
+                defaultIfEmpty(null),
+              ),
+            ),
+            last(),
+            tap(() => this.logService.success('Success', `Updated post: ${post.title}`)),
+            tap(() => this.fetchPosts(selectedOrganization)),
           )
         }
 
         return this.postService.create(post).pipe(
           tapResponse({
-            next: () => this.logService.success('Success', `Created post: ${post.title}`),
+            next: () => this.logService.success('Success', `Created post: ${post.title}`, false),
             error: (error: HttpErrorResponse) => this.logService.error(error),
-            finalize: () => this.fetchPosts(selectedOrganization),
           }),
+          switchMap((postResponse) =>
+            post.tags.length > 0
+              ? from(post.tags).pipe(
+                  mergeMap((tag) => this.addPostTag({ post: postResponse.post, tag })),
+                  defaultIfEmpty(null),
+                )
+              : of(null),
+          ),
+          last(),
+          tap(() => this.logService.success('Success', `Created post: ${post.title}`)),
+          tap(() => this.fetchPosts(selectedOrganization)),
         )
       }),
     )
@@ -904,12 +968,26 @@ export class StoreService extends ComponentStore<StoreState> {
       concatLatestFrom(() => [this.selectedOrganization$]),
       switchMap(([post, selectedOrganization]) => {
         post = { ...post, organizationId: selectedOrganization }
-        return this.postService.delete(post).pipe(
-          tapResponse({
-            next: () => this.logService.success('Success', `Deleted post: ${post.title}`),
-            error: (error: HttpErrorResponse) => this.logService.error(error),
-            finalize: () => this.fetchPosts(selectedOrganization),
-          }),
+
+        const deleteTags$ =
+          post.tags && post.tags.length > 0
+            ? from(post.tags).pipe(
+                mergeMap((tag) => this.deletePostTag({ post, tag })),
+                defaultIfEmpty(null),
+                last(),
+              )
+            : of(null)
+
+        return deleteTags$.pipe(
+          switchMap(() =>
+            this.postService.delete(post).pipe(
+              tapResponse({
+                next: () => this.logService.success('Success', `Deleted post: ${post.title}`),
+                error: (error: HttpErrorResponse) => this.logService.error(error),
+                finalize: () => this.fetchPosts(selectedOrganization),
+              }),
+            ),
+          ),
         )
       }),
     )
