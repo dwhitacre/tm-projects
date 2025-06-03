@@ -1,13 +1,9 @@
-import { afterAll, beforeAll, describe, expect, test } from "bun:test";
+import { describe, expect, test } from "bun:test";
 import { faker } from "@faker-js/faker";
 import { HdstmEventsClient } from "shared/clients/hdstmevents";
 import type { JsonAny } from "shared/domain/json";
-import { Db } from "shared/domain/db";
-import { PlayerService } from "shared/services/player";
 import type { IPlayer } from "shared/domain/player";
 
-let db: Db;
-let playerService: PlayerService;
 const client = new HdstmEventsClient({
   baseUrl: "http://localhost:8081",
   apikeyHeader: "x-hdstmevents-adminkey",
@@ -16,18 +12,6 @@ const adminClient = new HdstmEventsClient({
   baseUrl: "http://localhost:8081",
   apikey: "developer-test-key",
   apikeyHeader: "x-hdstmevents-adminkey",
-});
-
-beforeAll(async () => {
-  db = new Db({
-    connectionString:
-      "postgres://hdstmevents:Passw0rd!@localhost:5432/hdstmevents?pool_max_conns=10",
-  });
-  playerService = PlayerService.getInstance({ db });
-});
-
-afterAll(async () => {
-  await db.close();
 });
 
 describe("/api/player", () => {
@@ -44,7 +28,7 @@ describe("/api/player", () => {
 
   test("create player bad method", async () => {
     const accountId = faker.string.uuid().replace(/^.{4}/, "2000");
-    const response = await adminClient.httpPost("/api/player", { accountId });
+    const response = await adminClient.httpPatch("/api/player", { accountId });
     expect(response.status).toEqual(405);
   });
 
@@ -187,7 +171,7 @@ describe("/api/player", () => {
     const discord = "override.discord";
 
     await adminClient.createPlayer(accountId);
-    await playerService.addPlayerOverrides(
+    await adminClient.createPlayerOverrides(
       accountId,
       name,
       image,
@@ -239,7 +223,7 @@ describe("/api/player", () => {
     const discord = "override.discord";
 
     await adminClient.createPlayer(accountId);
-    await playerService.addPlayerOverrides(
+    await adminClient.createPlayerOverrides(
       accountId,
       name,
       image,

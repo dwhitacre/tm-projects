@@ -143,6 +143,22 @@ export class HdstmEventsClient extends Client {
     }
   }
 
+  createPlayerOverrides(
+    accountId: IPlayer["accountId"],
+    name?: IPlayer["name"],
+    image?: IPlayer["image"],
+    twitch?: IPlayer["twitch"],
+    discord?: IPlayer["discord"]
+  ) {
+    return this.httpPost(`/api/player`, {
+      accountId,
+      name,
+      image,
+      twitch,
+      discord,
+    });
+  }
+
   createWeekly(weeklyId: Weekly["weeklyId"]) {
     return this.httpPut("/api/weekly", { weeklyId });
   }

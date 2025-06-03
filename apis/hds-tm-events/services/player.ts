@@ -61,6 +61,47 @@ export class PlayerService {
       player
     );
   }
+
+  async insertOverrides(player: Player) {
+    return this.db.insert(
+      `
+        insert into PlayerOverrides (AccountId, Name, Image, Twitch, Discord)
+        values ($1, $2, $3, $4, $5)
+      `,
+      [
+        player.accountId,
+        player.name,
+        player.image,
+        player.twitch,
+        player.discord,
+      ]
+    );
+  }
+
+  async updateOverrides(player: Player) {
+    return this.db.insert(
+      `
+        update PlayerOverrides
+        set Name=$2, Image=$3, Twitch=$4, Discord=$5
+        where AccountId=$1
+      `,
+      [
+        player.accountId,
+        player.name,
+        player.image,
+        player.twitch,
+        player.discord,
+      ]
+    );
+  }
+
+  async upsertOverrides(player: Player) {
+    return this.db.upsert(
+      this.insertOverrides.bind(this),
+      this.updateOverrides.bind(this),
+      player
+    );
+  }
 }
 
 export default (db: Db) => new PlayerService(db);
