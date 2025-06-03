@@ -18,7 +18,7 @@ beforeEach(() => {
 });
 
 test("should handle non get/put method", async () => {
-  const request = new Request("http://sub.domain.example", { method: "post" });
+  const request = new Request("http://sub.domain.example", { method: "patch" });
   const apiRequest = new ApiRequest(request, services);
 
   const response = await player.handle(apiRequest);
