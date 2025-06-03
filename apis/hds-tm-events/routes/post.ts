@@ -13,8 +13,8 @@ class PostRoute extends Route {
     if (!post) return ApiResponse.badRequest(req);
 
     if (req.checkMethod("put")) {
-      await req.services.post.insert(post);
-      return ApiResponse.created(req);
+      const createdPost = await req.services.post.insert(post);
+      return ApiResponse.created(req, { post: createdPost?.toJson() });
     }
 
     if (req.checkMethod("post")) {

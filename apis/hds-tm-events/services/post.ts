@@ -71,11 +71,12 @@ export class PostService {
     return row !== undefined;
   }
 
-  insert(post: Post) {
-    return this.db.insert(
+  async insert(post: Post) {
+    const result = await this.db.insert(
       `
         insert into Post (accountId, title, description, image, content, isVisible, sortOrder, DateCreated, DateModified, OrganizationId)
         values ($1, $2, $3, $4, $5, $6, $7, now(), now(), $8)
+        returning postId, accountId, title, description, image, content, isVisible, sortOrder, dateCreated, dateModified, organizationId
       `,
       [
         post.accountId,
@@ -88,6 +89,11 @@ export class PostService {
         post.organizationId,
       ]
     );
+
+    if (result === undefined) return undefined;
+    if (result.rowCount !== 1) return undefined;
+
+    return Post.fromJson(result.rows[0]);
   }
 
   update(post: Post) {

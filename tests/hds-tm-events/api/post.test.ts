@@ -133,6 +133,15 @@ describe("/api/post", () => {
     const response = await adminClient.createPost(post);
     expect(response.status).toBe(201);
 
+    const createdPost = await response.json();
+    expect(createdPost).toBeDefined();
+    expect(createdPost.post).toBeDefined();
+    expect<string | undefined>(createdPost.post.content).toBe(post.content);
+    expect(createdPost.post.organizationId).toBe(org.organizationId);
+    expect(createdPost.post.postId).toBeDefined();
+    expect(createdPost.post.dateCreated).toBeDefined();
+    expect(createdPost.post.dateModified).toBeDefined();
+
     const getResp = await client.getPosts(org.organizationId);
     const json = await getResp.json();
     const created = json.posts.find((p: Post) => p.content === post.content);

@@ -13,7 +13,7 @@ import type {
   EventResponse,
   EventsResponse,
 } from "../domain/event";
-import type { Post, PostResponse } from "../domain/post";
+import type { PostResponse, Post, PostsResponse } from "../domain/post";
 import type { Tag, TagResponse } from "../domain/tag";
 import type {
   Team,
@@ -325,13 +325,13 @@ export class HdstmEventsClient extends Client {
   }
 
   getPosts(organizationId: Post["organizationId"]) {
-    return this.httpGet<PostResponse>(
+    return this.httpGet<PostsResponse>(
       `/api/organization/${organizationId}/post`
     );
   }
 
   createPost(post: Partial<Post>) {
-    return this.httpPut(`/api/post`, post);
+    return this.httpPut<PostResponse>(`/api/post`, post);
   }
 
   updatePost(post: Partial<Post>) {

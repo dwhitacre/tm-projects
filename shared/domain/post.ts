@@ -18,6 +18,10 @@ export interface Post {
   author: IPlayer;
 }
 
-export interface PostResponse extends ApiResponse {
+export interface PostsResponse extends ApiResponse {
   posts: Post[];
+}
+
+export interface PostResponse extends ApiResponse {
+  post: Post;
 }
