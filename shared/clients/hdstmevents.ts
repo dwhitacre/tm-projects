@@ -15,7 +15,12 @@ import type {
 } from "../domain/event";
 import type { Post, PostResponse } from "../domain/post";
 import type { Tag, TagResponse } from "../domain/tag";
-import type { Team, TeamPlayer, TeamResponse } from "../domain/team";
+import type {
+  Team,
+  TeamPlayer,
+  TeamResponse,
+  TeamsResponse,
+} from "../domain/team";
 import type { TeamRole, TeamRoleResponse } from "../domain/teamrole";
 import type {
   Organization,
@@ -274,13 +279,13 @@ export class HdstmEventsClient extends Client {
   }
 
   getTeams(organizationId: Team["organizationId"]) {
-    return this.httpGet<TeamResponse>(
+    return this.httpGet<TeamsResponse>(
       `/api/organization/${organizationId}/team`
     );
   }
 
   createTeam(team: Partial<Team>) {
-    return this.httpPut(`/api/team`, team);
+    return this.httpPut<TeamResponse>(`/api/team`, team);
   }
 
   updateTeam(team: Partial<Team>) {

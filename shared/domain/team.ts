@@ -19,6 +19,10 @@ export interface Team {
   players: TeamPlayer[];
 }
 
-export interface TeamResponse extends ApiResponse {
+export interface TeamsResponse extends ApiResponse {
   teams: Team[];
+}
+
+export interface TeamResponse extends ApiResponse {
+  team: Team;
 }

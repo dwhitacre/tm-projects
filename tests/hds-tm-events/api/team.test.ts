@@ -123,6 +123,15 @@ describe("/api/team", () => {
     const response = await adminClient.createTeam(team);
     expect(response.status).toBe(201);
 
+    const createdTeam = await response.json();
+    expect(createdTeam).toBeDefined();
+    expect(createdTeam.team).toBeDefined();
+    expect<string | undefined>(createdTeam.team.name).toBe(team.name);
+    expect(createdTeam.team.organizationId).toBe(org.organizationId);
+    expect(createdTeam.team.teamId).toBeDefined();
+    expect(createdTeam.team.dateCreated).toBeDefined();
+    expect(createdTeam.team.dateModified).toBeDefined();
+
     const getResp = await client.getTeams(org.organizationId);
     const json = await getResp.json();
     const created = json.teams.find((t: Team) => t.name === team.name);

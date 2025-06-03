@@ -14,8 +14,8 @@ class TeamRoute extends Route {
     if (!team) return ApiResponse.badRequest(req);
 
     if (req.checkMethod("put")) {
-      await req.services.team.insert(team);
-      return ApiResponse.created(req);
+      const createdTeam = await req.services.team.insert(team);
+      return ApiResponse.created(req, { team: createdTeam?.toJson() });
     }
 
     if (req.checkMethod("post")) {

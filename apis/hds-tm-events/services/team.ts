@@ -67,11 +67,12 @@ export class TeamService {
     return row !== undefined;
   }
 
-  insert(team: Team) {
-    return this.db.insert(
+  async insert(team: Team) {
+    const result = await this.db.insert(
       `
         insert into Team (Name, Description, SortOrder, IsVisible, DateCreated, DateModified, OrganizationId)
         values ($1, $2, $3, $4, NOW(), NOW(), $5)
+        returning TeamId, Name, Description, SortOrder, IsVisible, DateCreated, DateModified, OrganizationId
       `,
       [
         team.name,
@@ -81,6 +82,11 @@ export class TeamService {
         team.organizationId,
       ]
     );
+
+    if (result === undefined) return undefined;
+    if (result.rowCount !== 1) return undefined;
+
+    return Team.fromJson(result.rows[0]);
   }
 
   update(team: Team) {
