@@ -502,7 +502,7 @@ export class TopBarComponent implements OnInit, OnChanges, OnDestroy {
     icon: 'pi pi-user-plus',
     command: () => (this.addPlayerVisible = true),
     visible: true,
-    weeklyOnly: true,
+    weeklyOnly: false,
     adminOnly: true,
     styleClass: 'layout-topbar-menu-menuitem-addplayer',
   }
