@@ -23,7 +23,16 @@ import { StoreService } from 'src/services/store.service'
           </div>
           <div class="post-content">
             <ng-container *ngFor="let paragraph of paragraphs">
-              <p>{{ paragraph }}</p>
+              <p *ngIf="paragraph.startsWith('\\t'); else paragraphheader">
+                <ng-container *ngIf="paragraph.match(boldedPrefixRegex) as prefix; else normalParagraph">
+                  <b>{{ prefix[1] }}</b
+                  >{{ paragraph.slice(prefix[1].length) }}
+                </ng-container>
+                <ng-template #normalParagraph>{{ paragraph }}</ng-template>
+              </p>
+              <ng-template #paragraphheader>
+                <h3>{{ paragraph }}</h3>
+              </ng-template>
             </ng-container>
           </div>
         </div>
@@ -94,6 +103,13 @@ import { StoreService } from 'src/services/store.service'
       .post-content {
         margin-top: 32px;
       }
+      .post-content h3 {
+        justify-content: center;
+        display: flex;
+      }
+      .post-content p {
+        text-indent: 2em;
+      }
     `,
   ],
   imports: [CommonModule, ComponentsModule],
@@ -102,7 +118,8 @@ export class PostComponent {
   post?: Post
   paragraphs: string[] = []
 
-  #paragraphRegex = /\\n\\n/g
+  #paragraphRegex = /\n\n/g
+  boldedPrefixRegex = /^\t?([^:]+:\s?)/
 
   constructor(
     private route: ActivatedRoute,
