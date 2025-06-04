@@ -1,5 +1,5 @@
 namespace Clients {
-    class MeClient : Client {
+    class MeClient : Shared::Clients::Client {
         MeClient(Domain::ClientOptions@ options) {
             super(options);
         }

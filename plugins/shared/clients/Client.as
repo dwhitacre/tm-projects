@@ -1,4 +1,4 @@
-namespace Clients {
+namespace Shared::Clients {
     class Client {
         Domain::ClientOptions@ options;
 
