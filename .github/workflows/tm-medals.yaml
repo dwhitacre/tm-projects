@@ -5,9 +5,9 @@ on:
       - .github/workflows/tm-medals.yaml
       - apis/tm-medals/**
       - charts/tm-medals/**
-      - dbs/tmmedals/**
-      - plugins/player-medals/**
-      - tests/tm-medals/**
+      # - dbs/tmmedals/**
+      # - plugins/player-medals/**
+      # - tests/tm-medals/**
   workflow_dispatch:
 
 concurrency:

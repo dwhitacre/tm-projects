@@ -5,9 +5,9 @@ on:
       - .github/workflows/tm-api.yaml
       - apis/tm-api/**
       - charts/tm-api/**
-      - dbs/tmapi/**
-      - sims/**
-      - tests/tm-api/**
+      # - dbs/tmapi/**
+      # - sims/**
+      # - tests/tm-api/**
   workflow_dispatch:
 
 concurrency:

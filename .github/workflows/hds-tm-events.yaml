@@ -7,9 +7,9 @@ on:
       - apps/hds-tm-events/**
       - charts/holydynasty-events/**
       - dbs/hsdtmevents/**
-      - plugins/hds-bounty/**
-      - sims/**
-      - tests/hds-tm-events/**
+      # - plugins/hds-bounty/**
+      # - sims/**
+      # - tests/hds-tm-events/**
   workflow_dispatch:
 
 concurrency:
