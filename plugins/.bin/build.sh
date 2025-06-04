@@ -6,21 +6,9 @@ source "$SCRIPT_DIR/watch_fs.sh"
 
 log "lgrey" "Loaded scripts from the directory $SCRIPT_DIR"
 
-ROOT_DIR="$(git rev-parse --show-toplevel)/plugins/snake"
-SRC_DIR="$ROOT_DIR/src"
-INFO_TOML="$ROOT_DIR/info.toml"
-PLUGINS_DIR=${PLUGINS_DIR:-$HOME/OpenplanetNext/Plugins}
-ZIP=${ZIP:-"$PROGRAMFILES/7-Zip/7z.exe"}
-
-PLUGIN_PRETTY_NAME="$(cat $INFO_TOML | dos2unix | grep '^name' | cut -f 2 -d '=' | tr -d '\"\r' | sed 's/^[ ]*//')"
-PLUGIN_VERSION="$(cat $INFO_TOML | dos2unix | grep '^version' | cut -f 2 -d '=' | tr -d '\"\r' | sed 's/^[ ]*//')"
-PLUGIN_NAME=$(echo "$PLUGIN_PRETTY_NAME" | tr -d '(),:;'\''"' | tr 'A-Z ' 'a-z-')
-PLUGIN_BUILD_DIR="$ROOT_DIR/dist"
-PLUGIN_BUILD_NAME="$PLUGIN_BUILD_DIR/$PLUGIN_NAME-$PLUGIN_VERSION.op"
-PLUGIN_DIRTY_FLAG="$PLUGIN_BUILD_DIR/dirty"
-
 WATCH=false
 CI=false
+PLUGIN_DIR=player-medals
 POSITIONAL_ARGS=()
 
 while [[ $# -gt 0 ]]; do
@@ -32,6 +20,10 @@ while [[ $# -gt 0 ]]; do
     --ci)
       CI=true
       shift
+      ;;
+    -p|--plugin-dir)
+      PLUGIN_DIR="$2"
+      shift 2
       ;;
     -*|--*)
       log "red" "Unknown option $1. Exiting."
@@ -45,6 +37,20 @@ while [[ $# -gt 0 ]]; do
 done
 
 set -- "${POSITIONAL_ARGS[@]}"
+
+ROOT_DIR="$(git rev-parse --show-toplevel)/plugins/$PLUGIN_DIR"
+SRC_DIR="$ROOT_DIR/src"
+INFO_TOML="$ROOT_DIR/info.toml"
+PLUGINS_DIR=${PLUGINS_DIR:-$HOME/OpenplanetNext/Plugins}
+ZIP=${ZIP:-"$PROGRAMFILES/7-Zip/7z.exe"}
+
+PLUGIN_PRETTY_NAME="$(cat $INFO_TOML | dos2unix | grep '^name' | cut -f 2 -d '=' | tr -d '\"\r' | sed 's/^[ ]*//')"
+PLUGIN_VERSION="$(cat $INFO_TOML | dos2unix | grep '^version' | cut -f 2 -d '=' | tr -d '\"\r' | sed 's/^[ ]*//')"
+PLUGIN_NAME=$(echo "$PLUGIN_PRETTY_NAME" | tr -d '(),:;'\''"' | tr 'A-Z ' 'a-z-')
+PLUGIN_BUILD_DIR="$ROOT_DIR/dist"
+PLUGIN_BUILD_NAME="$PLUGIN_BUILD_DIR/$PLUGIN_NAME-$PLUGIN_VERSION.op"
+PLUGIN_DIRTY_FLAG="$PLUGIN_BUILD_DIR/dirty"
+
 
 function publish() {
   if ! $CI; then

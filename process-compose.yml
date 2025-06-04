@@ -48,16 +48,16 @@ processes:
       - "DEBUG=true"
 
   hds-bounty-plugin:
-    working_dir: plugins/hds-bounty
-    command: bash .bin/build.sh -w
+    working_dir: plugins
+    command: bash .bin/build.sh -w -p hds-bounty
 
   player-medals-plugin:
-    working_dir: plugins/player-medals
-    command: bash .bin/build.sh -w
+    working_dir: plugins
+    command: bash .bin/build.sh -w -p player-medals
 
   snake-plugin:
-    working_dir: plugins/snake
-    command: bash .bin/build.sh -w
+    working_dir: plugins
+    command: bash .bin/build.sh -w -p snake
 
   dbs:
     working_dir: .
