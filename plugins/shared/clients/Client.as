@@ -5,15 +5,22 @@ namespace Shared::Clients {
         string audienceLive = "NadeoLiveServices";
         string get_nadeoUrlLive() { return NadeoServices::BaseURLLive(); }
 
+        string pluginName = "";
+        string pluginVersion = "";
+        string loggedInUser = "";
+
         Client(Domain::ClientOptions@ options) {
             @this.options = options;
+            this.pluginName = Meta::ExecutingPlugin().Name.ToLower().Replace(" ", "-");
+            this.pluginVersion = Meta::ExecutingPlugin().Version;
+            this.loggedInUser = GetLocalLogin();
         }
 
         string Url(const string&in path) {
             auto trimmedBaseUrl = options.baseUrl.EndsWith("/") ? options.baseUrl.SubStr(0, options.baseUrl.Length - 1) : options.baseUrl;
             auto url = trimmedBaseUrl + (path.StartsWith("/") ? path : '/' + path);
             url += url.Contains("?") ? "&" : "?";
-            url += "source=tm-medals:plugin:" + Meta::ExecutingPlugin().Version + ":" + GetLocalLogin();
+            url += "source=" + this.pluginName + ":plugin:" + this.pluginVersion + ":" + this.loggedInUser;
             if (options.apikey != "") {
                 url += "&api-key=" + options.apikey;
             }
