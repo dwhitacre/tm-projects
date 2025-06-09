@@ -1,5 +1,5 @@
 namespace Clients {
-    class NadeoClient : Shared::Clients::Client {
+    class NadeoClient : Client {
         NadeoClient(Domain::ClientOptions@ options) {
             super(options);
         }

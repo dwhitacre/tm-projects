@@ -1,5 +1,5 @@
 namespace Clients {
-    class MapsClient : Shared::Clients::Client {
+    class MapsClient : Client {
         MapsClient(Domain::ClientOptions@ options) {
             super(options);
         }

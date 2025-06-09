@@ -1,5 +1,5 @@
 namespace Clients {
-    class ReadyClient : Shared::Clients::Client {
+    class ReadyClient : Client {
         ReadyClient(Domain::ClientOptions@ options) {
             super(options);
         }

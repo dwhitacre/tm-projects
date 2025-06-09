@@ -1,5 +1,5 @@
 namespace Clients {
-    class MedalTimesClient : Shared::Clients::Client {
+    class MedalTimesClient : Client {
         MedalTimesClient(Domain::ClientOptions@ options) {
             super(options);
         }
