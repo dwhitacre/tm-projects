@@ -53,7 +53,7 @@ processes:
 
   player-medals-plugin:
     working_dir: plugins
-    command: bash .bin/build.sh -w -p player-medals
+    command: bash .bin/build.sh -w -s -p player-medals
 
   snake-plugin:
     working_dir: plugins

@@ -10,6 +10,7 @@ WATCH=false
 CI=false
 PLUGIN_DIR=player-medals
 POSITIONAL_ARGS=()
+SHARED=false
 
 while [[ $# -gt 0 ]]; do
   case $1 in
@@ -25,6 +26,10 @@ while [[ $# -gt 0 ]]; do
       PLUGIN_DIR="$2"
       shift 2
       ;;
+    -s|--shared)
+      SHARED=true
+      shift
+      ;;
     -*|--*)
       log "red" "Unknown option $1. Exiting."
       exit 1
@@ -38,7 +43,9 @@ done
 
 set -- "${POSITIONAL_ARGS[@]}"
 
-ROOT_DIR="$(git rev-parse --show-toplevel)/plugins/$PLUGIN_DIR"
+GIT_DIR=$(git rev-parse --show-toplevel 2> /dev/null)
+ROOT_DIR="$GIT_DIR/plugins/$PLUGIN_DIR"
+SHARED_DIR="$GIT_DIR/plugins/shared"
 SRC_DIR="$ROOT_DIR/src"
 INFO_TOML="$ROOT_DIR/info.toml"
 PLUGINS_DIR=${PLUGINS_DIR:-$HOME/OpenplanetNext/Plugins}
@@ -50,7 +57,6 @@ PLUGIN_NAME=$(echo "$PLUGIN_PRETTY_NAME" | tr -d '(),:;'\''"' | tr 'A-Z ' 'a-z-'
 PLUGIN_BUILD_DIR="$ROOT_DIR/dist"
 PLUGIN_BUILD_NAME="$PLUGIN_BUILD_DIR/$PLUGIN_NAME-$PLUGIN_VERSION.op"
 PLUGIN_DIRTY_FLAG="$PLUGIN_BUILD_DIR/dirty"
-
 
 function publish() {
   if ! $CI; then
@@ -71,6 +77,20 @@ function publish_repeat() {
   done
 }
 
+function copy_shared() {
+  if ! $SHARED; then
+    log "lgrey" "Skipping shared files copy as --shared|-s is not set."
+    return
+  fi
+
+  if test -d "$SHARED_DIR"; then
+    log "lgrey" "Copying shared files from $SHARED_DIR"
+    cp -r "$SHARED_DIR"/* "$SRC_DIR/shared"
+  else
+    log "lgrey" "No shared directory found at $SHARED_DIR"
+  fi
+}
+
 function build() {
   log "white" "Running build script for plugin: $PLUGIN_PRETTY_NAME v$PLUGIN_VERSION"
 
@@ -87,11 +107,17 @@ function build() {
   echo "$(date)" > $PLUGIN_DIRTY_FLAG
 }
 
+copy_shared
 build
 if $WATCH; then
   publish_repeat &
   while [[ true ]]; do
-    watch_fs $SRC_DIR
+    if $SHARED; then
+      watch_fs $SRC_DIR $SHARED_DIR
+    else
+      watch_fs $SRC_DIR
+    fi
+    copy_shared
     build
   done
 else
