@@ -1,6 +1,6 @@
 namespace Clients {
     class ConfigClient : Client {
-        ConfigClient(Domain::ClientOptions@ options) {
+        ConfigClient(Domain::IClientOptions@ options) {
             super(options);
         }
 
