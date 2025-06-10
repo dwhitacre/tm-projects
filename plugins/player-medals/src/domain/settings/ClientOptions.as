@@ -4,7 +4,7 @@
 [Setting hidden] uint64 S_ApiLatency = 0;
 
 namespace Domain {
-    class ClientOptions {
+    class ClientOptions : IClientOptions {
         string get_baseUrl() {
             return S_ApiUrl;
         }

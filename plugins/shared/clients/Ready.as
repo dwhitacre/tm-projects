@@ -1,6 +1,6 @@
 namespace Clients {
     class ReadyClient : Client {
-        ReadyClient(Domain::ClientOptions@ options) {
+        ReadyClient(Domain::IClientOptions@ options) {
             super(options);
         }
 

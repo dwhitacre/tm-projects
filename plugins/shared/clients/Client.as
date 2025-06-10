@@ -1,6 +1,6 @@
 namespace Clients {
     class Client {
-        Domain::ClientOptions@ options;
+        Domain::IClientOptions@ options;
 
         string audienceLive = "NadeoLiveServices";
         string get_nadeoUrlLive() { return NadeoServices::BaseURLLive(); }
@@ -9,7 +9,7 @@ namespace Clients {
         string pluginVersion = "";
         string loggedInUser = "";
 
-        Client(Domain::ClientOptions@ options) {
+        Client(Domain::IClientOptions@ options) {
             @this.options = options;
             this.pluginName = Meta::ExecutingPlugin().Name.ToLower().Replace(" ", "-");
             this.pluginVersion = Meta::ExecutingPlugin().Version;
