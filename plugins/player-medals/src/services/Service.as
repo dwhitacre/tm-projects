@@ -7,8 +7,8 @@ namespace Services {
     }
 
     SettingsService@ Settings = SettingsService();
-    IconsService@ Icons = IconsService();;
-    FontsService@ Fonts = FontsService();;
+    IconsService@ Icons = IconsService();
+    FontsService@ Fonts = FontsService();
     ReadyService@ Ready = ReadyService();
     MeService@ Me = MeService();
     ConfigService@ Config = ConfigService();
