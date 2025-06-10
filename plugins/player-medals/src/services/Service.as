@@ -2,10 +2,6 @@ namespace Services {
     bool Loading = true; 
     bool PBsLoading = true;
 
-    class Service {
-        Service() {}
-    }
-
     SettingsService@ Settings = SettingsService();
     IconsService@ Icons = IconsService();
     FontsService@ Fonts = FontsService();
