@@ -1,4 +1,4 @@
-[Setting hidden] string S_ApiUrl = "https://tm-medals.danonthemoon.dev/api";
+[Setting hidden] string S_ApiUrl = "https://openplanet-snake.danonthemoon.dev/api";
 [Setting hidden] string S_ApiKey = "";
 [Setting hidden] bool S_ApiDebug = false;
 [Setting hidden] uint64 S_ApiLatency = 0;
@@ -36,7 +36,7 @@ namespace Domain {
         ClientOptions() {}
 
         void Reset() {
-            this.baseUrl = "https://tm-medals.danonthemoon.dev/api";
+            this.baseUrl = "https://openplanet-snake.danonthemoon.dev/api";
             this.apikey = "";
             this.debug = false;
             this.latency = 0;

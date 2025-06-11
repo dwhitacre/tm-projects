@@ -26,7 +26,7 @@ namespace View {
         return Text::ParseHexColor(Services::CurrentPlayer.player.color);
     }
 
-    SettingsWindow@ Settings = SettingsWindow();;
+    SettingsWindow@ Settings = SettingsWindow();
     MainWindow@ Main = MainWindow();
     MedalWindow@ Medal = MedalWindow();
     MenuWindow@ Menu = MenuWindow();

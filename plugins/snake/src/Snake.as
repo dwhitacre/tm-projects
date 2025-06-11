@@ -52,7 +52,7 @@ class Snake {
     }
 
     void ChangeDirection(vec2 newDir) {
-        LogTrace("Change Direction: " + Text::Format("%f", newDir.x) + "," + Text::Format("%f", newDir.y));
+        if (S_Advanced_DevLog) trace("Change Direction: " + Text::Format("%f", newDir.x) + "," + Text::Format("%f", newDir.y));
         if (newDir * -1 != lastMoveDirection && newDir * -1 != direction) { // Prevent the snake from reversing
             direction = newDir;
         }

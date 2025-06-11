@@ -2,6 +2,9 @@ GameController gc;
 float g_delta_current = 0.f;
 
 void Main() {
+    startnew(Services::StartReadyHealthCheck);
+    startnew(Services::LoadServices);
+
     // auto tokenTask = Auth::GetToken();
 
     // while (!tokenTask.Finished()) {
@@ -9,7 +12,7 @@ void Main() {
     // }
 
     // string token = tokenTask.Token();
-    // LogInfo("Token: " + token);
+    // trace("Token: " + token);
 
     while (true) {
         try {
@@ -17,7 +20,7 @@ void Main() {
                 gc = GameController();
             }
         } catch {
-            LogError(getExceptionInfo());
+            error(getExceptionInfo());
         }
         sleep(60000);
     }
@@ -48,7 +51,7 @@ void Render() {
 void Update(float dt) {
     if (gc is null) return;
     g_delta_current += dt;
-    // LogTrace("DT: " + Text::Format("%f", dt) + " Cur: " + Text::Format("%f", g_delta_current));
+    // trace("DT: " + Text::Format("%f", dt) + " Cur: " + Text::Format("%f", g_delta_current));
     if (g_delta_current >= S_Snake_GameTickRate) {
         gc.Update();
         g_delta_current = 0.f;

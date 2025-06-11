@@ -11,6 +11,12 @@ class GameController {
         @grid = @Grid();
     }
 
+    void LogTrace(const string &in msg) {
+        if (S_Advanced_DevLog) {
+            trace(msg);
+        }
+    }
+
     void StartGame() {
         if (running) return;
         LogTrace("Game started");
@@ -25,9 +31,9 @@ class GameController {
         running = false;
         if (S_Snake_LastScore > S_Snake_HighScore) {
             S_Snake_HighScore = S_Snake_LastScore;
-            NotifySuccess("New high score! " + Text::Format("%d", S_Snake_HighScore));
+            View::NotifySuccess("New high score! " + Text::Format("%d", S_Snake_HighScore));
         } else {
-            NotifyInfo("You died! Score: " + Text::Format("%d", S_Snake_LastScore));
+            View::NotifyInfo("You died! Score: " + Text::Format("%d", S_Snake_LastScore));
         }
     }
 
