@@ -57,7 +57,7 @@ processes:
 
   snake-plugin:
     working_dir: plugins
-    command: bash .bin/build.sh -w -p snake
+    command: bash .bin/build.sh -w -s -p snake
 
   dbs:
     working_dir: .

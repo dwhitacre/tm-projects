@@ -4,7 +4,6 @@ namespace Services {
 
     SettingsService@ Settings = SettingsService();
     IconsService@ Icons = IconsService();
-    FontsService@ Fonts = FontsService();
     ConfigService@ Config = ConfigService(Settings.options);
     ReadyService@ Ready = ReadyService(Settings.options, Config);
     MeService@ Me = MeService();
