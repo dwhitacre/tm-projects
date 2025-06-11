@@ -85,6 +85,7 @@ function copy_shared() {
 
   if test -d "$SHARED_DIR"; then
     log "lgrey" "Copying shared files from $SHARED_DIR"
+    mkdir -p "$SRC_DIR/shared"
     cp -r "$SHARED_DIR"/* "$SRC_DIR/shared"
   else
     log "lgrey" "No shared directory found at $SHARED_DIR"
