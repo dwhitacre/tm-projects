@@ -3,9 +3,9 @@ namespace Services {
         Domain::Config@ config = Domain::Config();
         Clients::ConfigClient@ client;
 
-        ConfigService() {
+        ConfigService(Domain::IClientOptions@ options) {
             super();
-            @client = Clients::ConfigClient(Settings.options);
+            @client = Clients::ConfigClient(options);
         }
 
         Domain::Config@ Get() {

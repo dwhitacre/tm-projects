@@ -4,9 +4,9 @@ namespace Services {
         bool isHealthy = true;
         Clients::ReadyClient@ client;
         
-        ReadyService() {
+        ReadyService(Domain::IClientOptions@ options) {
             super();
-            @client = Clients::ReadyClient(Settings.options);
+            @client = Clients::ReadyClient(options);
         }
 
         bool get_IsHealthy() {
