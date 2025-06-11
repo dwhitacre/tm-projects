@@ -3,10 +3,12 @@ namespace Services {
         bool isHealthCheckRunning = false;
         bool isHealthy = true;
         Clients::ReadyClient@ client;
+        Services::ConfigService@ config;
         
-        ReadyService(Domain::IClientOptions@ options) {
+        ReadyService(Domain::IClientOptions@ options, Services::ConfigService@ config) {
             super();
             @client = Clients::ReadyClient(options);
+            @this.config = config;
         }
 
         bool get_IsHealthy() {
@@ -24,15 +26,16 @@ namespace Services {
             while (true) {
                 yield();
 
-                if (Config.Get() is null || !Config.Get().healthCheckEnabled) continue;
+                if (config is null) continue;
+                if (config.Get() is null || !config.Get().healthCheckEnabled) continue;
                  
                 if (!IsReady()) {
                     isHealthy = false;
-                    warn("Healthcheck failed. API may not be accessible. Retrying in " + Config.Get().healthCheckMs + "ms..");
+                    warn("Healthcheck failed. API may not be accessible. Retrying in " + config.Get().healthCheckMs + "ms..");
                 } else {
                     isHealthy = true;
                 }
-                sleep(Config.Get().healthCheckMs);
+                sleep(config.Get().healthCheckMs);
             }
         }
     }

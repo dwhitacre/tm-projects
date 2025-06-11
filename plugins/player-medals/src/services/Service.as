@@ -5,9 +5,9 @@ namespace Services {
     SettingsService@ Settings = SettingsService();
     IconsService@ Icons = IconsService();
     FontsService@ Fonts = FontsService();
-    ReadyService@ Ready = ReadyService(Settings.options);
-    MeService@ Me = MeService();
     ConfigService@ Config = ConfigService(Settings.options);
+    ReadyService@ Ready = ReadyService(Settings.options, Config);
+    MeService@ Me = MeService();
     MapsService@ Maps = MapsService();
     PlayersService@ Players = PlayersService();
     MedalTimesService@ MedalTimes = MedalTimesService();
