@@ -38,10 +38,17 @@ spec:
                 secretKeyRef:
                   name: openplanet-snake-api
                   key: DATABASE_CONNSTR
+            - name: OPENPLANET_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: openplanet-snake-api
+                  key: OPENPLANET_SECRET
             - name: DATABASE_SSL
               value: "true"
             - name: HOST
               value: "0.0.0.0"
+            - name: OPENPLANET_URL
+              value: {{ .Values.openplanetUrl }}
           ports:
             - name: api-http
               containerPort: 8081
