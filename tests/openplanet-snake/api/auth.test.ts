@@ -12,10 +12,14 @@ import { PlayerService } from "shared/services/player";
 import { SnakeClient } from "shared/clients/snake";
 import type { IApikey } from "shared/domain/apikey";
 import type { OpenplanetAuth } from "shared/domain/auth";
+import { Player } from "shared/domain/player";
 
 let db: Db;
 let playerService: PlayerService;
 const client = new SnakeClient({
+  baseUrl: "http://localhost:8082",
+});
+const adminClient = new SnakeClient({
   baseUrl: "http://localhost:8082",
 });
 
@@ -25,6 +29,10 @@ beforeAll(async () => {
       "postgres://openplanetsnake:Passw0rd!@localhost:5432/openplanetsnake?pool_max_conns=10",
   });
   playerService = PlayerService.getInstance({ db });
+  const apikey = await playerService.createAdmin(
+    new Player(faker.string.uuid(), faker.internet.username())
+  );
+  adminClient.setApikey(apikey);
 });
 
 beforeEach(() => {
@@ -135,5 +143,70 @@ describe("openplanet", () => {
     expect(json.apikey).toBeDefined();
     expect(json.apikey.accountId).toBeDefined();
     expect(json.apikey.key).toBeDefined();
+
+    client.setApikey(json.apikey.key);
+    const meResponse = await client.getMe();
+    expect(meResponse.status).toEqual(200);
+
+    const meJson = await meResponse.json();
+    expect(meJson.me).toBeDefined();
+    expect(meJson.me!.accountId).toEqual(json.apikey.accountId);
+    expect(meJson.me!.name).toBeDefined();
+    expect(meJson.me!.color).toEqual("");
+    expect(meJson.me!.displayName).toEqual("");
+  });
+
+  test("returns 200 with existing player", async () => {
+    const accountId = "2001" + faker.string.uuid();
+    const name = faker.internet.username();
+    await adminClient.createPlayer(accountId, name);
+
+    const response = await client.authOpenplanet({
+      token: accountId,
+    });
+    expect(response.status).toEqual(200);
+
+    const json = await response.json();
+    expect(json.apikey).toBeDefined();
+    expect(json.apikey.accountId).toBeDefined();
+    expect(json.apikey.key).toBeDefined();
+
+    client.setApikey(json.apikey.key);
+    const meResponse = await client.getMe();
+    expect(meResponse.status).toEqual(200);
+
+    const meJson = await meResponse.json();
+    expect(meJson.me).toBeDefined();
+    expect(meJson.me!.accountId).toEqual(accountId);
+    expect(meJson.me!.name).toBeDefined();
+    expect(meJson.me!.color).toEqual("");
+    expect(meJson.me!.displayName).toEqual("");
+  });
+
+  test("returns 200 with existing player and apikey", async () => {
+    const accountId = "2001" + faker.string.uuid();
+    const player = new Player(accountId, faker.internet.username());
+    await playerService.createWithApikey(player);
+
+    const response = await client.authOpenplanet({
+      token: accountId,
+    });
+    expect(response.status).toEqual(200);
+
+    const json = await response.json();
+    expect(json.apikey).toBeDefined();
+    expect(json.apikey.accountId).toBeDefined();
+    expect(json.apikey.key).toBeDefined();
+
+    client.setApikey(json.apikey.key);
+    const meResponse = await client.getMe();
+    expect(meResponse.status).toEqual(200);
+
+    const meJson = await meResponse.json();
+    expect(meJson.me).toBeDefined();
+    expect(meJson.me!.accountId).toEqual(accountId);
+    expect(meJson.me!.name).toBeDefined();
+    expect(meJson.me!.color).toEqual("");
+    expect(meJson.me!.displayName).toEqual("");
   });
 });

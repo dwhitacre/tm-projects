@@ -387,6 +387,53 @@
           "callbacks": []
         },
         {
+          "uuid": "292e0117-1e96-4299-b551-f5ffb63c4ff0",
+          "body": "{\n  \"account_id\": \"{{ body 'token' 'somethingelse' }}\",\n  \"display_name\": \"{{ faker 'internet.username' }}\",\n  \"token_time\": 1746231798\n}",
+          "latency": 0,
+          "statusCode": 200,
+          "label": "Success - Player already exists",
+          "headers": [
+            {
+              "key": "connection",
+              "value": "close"
+            },
+            {
+              "key": "content-type",
+              "value": "application/json"
+            },
+            {
+              "key": "server",
+              "value": "Caddy"
+            }
+          ],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [
+            {
+              "target": "body",
+              "modifier": "token",
+              "value": "^2001",
+              "invert": false,
+              "operator": "regex_i"
+            },
+            {
+              "target": "body",
+              "modifier": "secret",
+              "value": "",
+              "invert": true,
+              "operator": "null"
+            }
+          ],
+          "rulesOperator": "AND",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": false,
+          "crudKey": "id",
+          "callbacks": []
+        },
+        {
           "uuid": "9b021e44-30c6-4452-8d07-3204912b060e",
           "body": "{\n  \"account_id\": \"{{ faker 'string.uuid' }}\",\n  \"display_name\": \"{{ faker 'internet.username' }}\",\n  \"token_time\": 1746231798\n}",
           "latency": 0,
