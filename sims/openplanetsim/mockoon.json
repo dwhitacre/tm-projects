@@ -388,7 +388,7 @@
         },
         {
           "uuid": "9b021e44-30c6-4452-8d07-3204912b060e",
-          "body": "{\n  \"account_id\": \"{{ faker 'string.uuid' }}\",\n  \"display_name\": \"{{ faker 'internet.userName' }}\",\n  \"token_time\": 1746231798\n}",
+          "body": "{\n  \"account_id\": \"{{ faker 'string.uuid' }}\",\n  \"display_name\": \"{{ faker 'internet.username' }}\",\n  \"token_time\": 1746231798\n}",
           "latency": 0,
           "statusCode": 200,
           "label": "Success",

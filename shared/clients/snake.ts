@@ -1,3 +1,5 @@
+import type { ApikeyResponse } from "../domain/apikey";
+import type { OpenplanetAuth } from "../domain/auth";
 import type { ConfigResponse } from "../domain/config";
 import type {
   MeResponse,
@@ -36,7 +38,7 @@ export class SnakeClient extends Client {
   createPlayer(
     accountId: IPlayer["accountId"],
     name: IPlayer["name"],
-    color: IPlayer["color"],
+    color?: IPlayer["color"],
     displayName?: IPlayer["displayName"]
   ) {
     return this.httpPost<PlayerResponse>(`/players`, {
@@ -45,5 +47,9 @@ export class SnakeClient extends Client {
       color,
       displayName,
     });
+  }
+
+  authOpenplanet(auth: OpenplanetAuth) {
+    return this.httpPost<ApikeyResponse>(`/auth/openplanet`, auth);
   }
 }

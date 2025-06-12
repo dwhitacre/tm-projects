@@ -1,5 +1,6 @@
 import type ApiRequest from "../domain/apirequest";
 import ApiResponse from "../domain/apiresponse";
+import auth from "./auth";
 import config from "./config";
 import me from "./me";
 import players from "./players";
@@ -15,6 +16,8 @@ async function handle(req: ApiRequest): Promise<ApiResponse> {
       response = await players.handle(req);
     else if (req.url.pathname === "/config")
       response = await config.handle(req);
+    else if (req.url.pathname === "/auth/openplanet")
+      response = await auth.openplanetHandle(req);
     else response = await Route.defaultHandle(req);
   } catch (error) {
     req.error = error as Error;

@@ -73,8 +73,7 @@ test("create player no name", async () => {
 test("create player", async () => {
   const accountId = faker.string.uuid();
   const name = faker.internet.username();
-  const color = "3D0";
-  const response = await adminClient.createPlayer(accountId, name, color);
+  const response = await adminClient.createPlayer(accountId, name);
 
   expect(response.status).toEqual(200);
 
@@ -84,7 +83,7 @@ test("create player", async () => {
   expect(json.player).toBeDefined();
   expect(json.player!.accountId).toEqual(accountId);
   expect(json.player!.name).toEqual(name);
-  expect(json.player!.color).toEqual(color);
+  expect(json.player!.color).toEqual("");
   expect(json.player!.displayName).toEqual("");
 });
 

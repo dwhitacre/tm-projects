@@ -21,7 +21,8 @@ processes:
     command: bun run watch
     environment:
       - "DATABASE_CONNSTR=postgres://openplanetsnake:Passw0rd!@localhost:5432/openplanetsnake?pool_max_conns=10"
-      - "ADMIN_KEY=developer-test-key"
+      - "OPENPLANET_URL=http://localhost:8101"
+      - "OPENPLANET_SECRET=developer-test-secret"
       - "HOST=localhost"
       - "PORT=8082"
       - "DEBUG=true"

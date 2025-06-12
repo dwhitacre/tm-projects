@@ -5,6 +5,8 @@ import gameModes from "./gamemodes";
 import gameModeScores from "./gamemodescores";
 import leaderboards from "./leaderboards";
 import leaderboardGameModes from "./leaderboardgamemodes";
+import openplanet from "./openplanet";
+import apikeys from "./apikey";
 
 const services = {
   logger,
@@ -14,6 +16,8 @@ const services = {
   gameModeScores: gameModeScores(db),
   leaderboards: leaderboards(db),
   leaderboardGameModes: leaderboardGameModes(db),
+  openplanet,
+  apikeys: apikeys(db),
 };
 
 export type Services = typeof services;

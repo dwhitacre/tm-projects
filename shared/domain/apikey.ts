@@ -1,6 +1,7 @@
 import { randomUUIDv7 } from "bun";
 import type { JsonObject } from "./json";
 import type { IPlayer } from "./player";
+import type { ApiResponse } from "./apiresponse";
 
 export interface IApikey {
   key: string;
@@ -36,4 +37,8 @@ export class Apikey implements IApikey {
       dateModified: this.dateModified,
     };
   }
+}
+
+export interface ApikeyResponse extends ApiResponse {
+  apikey: IApikey;
 }
