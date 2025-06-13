@@ -7,6 +7,8 @@ export class Permissions {
   static ZoneManage = "zone:manage";
   static MapManage = "map:manage";
   static MedalTimesManage = "medaltimes:manage";
+  static GameModeManage = "gamemode:manage";
+  static LeaderboardManage = "leaderboard:manage";
   static ApiKeyManage = "apikey:manage";
   static Admin = "admin";
 

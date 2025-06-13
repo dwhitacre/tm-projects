@@ -1,3 +1,4 @@
+import { randomUUIDv7 } from "bun";
 import type { Services } from "../services";
 import type Player from "./player";
 
@@ -26,7 +27,9 @@ export class ApiRequest {
       from: "request",
       start: this.start,
       pathname: this.url.pathname,
+      method: this.method,
       source: this.getQueryParam("source"),
+      requestId: randomUUIDv7(),
     });
   }
 
