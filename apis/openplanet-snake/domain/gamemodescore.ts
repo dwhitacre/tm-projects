@@ -1,10 +1,25 @@
 import Json from "./json";
 
+export enum GameModeScoreType {
+  PlayerCurrentBest = "playercurrentbest",
+  PlayerMostRecent = "playermostrecent",
+  PlayerLatest = "playerlatest",
+  PlayerBest = "playerbest",
+  AllCurrentBest = "allcurrentbest",
+  AllMostRecent = "allmostrecent",
+  AllLatest = "alllatest",
+  AllBest = "allbest",
+}
+
+export const GameModeScoreTypes: Array<string | undefined> =
+  Object.values(GameModeScoreType);
+
 export class GameModeScore {
   accountId: string;
   gameModeId: string;
   score: number;
   dateModified?: Date;
+  id?: number;
 
   static fromJson(json: { [_: string]: any }): GameModeScore {
     json = Json.lowercaseKeys(json);
@@ -19,6 +34,7 @@ export class GameModeScore {
       json.score
     );
     if (json.datemodified) gameModeScore.dateModified = json.datemodified;
+    if (json.id) gameModeScore.id = json.id;
 
     return gameModeScore;
   }
@@ -35,6 +51,7 @@ export class GameModeScore {
       gameModeId: this.gameModeId,
       score: this.score,
       dateModified: this.dateModified,
+      id: this.id,
     };
   }
 }

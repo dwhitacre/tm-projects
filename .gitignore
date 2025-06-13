@@ -1,3 +1,4 @@
 .infra
 .nx
 node_modules
+.vscode

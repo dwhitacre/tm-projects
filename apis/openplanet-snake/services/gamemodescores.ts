@@ -8,12 +8,12 @@ export class GameModeScores {
     this.db = db;
   }
 
-  async getBest(accountId: string, gameModeId: string) {
+  async getPlayerCurrentBest(accountId: string, gameModeId: string) {
     const result = await this.db.pool.query(
       `
         select * from GameModeScores
-        order by Score desc
         where AccountId=$1 and GameModeId=$2
+        order by Score desc
         limit 1;
       `,
       [accountId, gameModeId]
@@ -22,12 +22,12 @@ export class GameModeScores {
     return GameModeScore.fromJson(result.rows[0]);
   }
 
-  async getLatest(accountId: string, gameModeId: string) {
+  async getPlayerMostRecent(accountId: string, gameModeId: string) {
     const result = await this.db.pool.query(
       `
         select * from GameModeScores
-        order by DateModified desc
         where AccountId=$1 and GameModeId=$2
+        order by DateModified desc
         limit 1;
       `,
       [accountId, gameModeId]
@@ -36,12 +36,12 @@ export class GameModeScores {
     return GameModeScore.fromJson(result.rows[0]);
   }
 
-  async get(accountId: string, gameModeId: string) {
+  async getPlayerLatest(accountId: string, gameModeId: string) {
     const result = await this.db.pool.query(
       `
         select * from GameModeScores
+        where AccountId=$1 and GameModeId=$2
         order by DateModified desc
-        where AccountId=$1 and GameModeId=$2
       `,
       [accountId, gameModeId]
     );
@@ -49,12 +49,12 @@ export class GameModeScores {
     return result.rows.map(GameModeScore.fromJson);
   }
 
-  async getByScore(accountId: string, gameModeId: string) {
+  async getPlayerBest(accountId: string, gameModeId: string) {
     const result = await this.db.pool.query(
       `
         select * from GameModeScores
-        order by Score desc
         where AccountId=$1 and GameModeId=$2
+        order by Score desc
       `,
       [accountId, gameModeId]
     );
@@ -62,7 +62,7 @@ export class GameModeScores {
     return result.rows.map(GameModeScore.fromJson);
   }
 
-  async getAllBest(gameModeId: string) {
+  async getAllCurrentBest(gameModeId: string) {
     const result = await this.db.pool.query(
       `
         with tmp_RankedScores as (
@@ -72,6 +72,25 @@ export class GameModeScores {
         )
         select * from tmp_RankedScores
         where rn = 1
+        order by Score desc
+      `,
+      [gameModeId]
+    );
+    if (!result.rowCount) return [];
+    return result.rows.map(GameModeScore.fromJson);
+  }
+
+  async getAllMostRecent(gameModeId: string) {
+    const result = await this.db.pool.query(
+      `
+        with tmp_RankedScores as (
+          select *, row_number() over (partition by AccountId order by DateModified desc) as rn
+          from GameModeScores
+          where GameModeId=$1
+        )
+        select * from tmp_RankedScores
+        where rn = 1
+        order by DateModified desc
       `,
       [gameModeId]
     );
@@ -82,26 +101,9 @@ export class GameModeScores {
   async getAllLatest(gameModeId: string) {
     const result = await this.db.pool.query(
       `
-        with tmp_RankedScores as (
-          select *, row_number() over (partition by AccountId order by DateModified desc) as rn
-          from GameModeScores
-          where GameModeId=$1
-        )
-        select * from tmp_RankedScores
-        where rn = 1
-      `,
-      [gameModeId]
-    );
-    if (!result.rowCount) return [];
-    return result.rows.map(GameModeScore.fromJson);
-  }
-
-  async getAll(gameModeId: string) {
-    const result = await this.db.pool.query(
-      `
         select * from GameModeScores
-        order by DateModified desc
         where GameModeId=$1
+        order by DateModified desc
       `,
       [gameModeId]
     );
@@ -109,12 +111,12 @@ export class GameModeScores {
     return result.rows.map(GameModeScore.fromJson);
   }
 
-  async getAllByScore(gameModeId: string) {
+  async getAllBest(gameModeId: string) {
     const result = await this.db.pool.query(
       `
         select * from GameModeScores
-        order by Score desc
         where GameModeId=$1
+        order by Score desc
       `,
       [gameModeId]
     );

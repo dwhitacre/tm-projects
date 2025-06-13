@@ -1,6 +1,19 @@
 import type { ApikeyResponse } from "../domain/apikey";
 import type { OpenplanetAuth } from "../domain/auth";
 import type { ConfigResponse } from "../domain/config";
+import {
+  GameModeScoreType,
+  type GameModesResponse,
+  type GameMode,
+  type GameModeScore,
+  type GameModeScoresResponse,
+} from "../domain/gamemode";
+import type {
+  LeaderboardGameMode,
+  LeaderboardGameModesResponse,
+  SnakeLeaderboard,
+  SnakeLeaderboardsResponse,
+} from "../domain/leaderboard";
 import type {
   MeResponse,
   IPlayer,
@@ -51,5 +64,48 @@ export class SnakeClient extends Client {
 
   authOpenplanet(auth: OpenplanetAuth) {
     return this.httpPost<ApikeyResponse>(`/auth/openplanet`, auth);
+  }
+
+  getGameModes() {
+    return this.httpGet<GameModesResponse>(`/gamemodes`);
+  }
+
+  upsertGameMode(gamemode: Partial<GameMode>) {
+    return this.httpPost(`/gamemodes`, gamemode);
+  }
+
+  getLeaderboardGameModes(leaderboardId: LeaderboardGameMode["leaderboardId"]) {
+    return this.httpGet<LeaderboardGameModesResponse>(
+      `/leaderboardgamemodes?leaderboardId=${leaderboardId}`
+    );
+  }
+
+  upsertLeaderboardGameMode(leaderboardGameMode: Partial<LeaderboardGameMode>) {
+    return this.httpPost(`/leaderboardgamemodes`, leaderboardGameMode);
+  }
+
+  getLeaderboards() {
+    return this.httpGet<SnakeLeaderboardsResponse>(`/leaderboards`);
+  }
+
+  upsertLeaderboard(leaderboard: Partial<SnakeLeaderboard>) {
+    return this.httpPost(`/leaderboards`, leaderboard);
+  }
+
+  getGameModeScores(
+    gameModeId: GameMode["id"],
+    gameModeScoreType: GameModeScoreType = GameModeScoreType.PlayerCurrentBest
+  ) {
+    return this.httpGet<GameModeScoresResponse>(
+      `/gamemodescores?gameModeId=${gameModeId}&gameModeScoreType=${gameModeScoreType}`
+    );
+  }
+
+  insertGameModeScore(gameModeScore: Partial<GameModeScore>) {
+    return this.httpPost(`/gamemodescores`, gameModeScore);
+  }
+
+  deleteGameModeScore(scoreId: GameModeScore["id"]) {
+    return this.httpDelete(`/gamemodescores?scoreId=${scoreId}`);
   }
 }
