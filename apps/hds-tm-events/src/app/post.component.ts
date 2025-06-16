@@ -119,7 +119,7 @@ export class PostComponent {
   paragraphs: string[] = []
 
   #paragraphRegex = /\n\n/g
-  boldedPrefixRegex = /^\t?([^:]+:\s?)/
+  boldedPrefixRegex = /^\t?([A-Za-z0-9 ?!]+:\s?)/
 
   constructor(
     private route: ActivatedRoute,
