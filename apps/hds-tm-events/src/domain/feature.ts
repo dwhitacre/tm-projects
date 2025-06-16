@@ -12,7 +12,7 @@ export interface FeatureToggleSettings {
 export const FeatureToggles: Record<FeatureToggle, FeatureToggleSettings> = {
   [FeatureToggle.homepage]: {
     description: 'Make the homepage the default page',
-    override: false,
+    override: true,
   },
   [FeatureToggle.urlOverlay]: {
     description: 'Show the URL overlay on posts and events',
