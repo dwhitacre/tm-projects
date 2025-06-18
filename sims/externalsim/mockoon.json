@@ -1,0 +1,452 @@
+{
+  "uuid": "abc85b0a-536d-43b9-bdfa-1a85dec91eda",
+  "lastMigration": 33,
+  "name": "External Sim",
+  "endpointPrefix": "",
+  "latency": 0,
+  "port": 8102,
+  "hostname": "",
+  "folders": [],
+  "routes": [
+    {
+      "uuid": "79196e0f-da97-474c-a6c2-b1ec59a36d53",
+      "type": "http",
+      "documentation": "CI Only",
+      "method": "get",
+      "endpoint": "ready",
+      "responses": [
+        {
+          "uuid": "7ebdc9d8-4d10-4976-9ad4-a9d4a05ec11c",
+          "body": "OK",
+          "latency": 0,
+          "statusCode": 200,
+          "label": "",
+          "headers": [],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": true,
+          "crudKey": "id",
+          "callbacks": []
+        }
+      ],
+      "responseMode": null,
+      "streamingMode": null,
+      "streamingInterval": 0
+    },
+    {
+      "uuid": "71233c9a-6be6-467e-8e77-37cf73cda2c1",
+      "type": "http",
+      "documentation": "",
+      "method": "get",
+      "endpoint": ":path/index.html",
+      "responses": [
+        {
+          "uuid": "8813f2b4-cc6d-4b48-af31-0aca70ef221c",
+          "body": "",
+          "latency": 0,
+          "statusCode": 404,
+          "label": "",
+          "headers": [],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [
+            {
+              "target": "params",
+              "modifier": "path",
+              "value": "404",
+              "invert": false,
+              "operator": "equals"
+            }
+          ],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": false,
+          "crudKey": "id",
+          "callbacks": []
+        },
+        {
+          "uuid": "00da1d4e-c325-4261-bb34-505900e10b23",
+          "body": "<html lang=\"en\">\r\n  <head>\r\n    <meta charset=\"UTF-8\">\r\n    <title>External Sim</title>\r\n    <meta name=\"keywords\" content=\"External, test, video games\">\r\n    <meta name=\"description\" content=\"This is a test description\">\r\n    <meta name=\"author\" content=\"External Author\">\r\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\r\n    <meta property=\"og:title\" content=\"External Sim Title\">\r\n    <meta property=\"og:type\" content=\"website\">\r\n  \t<meta property=\"og:description\" content=\"This is a test external url\">\r\n  \t<meta property=\"og:url\" content=\"http://localhost:8102\">\r\n  \t<meta property=\"og:image\" content=\"http://localhost:8102/embed.png\">\r\n    <link rel=\"stylesheet\" href=\"/build/some.css\">\r\n  </head>\r\n  <body>\r\n    <div>hello world</div>\r\n  </body>\r\n</html",
+          "latency": 0,
+          "statusCode": 200,
+          "label": "Not valid html",
+          "headers": [],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [
+            {
+              "target": "params",
+              "modifier": "path",
+              "value": "2001",
+              "invert": false,
+              "operator": "equals"
+            }
+          ],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": false,
+          "crudKey": "id",
+          "callbacks": []
+        },
+        {
+          "uuid": "eb266e2e-26b7-4c34-9a44-51260522224c",
+          "body": "<html lang=\"en\">\r\n  <head>\r\n    <meta charset=\"UTF-8\">\r\n    <title>External Sim</title>\r\n    <meta name=\"keywords\" content=\"External, test, video games\">\r\n    <meta name=\"description\" content=\"This is a test description\">\r\n    <meta name=\"author\" content=\"External Author\">\r\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\r\n    <meta property=\"og:type\" content=\"website\">\r\n  \t<meta property=\"og:description\" content=\"This is a test external url\">\r\n  \t<meta property=\"og:url\" content=\"http://localhost:8102\">\r\n  \t<meta property=\"og:image\" content=\"http://localhost:8102/embed.png\">\r\n    <link rel=\"stylesheet\" href=\"/build/some.css\">\r\n  </head>\r\n  <body>\r\n    <div>hello world</div>\r\n  </body>\r\n</html>",
+          "latency": 0,
+          "statusCode": 200,
+          "label": "No og:title",
+          "headers": [],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [
+            {
+              "target": "params",
+              "modifier": "path",
+              "value": "2002",
+              "invert": false,
+              "operator": "equals"
+            }
+          ],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": false,
+          "crudKey": "id",
+          "callbacks": []
+        },
+        {
+          "uuid": "b5057b30-7013-49cb-a21d-4f6cf84bc9cd",
+          "body": "<html lang=\"en\">\r\n  <head>\r\n    <meta charset=\"UTF-8\">\r\n    <meta name=\"keywords\" content=\"External, test, video games\">\r\n    <meta name=\"description\" content=\"This is a test description\">\r\n    <meta name=\"author\" content=\"External Author\">\r\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\r\n    <meta property=\"og:type\" content=\"website\">\r\n  \t<meta property=\"og:description\" content=\"This is a test external url\">\r\n  \t<meta property=\"og:url\" content=\"http://localhost:8102\">\r\n  \t<meta property=\"og:image\" content=\"http://localhost:8102/embed.png\">\r\n    <link rel=\"stylesheet\" href=\"/build/some.css\">\r\n  </head>\r\n  <body>\r\n    <div>hello world</div>\r\n  </body>\r\n</html>",
+          "latency": 0,
+          "statusCode": 200,
+          "label": "No og:title nor title",
+          "headers": [],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [
+            {
+              "target": "params",
+              "modifier": "path",
+              "value": "2003",
+              "invert": false,
+              "operator": "equals"
+            }
+          ],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": false,
+          "crudKey": "id",
+          "callbacks": []
+        },
+        {
+          "uuid": "e5c48248-d9cb-4a31-a1d1-68af69d4b80f",
+          "body": "<html lang=\"en\">\r\n  <head>\r\n    <meta charset=\"UTF-8\">\r\n    <title>External Sim</title>\r\n    <meta name=\"keywords\" content=\"External, test, video games\">\r\n    <meta name=\"description\" content=\"This is a test description\">\r\n    <meta name=\"author\" content=\"External Author\">\r\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\r\n    <meta property=\"og:title\" content=\"External Sim Title\">\r\n    <meta property=\"og:type\" content=\"website\">\r\n  \t<meta property=\"og:url\" content=\"http://localhost:8102\">\r\n  \t<meta property=\"og:image\" content=\"http://localhost:8102/embed.png\">\r\n    <link rel=\"stylesheet\" href=\"/build/some.css\">\r\n  </head>\r\n  <body>\r\n    <div>hello world</div>\r\n  </body>\r\n</html>",
+          "latency": 0,
+          "statusCode": 200,
+          "label": "No og:description",
+          "headers": [],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [
+            {
+              "target": "params",
+              "modifier": "path",
+              "value": "2004",
+              "invert": false,
+              "operator": "equals"
+            }
+          ],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": false,
+          "crudKey": "id",
+          "callbacks": []
+        },
+        {
+          "uuid": "8e2c0c71-77c2-49e7-8c46-fb3830f85467",
+          "body": "<html lang=\"en\">\r\n  <head>\r\n    <meta charset=\"UTF-8\">\r\n    <title>External Sim</title>\r\n    <meta name=\"keywords\" content=\"External, test, video games\">\r\n    <meta name=\"description\" content=\"This is a test description\">\r\n    <meta name=\"author\" content=\"External Author\">\r\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\r\n    <meta property=\"og:title\" content=\"External Sim Title\">\r\n    <meta property=\"og:type\" content=\"website\">\r\n  \t<meta property=\"og:description\" content=\"This is a test external url\">\r\n  \t<meta property=\"og:url\" content=\"http://localhost:8102\">\r\n  \t<meta property=\"og:image\" content=\"http://localhost:8102/embed.png\">\r\n    <link rel=\"stylesheet\" href=\"/build/some.css\">\r\n  </head>\r\n  <body>\r\n    <div>hello world</div>\r\n  </body>\r\n</html>",
+          "latency": 0,
+          "statusCode": 200,
+          "label": "No og:description nor meta description",
+          "headers": [],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [
+            {
+              "target": "params",
+              "modifier": "path",
+              "value": "2005",
+              "invert": false,
+              "operator": "equals"
+            }
+          ],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": false,
+          "crudKey": "id",
+          "callbacks": []
+        },
+        {
+          "uuid": "1545ee52-2d15-4dc0-ad8d-44e82fcf8a5e",
+          "body": "<html lang=\"en\">\r\n  <head>\r\n    <meta charset=\"UTF-8\">\r\n    <title>External Sim</title>\r\n    <meta name=\"keywords\" content=\"External, test, video games\">\r\n    <meta name=\"description\" content=\"This is a test description\">\r\n    <meta name=\"author\" content=\"External Author\">\r\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\r\n    <meta property=\"og:title\" content=\"External Sim Title\">\r\n    <meta property=\"og:type\" content=\"website\">\r\n  \t<meta property=\"og:description\" content=\"This is a test external url\">\r\n  \t<meta property=\"og:url\" content=\"http://localhost:8102\">\r\n    <link rel=\"stylesheet\" href=\"/build/some.css\">\r\n  </head>\r\n  <body>\r\n    <div>hello world</div>\r\n  </body>\r\n</html>",
+          "latency": 0,
+          "statusCode": 200,
+          "label": "No og:image",
+          "headers": [],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [
+            {
+              "target": "params",
+              "modifier": "path",
+              "value": "2006",
+              "invert": false,
+              "operator": "equals"
+            }
+          ],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": false,
+          "crudKey": "id",
+          "callbacks": []
+        },
+        {
+          "uuid": "984835d9-22f3-439d-a76e-d466d058d813",
+          "body": "<html lang=\"en\">\r\n  <head>\r\n    <meta charset=\"UTF-8\">\r\n    <title>External Sim</title>\r\n    <meta name=\"keywords\" content=\"External, test, video games\">\r\n    <meta name=\"description\" content=\"This is a test description\">\r\n    <meta name=\"author\" content=\"External Author\">\r\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\r\n    <meta property=\"og:title\" content=\"External Sim Title\">\r\n    <meta property=\"og:type\" content=\"website\">\r\n  \t<meta property=\"og:description\" content=\"This is a test external url\">\r\n  \t<meta property=\"og:url\" content=\"http://localhost:8102\">\r\n  \t<meta property=\"og:image\" content=\"http://localhost:8102/noembed.png\">\r\n    <link rel=\"stylesheet\" href=\"/build/some.css\">\r\n  </head>\r\n  <body>\r\n    <div>hello world</div>\r\n  </body>\r\n</html>",
+          "latency": 0,
+          "statusCode": 200,
+          "label": "Not found og:image",
+          "headers": [],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [
+            {
+              "target": "params",
+              "modifier": "path",
+              "value": "2007",
+              "invert": false,
+              "operator": "equals"
+            }
+          ],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": false,
+          "crudKey": "id",
+          "callbacks": []
+        },
+        {
+          "uuid": "3896d9ac-775e-42dd-bbc4-6627a9f560af",
+          "body": "<html lang=\"en\">\r\n  <head>\r\n    <meta charset=\"UTF-8\">\r\n    <title>External Sim</title>\r\n    <meta name=\"keywords\" content=\"External, test, video games\">\r\n    <meta name=\"description\" content=\"This is a test description\">\r\n    <meta name=\"author\" content=\"External Author\">\r\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\r\n    <meta property=\"og:title\" content=\"External Sim Title\">\r\n    <meta property=\"og:type\" content=\"website\">\r\n  \t<meta property=\"og:description\" content=\"This is a test external url\">\r\n  \t<meta property=\"og:image\" content=\"http://localhost:8102/embed.png\">\r\n    <link rel=\"stylesheet\" href=\"/build/some.css\">\r\n  </head>\r\n  <body>\r\n    <div>hello world</div>\r\n  </body>\r\n</html>",
+          "latency": 0,
+          "statusCode": 200,
+          "label": "No og:url",
+          "headers": [],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [
+            {
+              "target": "params",
+              "modifier": "path",
+              "value": "2008",
+              "invert": false,
+              "operator": "equals"
+            }
+          ],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": false,
+          "crudKey": "id",
+          "callbacks": []
+        },
+        {
+          "uuid": "a8f9328d-de87-41b8-b68d-486556f835d7",
+          "body": "<html lang=\"en\">\r\n  <head>\r\n    <meta charset=\"UTF-8\">\r\n    <title>External Sim</title>\r\n    <meta name=\"keywords\" content=\"External, test, video games\">\r\n    <meta name=\"description\" content=\"This is a test description\">\r\n    <meta name=\"author\" content=\"External Author\">\r\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\r\n    <meta property=\"og:title\" content=\"External Sim Title\">\r\n    <meta property=\"og:type\" content=\"website\">\r\n  \t<meta property=\"og:description\" content=\"This is a test external url\">\r\n  \t<meta property=\"og:url\" content=\"http://localhost:8102\">\r\n  \t<meta property=\"og:image\" content=\"http://localhost:8102/embed.png\">\r\n    <link rel=\"stylesheet\" href=\"/build/some.css\">\r\n  </head>\r\n  <body>\r\n    <div>hello world</div>\r\n  </body>\r\n</html>",
+          "latency": 0,
+          "statusCode": 200,
+          "label": "",
+          "headers": [],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [
+            {
+              "target": "params",
+              "modifier": "path",
+              "value": "2000",
+              "invert": false,
+              "operator": "equals"
+            }
+          ],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": false,
+          "crudKey": "id",
+          "callbacks": []
+        },
+        {
+          "uuid": "5debedb0-4c69-4491-b7a6-a614c491186a",
+          "body": "",
+          "latency": 0,
+          "statusCode": 400,
+          "label": "Bad fallback, dont use",
+          "headers": [],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": true,
+          "crudKey": "id",
+          "callbacks": []
+        }
+      ],
+      "responseMode": null,
+      "streamingMode": null,
+      "streamingInterval": 0
+    },
+    {
+      "uuid": "b24fbd3f-e2e1-467a-abff-c896fe72645f",
+      "type": "http",
+      "documentation": "",
+      "method": "get",
+      "endpoint": "embed.png",
+      "responses": [
+        {
+          "uuid": "2ce3765d-37bd-4afc-b06c-fc7906f509d0",
+          "body": "{}",
+          "latency": 0,
+          "statusCode": 200,
+          "label": "",
+          "headers": [],
+          "bodyType": "FILE",
+          "filePath": "C:\\Users\\dwhit\\Documents\\projects\\tm-projects\\sims\\externalsim\\embed.png",
+          "databucketID": "",
+          "sendFileAsBody": true,
+          "rules": [],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": true,
+          "crudKey": "id",
+          "callbacks": []
+        }
+      ],
+      "responseMode": null,
+      "streamingMode": null,
+      "streamingInterval": 0
+    },
+    {
+      "uuid": "222882d9-59cf-4325-a323-cd270b74d452",
+      "type": "http",
+      "documentation": "",
+      "method": "get",
+      "endpoint": "noembed.png",
+      "responses": [
+        {
+          "uuid": "2755acdc-eafd-43e4-8ca7-edef5198b26f",
+          "body": "",
+          "latency": 0,
+          "statusCode": 404,
+          "label": "",
+          "headers": [],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": true,
+          "crudKey": "id",
+          "callbacks": []
+        }
+      ],
+      "responseMode": null,
+      "streamingMode": null,
+      "streamingInterval": 0
+    }
+  ],
+  "rootChildren": [
+    {
+      "type": "route",
+      "uuid": "79196e0f-da97-474c-a6c2-b1ec59a36d53"
+    },
+    {
+      "type": "route",
+      "uuid": "71233c9a-6be6-467e-8e77-37cf73cda2c1"
+    },
+    {
+      "type": "route",
+      "uuid": "b24fbd3f-e2e1-467a-abff-c896fe72645f"
+    },
+    {
+      "type": "route",
+      "uuid": "222882d9-59cf-4325-a323-cd270b74d452"
+    }
+  ],
+  "proxyMode": false,
+  "proxyHost": "",
+  "proxyRemovePrefix": false,
+  "tlsOptions": {
+    "enabled": false,
+    "type": "CERT",
+    "pfxPath": "",
+    "certPath": "",
+    "keyPath": "",
+    "caPath": "",
+    "passphrase": ""
+  },
+  "cors": false,
+  "headers": [],
+  "proxyReqHeaders": [
+    {
+      "key": "",
+      "value": ""
+    }
+  ],
+  "proxyResHeaders": [
+    {
+      "key": "",
+      "value": ""
+    }
+  ],
+  "data": [],
+  "callbacks": []
+}
