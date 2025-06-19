@@ -851,7 +851,7 @@ export class StoreService extends ComponentStore<StoreState> {
       switchMap((organizationId) =>
         this.postService.getAll(organizationId).pipe(
           tapResponse({
-            next: (res) => this.patchState({ posts: res.posts }),
+            next: (res) => this.patchState({ posts: res.posts.sort((a, b) => a.sortOrder - b.sortOrder) }),
             error: (error: HttpErrorResponse) => this.logService.error(error),
           }),
         ),
