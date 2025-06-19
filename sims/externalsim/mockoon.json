@@ -290,6 +290,33 @@
           "callbacks": []
         },
         {
+          "uuid": "97605ab2-a0ce-4a32-a72f-0cff67f29b50",
+          "body": "<html lang=\"en\">\r\n  <head>\r\n    <meta charset=\"UTF-8\">\r\n    <title>External Sim</title>\r\n    <meta name=\"keywords\" content=\"External, test, video games\">\r\n    <meta name=\"description\" content=\"This is a test description\">\r\n    <meta name=\"author\" content=\"External Author\">\r\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\r\n    <meta property=\"og:title\" content=\"External Sim Title\">\r\n    <meta property=\"og:type\" content=\"website\">\r\n  \t<meta property=\"og:description\" content=\"This is a test external url\">\r\n  \t<meta property=\"og:url\" content=\"http://localhost:8102\">\r\n  \t<meta property=\"og:image\" content=\"http://localhost:8102/badfileextension.abc\">\r\n    <link rel=\"stylesheet\" href=\"/build/some.css\">\r\n  </head>\r\n  <body>\r\n    <div>hello world</div>\r\n  </body>\r\n</html>",
+          "latency": 0,
+          "statusCode": 200,
+          "label": "Bad extension og:image",
+          "headers": [],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [
+            {
+              "target": "params",
+              "modifier": "path",
+              "value": "2009",
+              "invert": false,
+              "operator": "equals"
+            }
+          ],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": false,
+          "crudKey": "id",
+          "callbacks": []
+        },
+        {
           "uuid": "a8f9328d-de87-41b8-b68d-486556f835d7",
           "body": "<html lang=\"en\">\r\n  <head>\r\n    <meta charset=\"UTF-8\">\r\n    <title>External Sim</title>\r\n    <meta name=\"keywords\" content=\"External, test, video games\">\r\n    <meta name=\"description\" content=\"This is a test description\">\r\n    <meta name=\"author\" content=\"External Author\">\r\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\r\n    <meta property=\"og:title\" content=\"External Sim Title\">\r\n    <meta property=\"og:type\" content=\"website\">\r\n  \t<meta property=\"og:description\" content=\"This is a test external url\">\r\n  \t<meta property=\"og:url\" content=\"http://localhost:8102\">\r\n  \t<meta property=\"og:image\" content=\"http://localhost:8102/embed.png\">\r\n    <link rel=\"stylesheet\" href=\"/build/some.css\">\r\n  </head>\r\n  <body>\r\n    <div>hello world</div>\r\n  </body>\r\n</html>",
           "latency": 0,
@@ -401,6 +428,37 @@
       "responseMode": null,
       "streamingMode": null,
       "streamingInterval": 0
+    },
+    {
+      "uuid": "8129b9a0-7b3b-4e52-b76f-0abde3556753",
+      "type": "http",
+      "documentation": "",
+      "method": "get",
+      "endpoint": "badfileextension.abc",
+      "responses": [
+        {
+          "uuid": "e99bd983-438e-4aef-959c-8681ca7a52b4",
+          "body": "{}",
+          "latency": 0,
+          "statusCode": 200,
+          "label": "",
+          "headers": [],
+          "bodyType": "FILE",
+          "filePath": "C:\\Users\\dwhit\\Documents\\projects\\tm-projects\\sims\\externalsim\\embed.png",
+          "databucketID": "",
+          "sendFileAsBody": true,
+          "rules": [],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": true,
+          "crudKey": "id",
+          "callbacks": []
+        }
+      ],
+      "responseMode": null,
+      "streamingMode": null,
+      "streamingInterval": 0
     }
   ],
   "rootChildren": [
@@ -419,6 +477,10 @@
     {
       "type": "route",
       "uuid": "222882d9-59cf-4325-a323-cd270b74d452"
+    },
+    {
+      "type": "route",
+      "uuid": "8129b9a0-7b3b-4e52-b76f-0abde3556753"
     }
   ],
   "proxyMode": false,

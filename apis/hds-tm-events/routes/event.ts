@@ -3,6 +3,8 @@ import type ApiRequest from "../domain/apirequest";
 import ApiResponse from "../domain/apiresponse";
 import { Event } from "../domain/event";
 import { EventPlayer } from "../domain/eventplayer";
+import { Embed } from "../domain/embed";
+import { join } from "path";
 
 class EventRoute extends Route {
   async handle(req: ApiRequest): Promise<ApiResponse> {
@@ -73,6 +75,52 @@ class EventRoute extends Route {
 
     await req.services.event.deletePlayer(eventId, eventPlayer);
     return ApiResponse.ok(req);
+  }
+
+  async embedHandle(req: ApiRequest): Promise<ApiResponse> {
+    if (!req.checkMethod("get")) return ApiResponse.methodNotAllowed(req);
+
+    const eventIdParam = req.getPathParam("eventId");
+    if (!eventIdParam) return ApiResponse.badRequest(req);
+
+    const eventId = parseInt(eventIdParam);
+    if (isNaN(eventId)) return ApiResponse.badRequest(req);
+
+    const event = await req.services.event.get(eventId);
+    if (!event) return ApiResponse.badRequest(req);
+    if (!event.externalUrl) return ApiResponse.notFound(req);
+
+    const eventEmbed = await req.services.embed.get(eventId, req.hostname);
+    const eventEmbedExpired =
+      eventEmbed &&
+      eventEmbed.dateExpired &&
+      eventEmbed.dateExpired < new Date();
+
+    if (eventEmbedExpired) await req.services.embed.deleteExpired(eventId);
+    else if (eventEmbed) return ApiResponse.ok(req, { embed: eventEmbed });
+
+    const externalEmbed = await req.services.external.get(event);
+    if (!externalEmbed) return ApiResponse.notFound(req);
+
+    const embed = Embed.fromExternalEmbed(externalEmbed);
+    try {
+      const filepath = join(req.tmpdir, embed.localImage);
+      Bun.file(filepath).write()
+    }
+
+
+    // TODO
+    // create embed from external data
+    // create a local image file
+    // persist the embed
+
+    // const createdEmbed = await req.services.embed.insert(
+    //   eventId,
+    //   externalEmbed
+    // );
+    // if (!createdEmbed) return ApiResponse.internalServerError(req);
+
+    return ApiResponse.ok(req, { embed: externalEmbed });
   }
 }
 
