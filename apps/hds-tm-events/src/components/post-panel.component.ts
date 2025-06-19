@@ -20,7 +20,7 @@ import { Post } from 'src/domain/post'
               <ng-container *ngFor="let tag of post.tags"
                 ><p-tag [styleClass]="'post-tags'" severity="secondary" [value]="tag.name"
               /></ng-container>
-              {{ post.dateModified | date: 'short' }}
+              {{ post.dateCreated | date: 'short' }}
             </span>
           </div>
         </p-panel>

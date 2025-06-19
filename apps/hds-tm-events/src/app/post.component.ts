@@ -18,7 +18,7 @@ import { StoreService } from 'src/services/store.service'
             <span class="post-date"
               ><ng-container *ngFor="let tag of post.tags"
                 ><p-tag [styleClass]="'post-tags'" severity="secondary" [value]="tag.name" /></ng-container
-              >{{ post.dateModified | date: 'short' }}</span
+              >{{ post.dateCreated | date: 'short' }}</span
             >
           </div>
           <div class="post-content">
