@@ -88,7 +88,7 @@ class EventRoute extends Route {
 
     const event = await req.services.event.get(eventId);
     if (!event) return ApiResponse.badRequest(req);
-    if (!event.externalUrl) return ApiResponse.notFound(req);
+    if (!event.externalUrl) return ApiResponse.noContent(req);
 
     const eventEmbed = await req.services.embed.get(eventId, req.hostname);
     const eventEmbedExpired =
@@ -97,30 +97,21 @@ class EventRoute extends Route {
       eventEmbed.dateExpired < new Date();
 
     if (eventEmbedExpired) await req.services.embed.deleteExpired(eventId);
-    else if (eventEmbed) return ApiResponse.ok(req, { embed: eventEmbed });
-
-    const externalEmbed = await req.services.external.get(event);
-    if (!externalEmbed) return ApiResponse.notFound(req);
-
-    const embed = Embed.fromExternalEmbed(externalEmbed);
-    try {
-      const filepath = join(req.tmpdir, embed.localImage);
-      Bun.file(filepath).write()
+    else if (eventEmbed) {
+      await eventEmbed.hydrateBlob(req.tmpdir);
+      return ApiResponse.ok(req, { embed: eventEmbed.toJson() });
     }
 
+    const externalEmbed = await req.services.external.get(event);
+    if (!externalEmbed) return ApiResponse.noContent(req);
 
-    // TODO
-    // create embed from external data
-    // create a local image file
-    // persist the embed
+    const embed = await req.services.external.downloadImage(
+      Embed.fromExternalEmbed(externalEmbed),
+      req.tmpdir
+    );
+    if (!embed) return ApiResponse.noContent(req);
 
-    // const createdEmbed = await req.services.embed.insert(
-    //   eventId,
-    //   externalEmbed
-    // );
-    // if (!createdEmbed) return ApiResponse.internalServerError(req);
-
-    return ApiResponse.ok(req, { embed: externalEmbed });
+    return ApiResponse.ok(req, { embed: embed.toJson() });
   }
 }
 

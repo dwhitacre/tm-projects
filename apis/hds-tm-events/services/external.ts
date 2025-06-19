@@ -1,3 +1,4 @@
+import { join } from "path";
 import type ApiRequest from "../domain/apirequest";
 import type { Embed } from "../domain/embed";
 import type { Event } from "../domain/event";
@@ -71,7 +72,7 @@ export class ExternalService {
       imageExtension,
       url,
       type: "website",
-      expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+      expires: new Date(Date.now() + 24 * 60 * 60 * 1000),
     };
 
     return json;
@@ -80,7 +81,7 @@ export class ExternalService {
   async downloadImage(
     embed: Embed,
     tmpdir: ApiRequest["tmpdir"]
-  ): Promise<void> {
+  ): Promise<Embed> {
     const response = await this.call(embed.url);
     if (!response.ok) {
       throw new Error(
@@ -95,10 +96,10 @@ export class ExternalService {
       );
     }
 
-    const filepath = `${tmpdir}/${embed.localImage}`;
-    await Bun.write(filepath, blob);
+    await Bun.write(join(tmpdir, embed.localImage), blob);
 
-    return; // todo
+    embed.blob = blob;
+    return embed;
   }
 }
 

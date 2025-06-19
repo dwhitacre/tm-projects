@@ -2,6 +2,7 @@ import { randomUUIDv7 } from "bun";
 import type { ExternalEmbed } from "../domain/externalembed";
 import type { JsonObject } from "./json";
 import Json from "./json";
+import { join } from "path";
 
 export class Embed {
   embedId: number = 0;
@@ -15,6 +16,7 @@ export class Embed {
   dateCreated?: Date;
   dateModified?: Date;
   dateExpired?: Date;
+  blob?: Blob;
 
   static fromJson(json: JsonObject): Embed {
     json = Json.lowercaseKeys(json);
@@ -55,6 +57,15 @@ export class Embed {
 
   constructor() {}
 
+  async hydrateBlob(tmpdir: string): Promise<Embed> {
+    if (!this.localImage) {
+      throw new Error("Local image path is not set.");
+    }
+
+    this.blob = Bun.file(join(tmpdir, this.localImage));
+    return this;
+  }
+
   toJson(): JsonObject {
     return {
       embedId: this.embedId,
@@ -65,6 +76,7 @@ export class Embed {
       type: this.type,
       localImage: this.localImage,
       host: this.host,
+      blob: this.blob,
       dateCreated: this.dateCreated,
       dateModified: this.dateModified,
       dateExpired: this.dateExpired,
