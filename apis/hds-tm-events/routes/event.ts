@@ -78,7 +78,8 @@ class EventRoute extends Route {
   }
 
   async embedHandle(req: ApiRequest): Promise<ApiResponse> {
-    if (!req.checkMethod("get")) return ApiResponse.methodNotAllowed(req);
+    if (!req.checkMethod(["get", "post"]))
+      return ApiResponse.methodNotAllowed(req);
 
     const eventIdParam = req.getPathParam("eventId");
     if (!eventIdParam) return ApiResponse.badRequest(req);
@@ -89,6 +90,17 @@ class EventRoute extends Route {
     const event = await req.services.event.get(eventId);
     if (!event) return ApiResponse.badRequest(req);
     if (!event.externalUrl) return ApiResponse.noContent(req);
+
+    if (req.checkMethod("post")) {
+      if (!req.checkPermission("admin")) return ApiResponse.forbidden(req);
+
+      const eventEmbed = await req.parse(Embed);
+      if (!eventEmbed) return ApiResponse.badRequest(req);
+
+      await req.services.embed.update(eventId, eventEmbed);
+      await eventEmbed.hydrateBlob(req.tmpdir);
+      return ApiResponse.ok(req, { embed: eventEmbed.toJson() });
+    }
 
     const eventEmbed = await req.services.embed.get(eventId, req.hostname);
     const eventEmbedExpired =
