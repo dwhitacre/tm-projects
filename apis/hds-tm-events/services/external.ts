@@ -3,6 +3,7 @@ import type ApiRequest from "../domain/apirequest";
 import type { Embed } from "../domain/embed";
 import type { Event } from "../domain/event";
 import type { ExternalEmbed } from "../domain/externalembed";
+import * as cheerio from "cheerio";
 
 const allowedImageExtensions = ["png", "jpg", "jpeg", "gif", "webp", "svg"];
 
@@ -16,7 +17,7 @@ export class ExternalService {
   call(url: string, options: RequestInit = {}) {
     if (!url)
       throw new Error("Missing url, cannot make external embed requests");
-    return fetch(`${url}/index.html`, {
+    return fetch(url, {
       ...options,
       headers: {
         ...(options.headers ?? {}),
@@ -26,30 +27,17 @@ export class ExternalService {
   }
 
   async get(event: Event): Promise<ExternalEmbed | undefined> {
-    const response = await this.call(event.externalUrl);
+    const response = await this.call(`${event.externalUrl}/index.html`);
     const text = await response.text();
 
-    const parser = new DOMParser();
-    const doc = parser.parseFromString(text, "text/html");
-    if (
-      !doc ||
-      !doc.documentElement ||
-      doc.documentElement.nodeName === "parsererror"
-    ) {
-      throw new Error("Failed to parse HTML document");
-    }
+    const $ = cheerio.load(text);
 
     const getMeta = (property: string) =>
-      doc
-        .querySelector(`meta[property='${property}']`)
-        ?.getAttribute("content") ||
-      doc.querySelector(`meta[name='${property}']`)?.getAttribute("content") ||
+      $(`meta[property='${property}']`).attr("content") ||
+      $(`meta[name='${property}']`).attr("content") ||
       "";
 
-    const title =
-      getMeta("og:title") ||
-      doc.querySelector("title")?.textContent?.trim() ||
-      "";
+    const title = getMeta("og:title") || $("title").text().trim() || "";
     const description =
       getMeta("og:description") || getMeta("description") || "";
     const url = getMeta("og:url") || event.externalUrl;
@@ -72,7 +60,6 @@ export class ExternalService {
       imageExtension,
       url,
       type: "website",
-      expires: new Date(Date.now() + 24 * 60 * 60 * 1000),
     };
 
     return json;
@@ -82,18 +69,16 @@ export class ExternalService {
     embed: Embed,
     tmpdir: ApiRequest["tmpdir"]
   ): Promise<Embed> {
-    const response = await this.call(embed.url);
+    const response = await this.call(embed.image);
     if (!response.ok) {
       throw new Error(
-        `Failed to download image from ${embed.url}: ${response.statusText}`
+        `Failed to download image from ${embed.image}: ${response.statusText}`
       );
     }
 
-    const blob = await response.blob();
-    if (!blob.type.startsWith("image/")) {
-      throw new Error(
-        `Response from ${embed.url} is not an image: ${blob.type}`
-      );
+    const blob = await response.text();
+    if (!blob.length) {
+      throw new Error(`Response from ${embed.image} has length 0: ${blob}`);
     }
 
     await Bun.write(join(tmpdir, embed.localImage), blob);

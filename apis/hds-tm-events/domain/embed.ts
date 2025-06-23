@@ -16,7 +16,7 @@ export class Embed {
   dateCreated?: Date;
   dateModified?: Date;
   dateExpired?: Date;
-  blob?: Blob;
+  blob?: string;
 
   static fromJson(json: JsonObject): Embed {
     json = Json.lowercaseKeys(json);
@@ -47,7 +47,6 @@ export class Embed {
     embed.image = externalEmbed.image;
     embed.url = externalEmbed.url;
     embed.type = externalEmbed.type;
-    embed.dateExpired = externalEmbed.expires;
     embed.localImage = `event-${externalEmbed.eventId}-${randomUUIDv7()}.${
       externalEmbed.imageExtension
     }`;
@@ -62,7 +61,7 @@ export class Embed {
       throw new Error("Local image path is not set.");
     }
 
-    this.blob = Bun.file(join(tmpdir, this.localImage));
+    this.blob = await Bun.file(join(tmpdir, this.localImage)).text();
     return this;
   }
 

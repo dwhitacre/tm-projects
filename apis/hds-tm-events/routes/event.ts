@@ -4,7 +4,6 @@ import ApiResponse from "../domain/apiresponse";
 import { Event } from "../domain/event";
 import { EventPlayer } from "../domain/eventplayer";
 import { Embed } from "../domain/embed";
-import { join } from "path";
 
 class EventRoute extends Route {
   async handle(req: ApiRequest): Promise<ApiResponse> {
@@ -94,11 +93,12 @@ class EventRoute extends Route {
     if (req.checkMethod("post")) {
       if (!req.checkPermission("admin")) return ApiResponse.forbidden(req);
 
-      const eventEmbed = await req.parse(Embed);
+      let eventEmbed = await req.parse(Embed);
       if (!eventEmbed) return ApiResponse.badRequest(req);
 
-      await req.services.embed.update(eventId, eventEmbed);
-      await eventEmbed.hydrateBlob(req.tmpdir);
+      eventEmbed = await req.services.embed.upsert(eventId, eventEmbed);
+      if (!eventEmbed) return ApiResponse.badRequest(req);
+
       return ApiResponse.ok(req, { embed: eventEmbed.toJson() });
     }
 
@@ -117,13 +117,23 @@ class EventRoute extends Route {
     const externalEmbed = await req.services.external.get(event);
     if (!externalEmbed) return ApiResponse.noContent(req);
 
-    const embed = await req.services.external.downloadImage(
-      Embed.fromExternalEmbed(externalEmbed),
-      req.tmpdir
-    );
-    if (!embed) return ApiResponse.noContent(req);
+    try {
+      let embed: Embed | undefined = await req.services.external.downloadImage(
+        Embed.fromExternalEmbed(externalEmbed),
+        req.tmpdir
+      );
+      if (!embed) return ApiResponse.noContent(req);
 
-    return ApiResponse.ok(req, { embed: embed.toJson() });
+      embed.host = req.hostname;
+      embed = await req.services.embed.upsert(eventId, embed);
+      if (!embed) return ApiResponse.serverError(req);
+
+      await embed.hydrateBlob(req.tmpdir);
+      return ApiResponse.ok(req, { embed: embed.toJson() });
+    } catch (error) {
+      req.logger.warn("Failed to get embed", { error });
+      return ApiResponse.noContent(req);
+    }
   }
 }
 

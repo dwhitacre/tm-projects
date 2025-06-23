@@ -26,11 +26,11 @@ export class EmbedService {
     return Embed.fromJson(row);
   }
 
-  async insert(eventId: Event["eventId"], embed: Embed) {
-    const result = await this.db.insert(
+  insert(eventId: Event["eventId"], embed: Embed) {
+    return this.db.insert(
       `
         insert into Embed (EventId, Title, Description, Image, Url, Type, LocalImage, Host, DateCreated, DateModified, DateExpired)
-        values ($1, $2, $3, $4, $5, $6, $7, $8, NOW(), NOW(), $9)
+        values ($1, $2, $3, $4, $5, $6, $7, $8, NOW(), NOW(), NOW() + INTERVAL '7 days')
         returning *
       `,
       [
@@ -42,14 +42,8 @@ export class EmbedService {
         embed.type,
         embed.localImage,
         embed.host,
-        embed.dateExpired,
       ]
     );
-
-    if (result === undefined) return undefined;
-    if (result.rowCount !== 1) return undefined;
-
-    return Embed.fromJson(result.rows[0]);
   }
 
   update(eventId: Event["eventId"], embed: Embed) {
@@ -58,6 +52,7 @@ export class EmbedService {
         update Embed
         set Title = $1, Description = $2, Image = $3, Url = $4, Type = $5, LocalImage = $6, Host = $7, DateModified = NOW(), DateExpired = $8
         where EventId = $9
+        returning *
       `,
       [
         embed.title,
@@ -71,6 +66,20 @@ export class EmbedService {
         eventId,
       ]
     );
+  }
+
+  async upsert(eventId: Event["eventId"], embed: Embed) {
+    const result = await this.db.upsert(
+      this.insert.bind(this),
+      this.update.bind(this),
+      eventId,
+      embed
+    );
+
+    if (result === undefined) return undefined;
+    if (result.rowCount !== 1) return undefined;
+
+    return Embed.fromJson(result.rows[0]);
   }
 
   async deleteExpired(eventId: Event["eventId"]) {

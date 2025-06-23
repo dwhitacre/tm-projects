@@ -8,5 +8,4 @@ export type ExternalEmbed = {
   imageExtension: string;
   url: string;
   type: "website";
-  expires: Date;
 };

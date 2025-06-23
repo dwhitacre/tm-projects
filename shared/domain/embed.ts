@@ -10,5 +10,5 @@ export interface Embed {
   dateCreated?: Date;
   dateModified?: Date;
   dateExpired?: Date;
-  blob?: Blob;
+  blob?: string;
 }
