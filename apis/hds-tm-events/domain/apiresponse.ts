@@ -1,5 +1,5 @@
 import type { Services } from "../services";
-import type ApiRequest from "./apirequest";
+import ApiRequest from "./apirequest";
 
 export type ApiProperties =
   | {
@@ -93,6 +93,10 @@ export class ApiResponse {
 
   static redirect(req: ApiRequest, url: string) {
     return new ApiResponse(Response.redirect(url, 302), req);
+  }
+
+  static stream(req: ApiRequest, stream: ReadableStream) {
+    return new ApiResponse(new Response(stream, { status: 200 }), req);
   }
 }
 

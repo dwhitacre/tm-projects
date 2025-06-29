@@ -48,12 +48,14 @@ export class Db {
     insertFn: (...args: Array<any>) => Promise<QueryResult<any>>,
     updateFn: (...args: Array<any>) => Promise<QueryResult<any>>,
     ...args: Array<any>
-  ): Promise<void> {
+  ) {
     try {
-      await insertFn(...args);
+      const result = await insertFn(...args);
+      return result;
     } catch (error) {
       const result = await updateFn(...args);
       if (result.rowCount == null || result.rowCount < 1) throw error;
+      return result;
     }
   }
 

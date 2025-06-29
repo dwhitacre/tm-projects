@@ -7,11 +7,12 @@ import type { Leaderboard } from "../domain/leaderboard";
 import type { AdminResponse } from "../domain/admin";
 import type { ReadyResponse } from "../domain/ready";
 import type { RuleResponse, Rule, RuleCategory } from "../domain/rule";
-import type {
-  Event,
-  EventPlayer,
-  EventResponse,
-  EventsResponse,
+import {
+  type EventEmbedResponse,
+  type Event,
+  type EventPlayer,
+  type EventResponse,
+  type EventsResponse,
 } from "../domain/event";
 import type { PostResponse, Post, PostsResponse } from "../domain/post";
 import type { Tag, TagResponse } from "../domain/tag";
@@ -26,6 +27,7 @@ import type {
   Organization,
   OrganizationResponse,
 } from "../domain/organization";
+import type { Embed } from "../domain/embed";
 
 export class HdstmEventsClient extends Client {
   constructor(options: Partial<ClientOptions>) {
@@ -410,5 +412,19 @@ export class HdstmEventsClient extends Client {
     accountId: EventPlayer["accountId"]
   ) {
     return this.httpDelete(`/api/event/${eventId}/player`, { accountId });
+  }
+
+  getEventEmbedMeta(eventId: Event["eventId"]) {
+    return this.httpGet<EventEmbedResponse>(
+      `/api/event/${eventId}/embed?meta=true`
+    );
+  }
+
+  updateEventEmbed(eventId: Event["eventId"], embed: Partial<Embed>) {
+    return this.httpPost(`/api/event/${eventId}/embed`, embed);
+  }
+
+  deleteEventEmbed(eventId: Event["eventId"]) {
+    return this.httpDelete(`/api/event/${eventId}/embed`);
   }
 }

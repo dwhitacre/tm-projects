@@ -77,3 +77,9 @@ processes:
     command: docker compose up openplanetsim
     shutdown:
       command: docker compose stop openplanetsim
+
+  externalsim:
+    working_dir: .
+    command: docker compose up externalsim
+    shutdown:
+      command: docker compose stop externalsim

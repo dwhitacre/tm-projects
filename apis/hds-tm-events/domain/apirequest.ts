@@ -1,5 +1,6 @@
 import type { Services } from "../services";
 import type { JsonAny, JsonArray, JsonObject } from "./json";
+import { join } from "path";
 
 export type ApiPermissions = "admin" | "read";
 export type ApiMethods = "get" | "put" | "post" | "patch" | "delete";
@@ -18,6 +19,8 @@ export class ApiRequest {
   logger: Services["logger"];
   start: DOMHighResTimeStamp;
   error?: Error;
+  hostname: string;
+  tmpdir: string;
 
   #cache: Cache = {};
 
@@ -32,6 +35,8 @@ export class ApiRequest {
       pathname: this.url.pathname,
       method: this.method,
     });
+    this.hostname = process.env.HOSTNAME ?? "localhost";
+    this.tmpdir = process.env.TMPDIR ?? join(import.meta.dir, "../tmp");
   }
 
   get url(): URL {

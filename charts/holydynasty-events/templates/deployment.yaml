@@ -70,6 +70,8 @@ spec:
               value: {{ .Values.tmioUrl }}
             - name: DISCORD_INVITE_URL
               value: {{ .Values.discordInviteUrl }}
+            - name: TMPDIR
+              value: /tmp
           ports:
             - name: api-http
               containerPort: 8081
@@ -84,6 +86,12 @@ spec:
               port: api-http
           resources:
             {{- toYaml .Values.api.resources | nindent 12 }}
+          volumeMounts:
+            - name: tmp
+              mountPath: /tmp
+      volumes:
+        - name: tmp
+          emptyDir: {}
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}

@@ -12,11 +12,13 @@ let playerService: PlayerService;
 const client = new HdstmEventsClient({
   baseUrl: "http://localhost:8081",
   apikeyHeader: "x-hdstmevents-adminkey",
+  // debug: true,
 });
 const adminClient = new HdstmEventsClient({
   baseUrl: "http://localhost:8081",
   apikey: "developer-test-key",
   apikeyHeader: "x-hdstmevents-adminkey",
+  // debug: true,
 });
 
 async function createTestOrganization(): Promise<Organization> {
@@ -1246,5 +1248,780 @@ describe("/api/event/{eventId}/player", () => {
       accountId
     );
     expect(resp.status).toBe(400);
+  });
+});
+
+describe("/api/event/{eventId}/embed", () => {
+  test("bad method returns 405", async () => {
+    const org = await createTestOrganization();
+    const event: Partial<Event> = {
+      name: faker.lorem.words(2),
+      description: faker.lorem.sentence(),
+      image: faker.image.url(),
+      organizationId: org.organizationId,
+      externalUrl: "https://example.com/embed",
+    };
+    const eventResp = await adminClient.createEvent(event);
+    expect(eventResp.status).toBe(201);
+    const getResp = await client.getEvents(org.organizationId);
+    const json = await getResp.json();
+    const createdEvent = json.events.find((e: Event) => e.name === event.name);
+    expect(createdEvent).toBeDefined();
+    const resp = await client.httpPut(
+      `/api/event/${createdEvent!.eventId}/embed`,
+      {}
+    );
+    expect(resp.status).toBe(405);
+  });
+
+  test("bad eventId returns 400", async () => {
+    const resp = await client.getEventEmbedMeta("notanumber" as any);
+    expect(resp.status).toBe(400);
+  });
+
+  test("event not found returns 400", async () => {
+    const resp = await client.getEventEmbedMeta(99999999);
+    expect(resp.status).toBe(400);
+  });
+
+  test("event with no externalUrl returns 204", async () => {
+    const org = await createTestOrganization();
+    const event: Partial<Event> = {
+      name: faker.lorem.words(2),
+      description: faker.lorem.sentence(),
+      image: faker.image.url(),
+      organizationId: org.organizationId,
+      externalUrl: "",
+    };
+    const eventResp = await adminClient.createEvent(event);
+    expect(eventResp.status).toBe(201);
+    const getResp = await client.getEvents(org.organizationId);
+    const json = await getResp.json();
+    const createdEvent = json.events.find((e: Event) => e.name === event.name);
+    expect(createdEvent).toBeDefined();
+    const resp = await client.getEventEmbedMeta(createdEvent!.eventId);
+    expect(resp.status).toBe(204);
+  });
+
+  test("embed exists and is expired, triggers deleteExpired, returns new embed if available", async () => {
+    const org = await createTestOrganization();
+    const event: Partial<Event> = {
+      name: `embed-expired-${faker.string.alphanumeric(8)}`,
+      description: faker.lorem.sentence(),
+      image: faker.image.url(),
+      organizationId: org.organizationId,
+      externalUrl: "http://localhost:8102/2000",
+    };
+    const eventResp = await adminClient.createEvent(event);
+    expect(eventResp.status).toBe(201);
+    const getResp = await client.getEvents(org.organizationId);
+    const json = await getResp.json();
+    const createdEvent = json.events.find((e: Event) => e.name === event.name);
+    expect(createdEvent).toBeDefined();
+
+    const embed = {
+      title: "Old Embed",
+      description: "Old Description",
+      image: "http://localhost:8102/embed3.png",
+      url: "http://localhost:8102/2000",
+      type: "website" as const,
+      localImage: faker.string.alphanumeric(24) + ".png",
+      host: "localhost",
+    };
+    const setResp = await adminClient.updateEventEmbed(
+      createdEvent!.eventId,
+      embed
+    );
+    expect(setResp.status).toBe(200);
+
+    const newEmbed = {
+      title: "New Embed",
+      description: "New Description",
+      image: "http://localhost:8102/embed2.png",
+      url: "http://localhost:8102/2000",
+      type: "website" as const,
+      localImage: faker.string.alphanumeric(24) + ".png",
+      host: "localhost",
+      dateExpired: new Date(Date.now() - 1000 * 60 * 60 * 24), // Set to past to simulate expiry
+    };
+    // Overwrite with new embed to simulate refresh after expiry
+    const setResp2 = await adminClient.updateEventEmbed(
+      createdEvent!.eventId,
+      newEmbed
+    );
+    expect(setResp2.status).toBe(200);
+
+    // Should return the new embed
+    const resp = await client.getEventEmbedMeta(createdEvent!.eventId);
+    expect(resp.status).toBe(200);
+    const body = await resp.json();
+    expect(body.embed).toBeDefined();
+    expect(body.embed.title).toBe("External Sim Title");
+    expect(body.embed.description).toBe("This is a test external url");
+    expect(body.embed.image).toBe("http://localhost:8102/embed.png");
+    expect(body.embed.url).toBe("http://localhost:8102");
+    expect(body.embed.type).toBe(embed.type);
+    expect(body.embed.dateCreated).toBeDefined();
+    expect(body.embed.dateModified).toBeDefined();
+    expect(body.embed.dateExpired).toBeDefined();
+    expect(new Date(body.embed.dateExpired!).getTime()).toBeGreaterThan(
+      Date.now()
+    );
+  });
+
+  test("embed exists and delete embed, returns new embed if available", async () => {
+    const org = await createTestOrganization();
+    const event: Partial<Event> = {
+      name: `embed-expired-${faker.string.alphanumeric(8)}`,
+      description: faker.lorem.sentence(),
+      image: faker.image.url(),
+      organizationId: org.organizationId,
+      externalUrl: "http://localhost:8102/2000",
+    };
+    const eventResp = await adminClient.createEvent(event);
+    expect(eventResp.status).toBe(201);
+    const getResp = await client.getEvents(org.organizationId);
+    const json = await getResp.json();
+    const createdEvent = json.events.find((e: Event) => e.name === event.name);
+    expect(createdEvent).toBeDefined();
+
+    const embed = {
+      title: "Old Embed",
+      description: "Old Description",
+      image: "http://localhost:8102/embed3.png",
+      url: "http://localhost:8102/2000",
+      type: "website" as const,
+      localImage: faker.string.alphanumeric(24) + ".png",
+      host: "localhost",
+    };
+    const setResp = await adminClient.updateEventEmbed(
+      createdEvent!.eventId,
+      embed
+    );
+    expect(setResp.status).toBe(200);
+
+    const setResp2 = await adminClient.deleteEventEmbed(createdEvent!.eventId);
+    expect(setResp2.status).toBe(200);
+
+    // Should return the new embed
+    const resp = await client.getEventEmbedMeta(createdEvent!.eventId);
+    expect(resp.status).toBe(200);
+    const body = await resp.json();
+    expect(body.embed).toBeDefined();
+    expect(body.embed.title).toBe("External Sim Title");
+    expect(body.embed.description).toBe("This is a test external url");
+    expect(body.embed.image).toBe("http://localhost:8102/embed.png");
+    expect(body.embed.url).toBe("http://localhost:8102");
+    expect(body.embed.type).toBe(embed.type);
+    expect(body.embed.dateCreated).toBeDefined();
+    expect(body.embed.dateModified).toBeDefined();
+    expect(body.embed.dateExpired).toBeDefined();
+    expect(new Date(body.embed.dateExpired!).getTime()).toBeGreaterThan(
+      Date.now()
+    );
+  });
+
+  test("no embed exists, no external embed available returns 204", async () => {
+    const org = await createTestOrganization();
+    const event: Partial<Event> = {
+      name: `embed-none-${faker.string.alphanumeric(8)}`,
+      description: faker.lorem.sentence(),
+      image: faker.image.url(),
+      organizationId: org.organizationId,
+      externalUrl: "http://localhost:8102/2001", // 2001 = not valid html, so no embed
+    };
+    const eventResp = await adminClient.createEvent(event);
+    expect(eventResp.status).toBe(201);
+    const getResp = await client.getEvents(org.organizationId);
+    const json = await getResp.json();
+    const createdEvent = json.events.find((e: Event) => e.name === event.name);
+    expect(createdEvent).toBeDefined();
+
+    const resp = await client.getEventEmbedMeta(createdEvent!.eventId);
+    expect(resp.status).toBe(204);
+  });
+
+  test("no embed exists, external embed available, image download fails returns 204", async () => {
+    const org = await createTestOrganization();
+    const event: Partial<Event> = {
+      name: `embed-imgfail-${faker.string.alphanumeric(8)}`,
+      description: faker.lorem.sentence(),
+      image: faker.image.url(),
+      organizationId: org.organizationId,
+      externalUrl: "http://localhost:8102/2007", // 2007 = og:image points to not found
+    };
+    const eventResp = await adminClient.createEvent(event);
+    expect(eventResp.status).toBe(201);
+    const getResp = await client.getEvents(org.organizationId);
+    const json = await getResp.json();
+    const createdEvent = json.events.find((e: Event) => e.name === event.name);
+    expect(createdEvent).toBeDefined();
+
+    const resp = await client.getEventEmbedMeta(createdEvent!.eventId);
+    expect(resp.status).toBe(204);
+  });
+
+  test("no embed exists, external embed available, image download succeeds returns 200 and embed", async () => {
+    const org = await createTestOrganization();
+    const event: Partial<Event> = {
+      name: `embed-imgok-${faker.string.alphanumeric(8)}`,
+      description: faker.lorem.sentence(),
+      image: faker.image.url(),
+      organizationId: org.organizationId,
+      externalUrl: "http://localhost:8102/2000", // 2000 = all og fields present
+    };
+    const eventResp = await adminClient.createEvent(event);
+    expect(eventResp.status).toBe(201);
+    const getResp = await client.getEvents(org.organizationId);
+    const json = await getResp.json();
+    const createdEvent = json.events.find((e: Event) => e.name === event.name);
+    expect(createdEvent).toBeDefined();
+
+    const resp = await client.getEventEmbedMeta(createdEvent!.eventId);
+    expect(resp.status).toBe(200);
+    const body = await resp.json();
+    expect(body.embed).toBeDefined();
+    expect(body.embed.title).toBe("External Sim Title");
+    expect(body.embed.description).toBe("This is a test external url");
+    expect(body.embed.image).toBe("http://localhost:8102/embed.png");
+    expect(body.embed.url).toBe("http://localhost:8102");
+    expect(body.embed.type).toBe("website");
+    expect(body.embed.dateCreated).toBeDefined();
+    expect(body.embed.dateModified).toBeDefined();
+    expect(body.embed.dateExpired).toBeDefined();
+    expect(new Date(body.embed.dateExpired!).getTime()).toBeGreaterThan(
+      Date.now()
+    );
+    // check we got cached embed
+    await adminClient.updateEvent({
+      ...createdEvent,
+      externalUrl: "http://localhost:8102/2001",
+    });
+    const resp2 = await client.getEventEmbedMeta(createdEvent!.eventId);
+    expect(resp2.status).toBe(200);
+    const body2 = await resp2.json();
+    expect(body2.embed).toBeDefined();
+    expect(body2.embed.title).toBe("External Sim Title");
+    expect(body2.embed.description).toBe("This is a test external url");
+    expect(body2.embed.image).toBe("http://localhost:8102/embed.png");
+    expect(body2.embed.url).toBe("http://localhost:8102");
+    expect(body2.embed.type).toBe("website");
+    expect(body2.embed.dateCreated).toBeDefined();
+    expect(body2.embed.dateModified).toBeDefined();
+    expect(body2.embed.dateExpired).toBeDefined();
+    expect(new Date(body2.embed.dateExpired!).getTime()).toBeGreaterThan(
+      Date.now()
+    );
+  });
+});
+
+describe("/api/event/{eventId}/embed (mock external sim)", () => {
+  const baseExternal = "http://localhost:8102";
+  test("external sim: all og fields present (2000)", async () => {
+    const org = await createTestOrganization();
+    const event: Partial<Event> = {
+      name: `embed-mock-2000-${faker.string.alphanumeric(8)}`,
+      description: faker.lorem.sentence(),
+      image: faker.image.url(),
+      organizationId: org.organizationId,
+      externalUrl: `${baseExternal}/2000`,
+    };
+    const eventResp = await adminClient.createEvent(event);
+    expect(eventResp.status).toBe(201);
+    const getResp = await client.getEvents(org.organizationId);
+    const json = await getResp.json();
+    const createdEvent = json.events.find((e: Event) => e.name === event.name);
+    expect(createdEvent).toBeDefined();
+    const resp = await client.getEventEmbedMeta(createdEvent!.eventId);
+    expect(resp.status).toBe(200);
+    const body = (await resp.json()) as any;
+    expect(body.embed).toBeDefined();
+    expect(body.embed.title).toBeDefined();
+    expect(body.embed.url).toBeDefined();
+    expect(body.embed.image).toBeDefined();
+  });
+
+  test("external sim: not valid html (2001)", async () => {
+    const org = await createTestOrganization();
+    const event: Partial<Event> = {
+      name: `embed-mock-2001-${faker.string.alphanumeric(8)}`,
+      description: faker.lorem.sentence(),
+      image: faker.image.url(),
+      organizationId: org.organizationId,
+      externalUrl: `${baseExternal}/2001`,
+    };
+    const eventResp = await adminClient.createEvent(event);
+    expect(eventResp.status).toBe(201);
+    const getResp = await client.getEvents(org.organizationId);
+    const json = await getResp.json();
+    const createdEvent = json.events.find((e: Event) => e.name === event.name);
+    expect(createdEvent).toBeDefined();
+    const resp = await client.getEventEmbedMeta(createdEvent!.eventId);
+    expect(resp.status).toBe(204);
+  });
+
+  test("external sim: no og:title (2002)", async () => {
+    const org = await createTestOrganization();
+    const event: Partial<Event> = {
+      name: `embed-mock-2002-${faker.string.alphanumeric(8)}`,
+      description: faker.lorem.sentence(),
+      image: faker.image.url(),
+      organizationId: org.organizationId,
+      externalUrl: `${baseExternal}/2002`,
+    };
+    const eventResp = await adminClient.createEvent(event);
+    expect(eventResp.status).toBe(201);
+    const getResp = await client.getEvents(org.organizationId);
+    const json = await getResp.json();
+    const createdEvent = json.events.find((e: Event) => e.name === event.name);
+    expect(createdEvent).toBeDefined();
+    const resp = await client.getEventEmbedMeta(createdEvent!.eventId);
+    expect(resp.status).toBe(200);
+    const body = await resp.json();
+    expect(body.embed).toBeDefined();
+    expect(body.embed.title).toBe("External Sim");
+    expect(body.embed.description).toBe("This is a test external url");
+    expect(body.embed.image).toBe("http://localhost:8102/embed.png");
+    expect(body.embed.url).toBe("http://localhost:8102");
+    expect(body.embed.type).toBe("website");
+    expect(body.embed.dateCreated).toBeDefined();
+    expect(body.embed.dateModified).toBeDefined();
+    expect(body.embed.dateExpired).toBeDefined();
+    expect(new Date(body.embed.dateExpired!).getTime()).toBeGreaterThan(
+      Date.now()
+    );
+  });
+
+  test("external sim: no og:title nor title (2003)", async () => {
+    const org = await createTestOrganization();
+    const event: Partial<Event> = {
+      name: `embed-mock-2003-${faker.string.alphanumeric(8)}`,
+      description: faker.lorem.sentence(),
+      image: faker.image.url(),
+      organizationId: org.organizationId,
+      externalUrl: `${baseExternal}/2003`,
+    };
+    const eventResp = await adminClient.createEvent(event);
+    expect(eventResp.status).toBe(201);
+    const getResp = await client.getEvents(org.organizationId);
+    const json = await getResp.json();
+    const createdEvent = json.events.find((e: Event) => e.name === event.name);
+    expect(createdEvent).toBeDefined();
+    const resp = await client.getEventEmbedMeta(createdEvent!.eventId);
+    expect(resp.status).toBe(200);
+    const body = await resp.json();
+    expect(body.embed).toBeDefined();
+    expect(body.embed.title).toBe("");
+    expect(body.embed.description).toBe("This is a test external url");
+    expect(body.embed.image).toBe("http://localhost:8102/embed.png");
+    expect(body.embed.url).toBe("http://localhost:8102");
+    expect(body.embed.type).toBe("website");
+    expect(body.embed.dateCreated).toBeDefined();
+    expect(body.embed.dateModified).toBeDefined();
+    expect(body.embed.dateExpired).toBeDefined();
+    expect(new Date(body.embed.dateExpired!).getTime()).toBeGreaterThan(
+      Date.now()
+    );
+  });
+
+  test("external sim: no og:description (2004)", async () => {
+    const org = await createTestOrganization();
+    const event: Partial<Event> = {
+      name: `embed-mock-2004-${faker.string.alphanumeric(8)}`,
+      description: faker.lorem.sentence(),
+      image: faker.image.url(),
+      organizationId: org.organizationId,
+      externalUrl: `${baseExternal}/2004`,
+    };
+    const eventResp = await adminClient.createEvent(event);
+    expect(eventResp.status).toBe(201);
+    const getResp = await client.getEvents(org.organizationId);
+    const json = await getResp.json();
+    const createdEvent = json.events.find((e: Event) => e.name === event.name);
+    expect(createdEvent).toBeDefined();
+    const resp = await client.getEventEmbedMeta(createdEvent!.eventId);
+    expect(resp.status).toBe(200);
+    const body = await resp.json();
+    expect(body.embed).toBeDefined();
+    expect(body.embed.title).toBe("External Sim Title");
+    expect(body.embed.description).toBe("This is a test description");
+    expect(body.embed.image).toBe("http://localhost:8102/embed.png");
+    expect(body.embed.url).toBe("http://localhost:8102");
+    expect(body.embed.type).toBe("website");
+    expect(body.embed.dateCreated).toBeDefined();
+    expect(body.embed.dateModified).toBeDefined();
+    expect(body.embed.dateExpired).toBeDefined();
+    expect(new Date(body.embed.dateExpired!).getTime()).toBeGreaterThan(
+      Date.now()
+    );
+  });
+
+  test("external sim: no og:description nor meta description (2005)", async () => {
+    const org = await createTestOrganization();
+    const event: Partial<Event> = {
+      name: `embed-mock-2005-${faker.string.alphanumeric(8)}`,
+      description: faker.lorem.sentence(),
+      image: faker.image.url(),
+      organizationId: org.organizationId,
+      externalUrl: `${baseExternal}/2005`,
+    };
+    const eventResp = await adminClient.createEvent(event);
+    expect(eventResp.status).toBe(201);
+    const getResp = await client.getEvents(org.organizationId);
+    const json = await getResp.json();
+    const createdEvent = json.events.find((e: Event) => e.name === event.name);
+    expect(createdEvent).toBeDefined();
+    const resp = await client.getEventEmbedMeta(createdEvent!.eventId);
+    expect(resp.status).toBe(200);
+    const body = await resp.json();
+    expect(body.embed).toBeDefined();
+    expect(body.embed.title).toBe("External Sim Title");
+    expect(body.embed.description).toBe("This is a test external url");
+    expect(body.embed.image).toBe("http://localhost:8102/embed.png");
+    expect(body.embed.url).toBe("http://localhost:8102");
+    expect(body.embed.type).toBe("website");
+    expect(body.embed.dateCreated).toBeDefined();
+    expect(body.embed.dateModified).toBeDefined();
+    expect(body.embed.dateExpired).toBeDefined();
+    expect(new Date(body.embed.dateExpired!).getTime()).toBeGreaterThan(
+      Date.now()
+    );
+  });
+
+  test("external sim: no og:image (2006)", async () => {
+    const org = await createTestOrganization();
+    const event: Partial<Event> = {
+      name: `embed-mock-2006-${faker.string.alphanumeric(8)}`,
+      description: faker.lorem.sentence(),
+      image: faker.image.url(),
+      organizationId: org.organizationId,
+      externalUrl: `${baseExternal}/2006`,
+    };
+    const eventResp = await adminClient.createEvent(event);
+    expect(eventResp.status).toBe(201);
+    const getResp = await client.getEvents(org.organizationId);
+    const json = await getResp.json();
+    const createdEvent = json.events.find((e: Event) => e.name === event.name);
+    expect(createdEvent).toBeDefined();
+    const resp = await client.getEventEmbedMeta(createdEvent!.eventId);
+    expect(resp.status).toBe(204);
+  });
+
+  test("external sim: og:image points to not found (2007)", async () => {
+    const org = await createTestOrganization();
+    const event: Partial<Event> = {
+      name: `embed-mock-2007-${faker.string.alphanumeric(8)}`,
+      description: faker.lorem.sentence(),
+      image: faker.image.url(),
+      organizationId: org.organizationId,
+      externalUrl: `${baseExternal}/2007`,
+    };
+    const eventResp = await adminClient.createEvent(event);
+    expect(eventResp.status).toBe(201);
+    const getResp = await client.getEvents(org.organizationId);
+    const json = await getResp.json();
+    const createdEvent = json.events.find((e: Event) => e.name === event.name);
+    expect(createdEvent).toBeDefined();
+    const resp = await client.getEventEmbedMeta(createdEvent!.eventId);
+    expect(resp.status).toBe(204);
+  });
+
+  test("external sim: no og:url (2008)", async () => {
+    const org = await createTestOrganization();
+    const event: Partial<Event> = {
+      name: `embed-mock-2008-${faker.string.alphanumeric(8)}`,
+      description: faker.lorem.sentence(),
+      image: faker.image.url(),
+      organizationId: org.organizationId,
+      externalUrl: `${baseExternal}/2008`,
+    };
+    const eventResp = await adminClient.createEvent(event);
+    expect(eventResp.status).toBe(201);
+    const getResp = await client.getEvents(org.organizationId);
+    const json = await getResp.json();
+    const createdEvent = json.events.find((e: Event) => e.name === event.name);
+    expect(createdEvent).toBeDefined();
+    const resp = await client.getEventEmbedMeta(createdEvent!.eventId);
+    expect(resp.status).toBe(200);
+    const body = await resp.json();
+    expect(body.embed).toBeDefined();
+    expect(body.embed.title).toBe("External Sim Title");
+    expect(body.embed.description).toBe("This is a test external url");
+    expect(body.embed.image).toBe("http://localhost:8102/embed.png");
+    expect(body.embed.url).toBe("http://localhost:8102/2008");
+    expect(body.embed.type).toBe("website");
+    expect(body.embed.dateCreated).toBeDefined();
+    expect(body.embed.dateModified).toBeDefined();
+    expect(body.embed.dateExpired).toBeDefined();
+    expect(new Date(body.embed.dateExpired!).getTime()).toBeGreaterThan(
+      Date.now()
+    );
+  });
+
+  test("external sim: bad file extension for og:image (2009)", async () => {
+    const org = await createTestOrganization();
+    const event: Partial<Event> = {
+      name: `embed-mock-2009-${faker.string.alphanumeric(8)}`,
+      description: faker.lorem.sentence(),
+      image: faker.image.url(),
+      organizationId: org.organizationId,
+      externalUrl: `${baseExternal}/2009`,
+    };
+    const eventResp = await adminClient.createEvent(event);
+    expect(eventResp.status).toBe(201);
+    const getResp = await client.getEvents(org.organizationId);
+    const json = await getResp.json();
+    const createdEvent = json.events.find((e: Event) => e.name === event.name);
+    expect(createdEvent).toBeDefined();
+    const resp = await client.getEventEmbedMeta(createdEvent!.eventId);
+    expect(resp.status).toBe(204);
+  });
+});
+
+describe("/api/event/{eventId}/embed (delete)", () => {
+  test("delete embed as admin succeeds", async () => {
+    const org = await createTestOrganization();
+    const event: Partial<Event> = {
+      name: `embed-update-${faker.string.alphanumeric(8)}`,
+      description: faker.lorem.sentence(),
+      image: faker.image.url(),
+      organizationId: org.organizationId,
+      externalUrl: "http://localhost:8102/2000",
+    };
+    const eventResp = await adminClient.createEvent(event);
+    expect(eventResp.status).toBe(201);
+    const getResp = await client.getEvents(org.organizationId);
+    const json = await getResp.json();
+    const createdEvent = json.events.find((e: Event) => e.name === event.name);
+    expect(createdEvent).toBeDefined();
+
+    const resp = await adminClient.deleteEventEmbed(createdEvent!.eventId);
+    expect(resp.status).toBe(200);
+  });
+
+  test("delete embed as non-admin returns 403", async () => {
+    const org = await createTestOrganization();
+    const event: Partial<Event> = {
+      name: `embed-update-nonadmin-${faker.string.alphanumeric(8)}`,
+      description: faker.lorem.sentence(),
+      image: faker.image.url(),
+      organizationId: org.organizationId,
+      externalUrl: "http://localhost:8102/2000",
+    };
+    const eventResp = await adminClient.createEvent(event);
+    expect(eventResp.status).toBe(201);
+    const getResp = await client.getEvents(org.organizationId);
+    const json = await getResp.json();
+    const createdEvent = json.events.find((e: Event) => e.name === event.name);
+    expect(createdEvent).toBeDefined();
+
+    const resp = await client.deleteEventEmbed(createdEvent!.eventId);
+    expect(resp.status).toBe(403);
+  });
+
+  test("delete embed with bad eventId returns 400", async () => {
+    const resp = await adminClient.deleteEventEmbed("notanumber" as any);
+    expect(resp.status).toBe(400);
+  });
+
+  test("delete embed with event not found returns 400", async () => {
+    const resp = await adminClient.deleteEventEmbed(99999999);
+    expect(resp.status).toBe(400);
+  });
+
+  test("delete embed with event with no externalUrl returns 204", async () => {
+    const org = await createTestOrganization();
+    const event: Partial<Event> = {
+      name: `embed-update-noexturl-${faker.string.alphanumeric(8)}`,
+      description: faker.lorem.sentence(),
+      image: faker.image.url(),
+      organizationId: org.organizationId,
+      externalUrl: "",
+    };
+    const eventResp = await adminClient.createEvent(event);
+    expect(eventResp.status).toBe(201);
+    const getResp = await client.getEvents(org.organizationId);
+    const json = await getResp.json();
+    const createdEvent = json.events.find((e: Event) => e.name === event.name);
+    expect(createdEvent).toBeDefined();
+
+    const resp = await adminClient.deleteEventEmbed(createdEvent!.eventId);
+    expect(resp.status).toBe(204);
+  });
+});
+
+describe("/api/event/{eventId}/embed (update)", () => {
+  test("update embed as admin succeeds", async () => {
+    const org = await createTestOrganization();
+    const event: Partial<Event> = {
+      name: `embed-update-${faker.string.alphanumeric(8)}`,
+      description: faker.lorem.sentence(),
+      image: faker.image.url(),
+      organizationId: org.organizationId,
+      externalUrl: "http://localhost:8102/2000",
+    };
+    const eventResp = await adminClient.createEvent(event);
+    expect(eventResp.status).toBe(201);
+    const getResp = await client.getEvents(org.organizationId);
+    const json = await getResp.json();
+    const createdEvent = json.events.find((e: Event) => e.name === event.name);
+    expect(createdEvent).toBeDefined();
+    const embed = {
+      title: "Custom Title",
+      description: "Custom Description",
+      image: "http://localhost:8102/embed.png",
+      url: "http://localhost:8102/2000",
+      type: "website" as const,
+      localImage: faker.string.alphanumeric(24) + ".png",
+      host: "localhost",
+    };
+    const resp = await adminClient.updateEventEmbed(
+      createdEvent!.eventId,
+      embed
+    );
+    expect(resp.status).toBe(200);
+    const body = (await resp.json()) as any;
+    expect(body.embed).toBeDefined();
+    expect(body.embed.title).toBe("Custom Title");
+    expect(body.embed.description).toBe("Custom Description");
+  });
+
+  test("update embed as admin with bad body returns 400", async () => {
+    const org = await createTestOrganization();
+    const event: Partial<Event> = {
+      name: `embed-update-badbody-${faker.string.alphanumeric(8)}`,
+      description: faker.lorem.sentence(),
+      image: faker.image.url(),
+      organizationId: org.organizationId,
+      externalUrl: "http://localhost:8102/2000",
+    };
+    const eventResp = await adminClient.createEvent(event);
+    expect(eventResp.status).toBe(201);
+    const getResp = await client.getEvents(org.organizationId);
+    const json = await getResp.json();
+    const createdEvent = json.events.find((e: Event) => e.name === event.name);
+    expect(createdEvent).toBeDefined();
+    const resp = await adminClient.updateEventEmbed(createdEvent!.eventId, {
+      embedId: "website" as unknown as number,
+    });
+    expect(resp.status).toBe(400);
+  });
+
+  test("update embed as non-admin returns 403", async () => {
+    const org = await createTestOrganization();
+    const event: Partial<Event> = {
+      name: `embed-update-nonadmin-${faker.string.alphanumeric(8)}`,
+      description: faker.lorem.sentence(),
+      image: faker.image.url(),
+      organizationId: org.organizationId,
+      externalUrl: "http://localhost:8102/2000",
+    };
+    const eventResp = await adminClient.createEvent(event);
+    expect(eventResp.status).toBe(201);
+    const getResp = await client.getEvents(org.organizationId);
+    const json = await getResp.json();
+    const createdEvent = json.events.find((e: Event) => e.name === event.name);
+    expect(createdEvent).toBeDefined();
+    const embed = {
+      title: "Custom Title",
+      description: "Custom Description",
+      image: "http://localhost:8102/embed.png",
+      url: "http://localhost:8102/2000",
+      type: "website" as const,
+      localImage: "custom.png",
+      host: "localhost",
+    };
+    const resp = await client.updateEventEmbed(createdEvent!.eventId, embed);
+    expect(resp.status).toBe(403);
+  });
+
+  test("update embed with bad eventId returns 400", async () => {
+    const embed = {
+      title: "Custom Title",
+      description: "Custom Description",
+      image: "http://localhost:8102/embed.png",
+      url: "http://localhost:8102/2000",
+      type: "website" as const,
+      localImage: "custom.png",
+      host: "localhost",
+    };
+    const resp = await adminClient.updateEventEmbed("notanumber" as any, embed);
+    expect(resp.status).toBe(400);
+  });
+
+  test("update embed with event not found returns 400", async () => {
+    const embed = {
+      title: "Custom Title",
+      description: "Custom Description",
+      image: "http://localhost:8102/embed.png",
+      url: "http://localhost:8102/2000",
+      type: "website" as const,
+      localImage: "custom.png",
+      host: "localhost",
+    };
+    const resp = await adminClient.updateEventEmbed(99999999, embed);
+    expect(resp.status).toBe(400);
+  });
+
+  test("update embed with event with no externalUrl returns 204", async () => {
+    const org = await createTestOrganization();
+    const event: Partial<Event> = {
+      name: `embed-update-noexturl-${faker.string.alphanumeric(8)}`,
+      description: faker.lorem.sentence(),
+      image: faker.image.url(),
+      organizationId: org.organizationId,
+      externalUrl: "",
+    };
+    const eventResp = await adminClient.createEvent(event);
+    expect(eventResp.status).toBe(201);
+    const getResp = await client.getEvents(org.organizationId);
+    const json = await getResp.json();
+    const createdEvent = json.events.find((e: Event) => e.name === event.name);
+    expect(createdEvent).toBeDefined();
+    const embed = {
+      title: "Custom Title",
+      description: "Custom Description",
+      image: "http://localhost:8102/embed.png",
+      url: "http://localhost:8102/2000",
+      type: "website" as const,
+      localImage: "custom.png",
+      host: "localhost",
+    };
+    const resp = await adminClient.updateEventEmbed(
+      createdEvent!.eventId,
+      embed
+    );
+    expect(resp.status).toBe(204);
+  });
+
+  test("update embed with bad method returns 405", async () => {
+    const org = await createTestOrganization();
+    const event: Partial<Event> = {
+      name: `embed-update-badmethod-${faker.string.alphanumeric(8)}`,
+      description: faker.lorem.sentence(),
+      image: faker.image.url(),
+      organizationId: org.organizationId,
+      externalUrl: "http://localhost:8102/2000",
+    };
+    const eventResp = await adminClient.createEvent(event);
+    expect(eventResp.status).toBe(201);
+    const getResp = await client.getEvents(org.organizationId);
+    const json = await getResp.json();
+    const createdEvent = json.events.find((e: Event) => e.name === event.name);
+    expect(createdEvent).toBeDefined();
+    const embed = {
+      title: "Custom Title",
+      description: "Custom Description",
+      image: "http://localhost:8102/embed.png",
+      url: "http://localhost:8102/2000",
+      type: "website" as const,
+      localImage: "custom.png",
+      host: "localhost",
+    };
+    const resp = await adminClient.httpPut(
+      `/api/event/${createdEvent!.eventId}/embed`,
+      embed
+    );
+    expect(resp.status).toBe(405);
   });
 });

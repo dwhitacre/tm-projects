@@ -113,6 +113,17 @@ services:
     volumes:
       - ./sims/openplanetsim/:/data:ro
 
+  externalsim:
+    image: mockoon/cli:9
+    command: ["-d", "/data/mockoon.json", "-p", "8102"]
+    restart: unless-stopped
+    networks:
+      - server-network
+    ports:
+      - 8102:8102
+    volumes:
+      - ./sims/externalsim/:/data:ro
+
 networks:
   server-network:
     driver: bridge

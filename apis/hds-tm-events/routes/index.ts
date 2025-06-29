@@ -61,6 +61,7 @@ function getHandle(req: ApiRequest): (req: ApiRequest) => Promise<ApiResponse> {
   if (req.checkPath("/api/team")) return team.handle;
 
   if (req.checkPath("/api/event/{eventId}/player")) return event.playerHandle;
+  if (req.checkPath("/api/event/{eventId}/embed")) return event.embedHandle;
   if (req.checkPath("/api/event")) return event.handle;
 
   if (req.checkPath("/api/tag")) return tag.handle;

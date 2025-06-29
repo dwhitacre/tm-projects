@@ -1,4 +1,5 @@
 import type { ApiResponse } from "./apiresponse";
+import type { Embed } from "./embed";
 import type { TeamPlayer } from "./team";
 import type { TeamRole } from "./teamrole";
 
@@ -29,4 +30,8 @@ export interface EventsResponse extends ApiResponse {
 
 export interface EventResponse extends ApiResponse {
   event: Event;
+}
+
+export interface EventEmbedResponse extends ApiResponse {
+  embed: Embed;
 }

@@ -13,11 +13,14 @@ import teamrole from "./teamrole";
 import team from "./team";
 import event from "./event";
 import organization from "./organization";
+import external from "./external";
+import embed from "./embed";
 
 const services = {
   logger,
   db,
   tmio,
+  external,
   map: map(db),
   player: player(db),
   match: match(db),
@@ -30,6 +33,7 @@ const services = {
   team: team(db),
   event: event(db),
   organization: organization(db),
+  embed: embed(db),
 };
 
 export type Services = typeof services;

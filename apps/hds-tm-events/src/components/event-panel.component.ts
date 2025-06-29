@@ -9,7 +9,7 @@ import { FeatureToggle, isEnabled } from 'src/domain/feature'
     <div #eventpanel>
       <div class="event-card" (mouseover)="showUrl = true" (mouseleave)="showUrl = false">
         <p-panel [header]="event.name" [styleClass]="'clickable-panel'" (click)="openExternalUrl(event.externalUrl)">
-          <img [src]="event.image" alt="{{ event.name }}" class="event-image" />
+          <img [src]="eventEmbedUrl || event.image" alt="{{ event.name }}" class="event-image" />
           <players-list [players]="event.players"></players-list>
           <div class="event-footer">
             <span>
@@ -90,8 +90,27 @@ export class EventPanelComponent {
   @Input() event!: Event
   @Input() showContextMenu: boolean = false
 
+  private _eventEmbed: Blob | null = null
+  eventEmbedUrl: string | null = null
+
+  @Input()
+  set eventEmbed(value: Blob | null) {
+    this._eventEmbed = value
+    if (this.eventEmbedUrl) {
+      URL.revokeObjectURL(this.eventEmbedUrl)
+      this.eventEmbedUrl = null
+    }
+    if (value instanceof Blob) {
+      this.eventEmbedUrl = URL.createObjectURL(value)
+    }
+  }
+  get eventEmbed(): Blob | null {
+    return this._eventEmbed
+  }
+
   @Output() edit = new EventEmitter<Event>()
   @Output() delete = new EventEmitter<Event>()
+  @Output() embedDelete = new EventEmitter<Event>()
 
   showUrl = false
   overlayEnabled = isEnabled(FeatureToggle.urlOverlay)
@@ -107,6 +126,12 @@ export class EventPanelComponent {
       label: 'Delete Event',
       icon: 'pi pi-trash',
       command: () => this.delete.emit(this.event),
+      visible: true,
+    },
+    {
+      label: 'Refresh Embed',
+      icon: 'pi pi-refresh',
+      command: () => this.embedDelete.emit(this.event),
       visible: true,
     },
   ]

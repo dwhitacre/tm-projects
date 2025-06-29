@@ -1,4 +1,5 @@
 import { ApiResponse } from './apiresponse'
+import { Embed } from './embed'
 import { TeamPlayer } from './team'
 import { TeamRole } from './teamrole'
 
@@ -29,4 +30,8 @@ export interface EventsResponse extends ApiResponse {
 
 export interface EventResponse extends ApiResponse {
   event: Event
+}
+
+export interface EventEmbedResponse extends ApiResponse {
+  embed: Embed
 }

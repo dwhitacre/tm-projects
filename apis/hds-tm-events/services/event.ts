@@ -79,6 +79,32 @@ export class EventService {
     return row !== undefined;
   }
 
+  async get(eventId: Event["eventId"]): Promise<Event | undefined> {
+    const result = await this.db.selectOne(
+      `
+        select
+          Event.EventId,
+          Event.Name,
+          Event.Description,
+          Event.Image,
+          Event.DateStart,
+          Event.DateEnd,
+          Event.ExternalUrl,
+          Event.IsVisible,
+          Event.SortOrder,
+          Event.DateCreated,
+          Event.DateModified,
+          Event.OrganizationId
+        from Event
+        where Event.EventId = $1
+      `,
+      [eventId]
+    );
+    if (result === undefined) return undefined;
+
+    return Event.fromJson(result);
+  }
+
   async insert(event: Event) {
     const result = await this.db.insert(
       `

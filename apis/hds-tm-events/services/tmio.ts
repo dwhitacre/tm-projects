@@ -13,7 +13,7 @@ export type TmioPlayer = {
 
 export class Tmio {
   headers = {
-    "User-Agent": "hdweeklyleague.com / hdstmevents@whitacre.dev",
+    "User-Agent": "holydynasty.events / hdstmevents@whitacre.dev",
   };
   url = process.env.TMIO_URL;
 

@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http'
 import { Injectable } from '@angular/core'
-import { Observable, of } from 'rxjs'
+import { Observable } from 'rxjs'
 import { EventPlayer, EventResponse, EventsResponse } from 'src/domain/event'
 import { Event } from 'src/domain/event'
 import { LogService } from './log.service'
@@ -47,5 +47,15 @@ export class EventService {
   deletePlayer(event: Event, accountId: string) {
     this.logService.trace('delete event player', event, accountId)
     return this.httpClient.delete(`/api/event/${event.eventId}/player`, { body: { accountId } })
+  }
+
+  getEmbed(eventId: Event['eventId']): Observable<Blob> {
+    this.logService.trace('get embed event', eventId)
+    return this.httpClient.get(`/api/event/${eventId}/embed`, { responseType: 'blob' })
+  }
+
+  deleteEmbed(eventId: Event['eventId']) {
+    this.logService.trace('delete embed event', eventId)
+    return this.httpClient.delete(`/api/event/${eventId}/embed`)
   }
 }
