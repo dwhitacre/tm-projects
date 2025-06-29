@@ -120,9 +120,11 @@ class EventRoute extends Route {
 
     if (eventEmbedExpired) await req.services.embed.deleteExpired(eventId);
     else if (eventEmbed) {
+      const headers = new Headers();
+      headers.set("X-Cache", "HIT");
       return getMetaParam
         ? ApiResponse.ok(req, { embed: eventEmbed.toJson() })
-        : ApiResponse.stream(req, eventEmbed.streamBlob(req.tmpdir));
+        : ApiResponse.stream(req, eventEmbed.streamBlob(req.tmpdir), headers);
     }
 
     const externalEmbed = await req.services.external.get(event);
@@ -162,9 +164,11 @@ class EventRoute extends Route {
     embed = await req.services.embed.upsert(eventId, embed);
     if (!embed) return ApiResponse.serverError(req);
 
+    const headers = new Headers();
+    headers.set("X-Cache", "MISS");
     return getMetaParam
       ? ApiResponse.ok(req, { embed: embed.toJson() })
-      : ApiResponse.stream(req, embed.streamBlob(req.tmpdir));
+      : ApiResponse.stream(req, embed.streamBlob(req.tmpdir), headers);
   }
 }
 

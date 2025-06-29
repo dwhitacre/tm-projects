@@ -95,8 +95,12 @@ export class ApiResponse {
     return new ApiResponse(Response.redirect(url, 302), req);
   }
 
-  static stream(req: ApiRequest, stream: ReadableStream) {
-    return new ApiResponse(new Response(stream, { status: 200 }), req);
+  static stream(
+    req: ApiRequest,
+    stream: ReadableStream,
+    headers: Headers = new Headers()
+  ) {
+    return new ApiResponse(new Response(stream, { status: 200, headers }), req);
   }
 }
 
