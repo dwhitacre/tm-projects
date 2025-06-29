@@ -1,5 +1,0 @@
-apiVersion: v2
-name: hds-tm-events
-description: A Helm chart for HDs TM Events
-type: application
-version: "0.1.0"
