@@ -44,7 +44,7 @@
       "type": "http",
       "documentation": "",
       "method": "get",
-      "endpoint": ":path/index.html",
+      "endpoint": ":path",
       "responses": [
         {
           "uuid": "8813f2b4-cc6d-4b48-af31-0aca70ef221c",
@@ -318,7 +318,7 @@
         },
         {
           "uuid": "a8f9328d-de87-41b8-b68d-486556f835d7",
-          "body": "<html lang=\"en\">\r\n  <head>\r\n    <meta charset=\"UTF-8\">\r\n    <title>External Sim</title>\r\n    <meta name=\"keywords\" content=\"External, test, video games\">\r\n    <meta name=\"description\" content=\"This is a test description\">\r\n    <meta name=\"author\" content=\"External Author\">\r\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\r\n    <meta property=\"og:title\" content=\"External Sim Title\">\r\n    <meta property=\"og:type\" content=\"website\">\r\n  \t<meta property=\"og:description\" content=\"This is a test external url\">\r\n  \t<meta property=\"og:url\" content=\"http://localhost:8102\">\r\n  \t<meta property=\"og:image\" content=\"http://localhost:8102/embed.png\">\r\n    <link rel=\"stylesheet\" href=\"/build/some.css\">\r\n  </head>\r\n  <body>\r\n    <div>hello world</div>\r\n  </body>\r\n</html>",
+          "body": "<html lang=\"en\">\r\n  <head>\r\n    <meta charset=\"UTF-8\">\r\n    <title>External Sim</title>\r\n    <meta name=\"keywords\" content=\"External, test, video games\">\r\n    <meta name=\"description\" content=\"This is a test description\">\r\n    <meta name=\"author\" content=\"External Author\">\r\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\r\n    <meta name=\"theme-color\" content=\"#b12c34\">\r\n    <meta property=\"og:title\" content=\"External Sim Title\">\r\n    <meta property=\"og:type\" content=\"website\">\r\n  \t<meta property=\"og:description\" content=\"This is a test external url\">\r\n  \t<meta property=\"og:url\" content=\"http://localhost:8102\">\r\n  \t<meta property=\"og:image\" content=\"http://localhost:8102/embed.png\">\r\n    <link rel=\"stylesheet\" href=\"/build/some.css\">\r\n  </head>\r\n  <body>\r\n    <div>hello world</div>\r\n  </body>\r\n</html>",
           "latency": 0,
           "statusCode": 200,
           "label": "",
@@ -468,10 +468,6 @@
     },
     {
       "type": "route",
-      "uuid": "71233c9a-6be6-467e-8e77-37cf73cda2c1"
-    },
-    {
-      "type": "route",
       "uuid": "b24fbd3f-e2e1-467a-abff-c896fe72645f"
     },
     {
@@ -481,6 +477,10 @@
     {
       "type": "route",
       "uuid": "8129b9a0-7b3b-4e52-b76f-0abde3556753"
+    },
+    {
+      "type": "route",
+      "uuid": "71233c9a-6be6-467e-8e77-37cf73cda2c1"
     }
   ],
   "proxyMode": false,

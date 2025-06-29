@@ -269,9 +269,9 @@ export class HomeComponent {
 
   showEventEmbedDeleteDialog(event: Event) {
     this.confirmationService.confirm({
-      message: `Do you want to delete the embed for the event: ${event.name}?`,
-      header: 'Delete Event Embed',
-      icon: 'pi pi-calendar',
+      message: `Do you want to refresh the embed for the event: ${event.name}?`,
+      header: 'Refresh Event Embed',
+      icon: 'pi pi-refresh',
       closeOnEscape: true,
       closable: true,
       rejectLabel: 'Cancel',
@@ -280,7 +280,7 @@ export class HomeComponent {
         severity: 'secondary',
       },
       acceptButtonProps: {
-        label: 'Delete',
+        label: 'Refresh',
       },
       accept: () => {
         this.storeService.deleteEventEmbed(event.eventId)

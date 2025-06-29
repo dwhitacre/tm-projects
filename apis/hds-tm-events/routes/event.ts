@@ -128,24 +128,43 @@ class EventRoute extends Route {
     const externalEmbed = await req.services.external.get(event);
     if (!externalEmbed) return ApiResponse.noContent(req);
 
-    try {
-      let embed: Embed | undefined = await req.services.external.downloadImage(
-        Embed.fromExternalEmbed(externalEmbed),
-        req.tmpdir
-      );
-      if (!embed) return ApiResponse.noContent(req);
+    let embed: Embed | undefined;
 
-      embed.host = req.hostname;
-      embed = await req.services.embed.upsert(eventId, embed);
-      if (!embed) return ApiResponse.serverError(req);
-
-      return getMetaParam
-        ? ApiResponse.ok(req, { embed: embed.toJson() })
-        : ApiResponse.stream(req, embed.streamBlob(req.tmpdir));
-    } catch (error) {
-      req.logger.warn("Failed to get embed", { error });
-      return ApiResponse.noContent(req);
+    if (externalEmbed.image) {
+      try {
+        embed = await req.services.external.downloadImage(
+          Embed.fromExternalEmbed(externalEmbed),
+          req.tmpdir
+        );
+      } catch (error) {
+        req.logger.warn("Failed to get embed, trying apple icon", { error });
+      }
     }
+
+    if (externalEmbed.appleTouchIcon) {
+      try {
+        embed = await req.services.external.downloadImage(
+          Embed.fromExternalEmbed({
+            ...externalEmbed,
+            image: externalEmbed.appleTouchIcon,
+            imageExtension: externalEmbed.appleTouchIconExtension,
+          }),
+          req.tmpdir
+        );
+      } catch (error) {
+        req.logger.warn("Failed to get apple touch icon", { error });
+      }
+    }
+
+    if (!embed) return ApiResponse.noContent(req);
+
+    embed.host = req.hostname;
+    embed = await req.services.embed.upsert(eventId, embed);
+    if (!embed) return ApiResponse.serverError(req);
+
+    return getMetaParam
+      ? ApiResponse.ok(req, { embed: embed.toJson() })
+      : ApiResponse.stream(req, embed.streamBlob(req.tmpdir));
   }
 }
 

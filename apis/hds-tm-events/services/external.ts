@@ -3,6 +3,7 @@ import type ApiRequest from "../domain/apirequest";
 import type { Embed } from "../domain/embed";
 import type { Event } from "../domain/event";
 import type { ExternalEmbed } from "../domain/externalembed";
+import { Image } from "../domain/image";
 import * as cheerio from "cheerio";
 
 const allowedImageExtensions = ["png", "jpg", "jpeg", "gif", "webp", "svg"];
@@ -27,7 +28,7 @@ export class ExternalService {
   }
 
   async get(event: Event): Promise<ExternalEmbed | undefined> {
-    const response = await this.call(`${event.externalUrl}/index.html`);
+    const response = await this.call(`${event.externalUrl}`);
     const text = await response.text();
 
     const $ = cheerio.load(text);
@@ -37,20 +38,29 @@ export class ExternalService {
       $(`meta[name='${property}']`).attr("content") ||
       "";
 
+    const getLink = (rel: string) => $(`link[rel='${rel}']`).attr("href") || "";
+
     const title = getMeta("og:title") || $("title").text().trim() || "";
     const description =
       getMeta("og:description") || getMeta("description") || "";
     const url = getMeta("og:url") || event.externalUrl;
 
-    let image = getMeta("og:image") || "";
+    let appleTouchIcon = getLink("apple-touch-icon") || "";
+    appleTouchIcon = appleTouchIcon
+      ? `${event.externalUrl}/${appleTouchIcon}`
+      : "";
+    let appleTouchIconExtension =
+      appleTouchIcon.split(".").pop()?.toLowerCase() ?? "";
+
+    let image = getMeta("og:image") || getLink("image") || "";
     let imageExtension = image.split(".").pop()?.toLowerCase() ?? "";
 
-    if (
-      !image ||
-      !imageExtension ||
-      !allowedImageExtensions.includes(imageExtension)
-    )
-      return undefined;
+    if (!allowedImageExtensions.includes(imageExtension)) return undefined;
+
+    if (!allowedImageExtensions.includes(appleTouchIconExtension)) {
+      appleTouchIcon = "";
+      appleTouchIconExtension = "";
+    }
 
     const json: ExternalEmbed = {
       eventId: event.eventId,
@@ -60,6 +70,8 @@ export class ExternalService {
       imageExtension,
       url,
       type: "website",
+      appleTouchIcon,
+      appleTouchIconExtension,
     };
 
     return json;
@@ -80,6 +92,20 @@ export class ExternalService {
     if (!blob.type.startsWith("image/")) {
       throw new Error(
         `Response from ${embed.image} is not of type image: ${blob.type}`
+      );
+    }
+
+    const arrayBuffer = await blob.arrayBuffer();
+    const buffer = Buffer.from(arrayBuffer);
+    const size = Image.getImageSizeFromBuffer(buffer);
+    if (!size) {
+      throw new Error(`Could not determine image size for ${embed.image}`);
+    }
+
+    const { width, height } = size;
+    if (width < 150 && height < 150) {
+      throw new Error(
+        `Image from ${embed.image} is not at least 150x150px (got ${width}x${height})`
       );
     }
 

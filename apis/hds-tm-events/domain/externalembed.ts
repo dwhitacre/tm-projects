@@ -8,4 +8,6 @@ export type ExternalEmbed = {
   imageExtension: string;
   url: string;
   type: "website";
+  appleTouchIcon: string;
+  appleTouchIconExtension: string;
 };
