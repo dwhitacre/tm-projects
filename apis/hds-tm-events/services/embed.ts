@@ -51,7 +51,7 @@ export class EmbedService {
       `
         update Embed
         set Title = $1, Description = $2, Image = $3, Url = $4, Type = $5, LocalImage = $6, Host = $7, DateModified = NOW(), DateExpired = $8
-        where EventId = $9
+        where EventId = $9 and Host = $7
         returning *
       `,
       [

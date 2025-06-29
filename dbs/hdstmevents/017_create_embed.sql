@@ -12,7 +12,7 @@ create table Embed(
   DateModified timestamp not null default now(),
   DateExpired timestamp not null,
   foreign key(EventId) references Event(EventId),
-  constraint embed_eventid_unique unique (EventId),
+  constraint embed_eventid_host_unique unique (EventId, Host),
   constraint embed_localimage_host_unique unique (LocalImage, Host)
 );
 
