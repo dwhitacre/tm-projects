@@ -82,6 +82,16 @@ export class EmbedService {
     return Embed.fromJson(result.rows[0]);
   }
 
+  async delete(eventId: Event["eventId"]) {
+    return this.db.delete(
+      `
+        delete from Embed
+        where EventId = $1
+      `,
+      [eventId]
+    );
+  }
+
   async deleteExpired(eventId: Event["eventId"]) {
     return this.db.delete(
       `

@@ -77,7 +77,7 @@ class EventRoute extends Route {
   }
 
   async embedHandle(req: ApiRequest): Promise<ApiResponse> {
-    if (!req.checkMethod(["get", "post"]))
+    if (!req.checkMethod(["get", "post", "delete"]))
       return ApiResponse.methodNotAllowed(req);
 
     const eventIdParam = req.getPathParam("eventId");
@@ -89,6 +89,15 @@ class EventRoute extends Route {
     const event = await req.services.event.get(eventId);
     if (!event) return ApiResponse.badRequest(req);
     if (!event.externalUrl) return ApiResponse.noContent(req);
+
+    if (req.checkMethod("delete")) {
+      if (!req.checkPermission("admin")) return ApiResponse.forbidden(req);
+
+      const deleted = await req.services.embed.delete(eventId);
+      if (!deleted) return ApiResponse.badRequest(req);
+
+      return ApiResponse.ok(req);
+    }
 
     if (req.checkMethod("post")) {
       if (!req.checkPermission("admin")) return ApiResponse.forbidden(req);
@@ -107,11 +116,13 @@ class EventRoute extends Route {
       eventEmbed &&
       eventEmbed.dateExpired &&
       eventEmbed.dateExpired < new Date();
+    const getMetaParam = req.getQueryParam("meta");
 
     if (eventEmbedExpired) await req.services.embed.deleteExpired(eventId);
     else if (eventEmbed) {
-      await eventEmbed.hydrateBlob(req.tmpdir);
-      return ApiResponse.ok(req, { embed: eventEmbed.toJson() });
+      return getMetaParam
+        ? ApiResponse.ok(req, { embed: eventEmbed.toJson() })
+        : ApiResponse.stream(req, eventEmbed.streamBlob(req.tmpdir));
     }
 
     const externalEmbed = await req.services.external.get(event);
@@ -128,8 +139,9 @@ class EventRoute extends Route {
       embed = await req.services.embed.upsert(eventId, embed);
       if (!embed) return ApiResponse.serverError(req);
 
-      await embed.hydrateBlob(req.tmpdir);
-      return ApiResponse.ok(req, { embed: embed.toJson() });
+      return getMetaParam
+        ? ApiResponse.ok(req, { embed: embed.toJson() })
+        : ApiResponse.stream(req, embed.streamBlob(req.tmpdir));
     } catch (error) {
       req.logger.warn("Failed to get embed", { error });
       return ApiResponse.noContent(req);

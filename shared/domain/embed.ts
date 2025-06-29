@@ -5,10 +5,7 @@ export interface Embed {
   image: string;
   url: string;
   type: "website";
-  localImage: string;
-  host: string;
   dateCreated?: Date;
   dateModified?: Date;
   dateExpired?: Date;
-  blob?: string;
 }

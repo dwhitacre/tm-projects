@@ -7,6 +7,7 @@ import { Team } from 'src/domain/team'
 import { ConfirmationService } from 'primeng/api'
 import { Event } from 'src/domain/event'
 import { Post } from 'src/domain/post'
+import { map, Observable, tap } from 'rxjs'
 
 @Component({
   selector: 'home',
@@ -60,8 +61,10 @@ import { Post } from 'src/domain/post'
                 <event-panel
                   [showContextMenu]="(storeService.isAdmin$ | async) ?? false"
                   [event]="event"
+                  [eventEmbed]="getEventEmbed$(event) | async"
                   (edit)="showEventDialog(event, true)"
                   (delete)="showEventDeleteDialog(event)"
+                  (embedDelete)="showEventEmbedDeleteDialog(event)"
                 ></event-panel>
               </div>
             </ng-container>
@@ -165,10 +168,21 @@ export class HomeComponent {
   selectedPost: Post | undefined
   selectedPostEditMode: boolean = false
 
+  private eventEmbedObservables: { [eventId: number]: Observable<Blob | null> } = {}
+
   constructor(
     public storeService: StoreService,
     private confirmationService: ConfirmationService,
   ) {}
+
+  getEventEmbed$(event: Event) {
+    if (!this.eventEmbedObservables[event.eventId]) {
+      this.eventEmbedObservables[event.eventId] = this.storeService.eventEmbeds$.pipe(
+        map((embeds) => embeds[event.eventId] ?? null),
+      )
+    }
+    return this.eventEmbedObservables[event.eventId]
+  }
 
   showTeamDialog(team?: Team, editMode: boolean = false) {
     this.selectedTeam =
@@ -249,6 +263,27 @@ export class HomeComponent {
       },
       accept: () => {
         this.storeService.deleteEvent(event)
+      },
+    })
+  }
+
+  showEventEmbedDeleteDialog(event: Event) {
+    this.confirmationService.confirm({
+      message: `Do you want to delete the embed for the event: ${event.name}?`,
+      header: 'Delete Event Embed',
+      icon: 'pi pi-calendar',
+      closeOnEscape: true,
+      closable: true,
+      rejectLabel: 'Cancel',
+      rejectButtonProps: {
+        label: 'Cancel',
+        severity: 'secondary',
+      },
+      acceptButtonProps: {
+        label: 'Delete',
+      },
+      accept: () => {
+        this.storeService.deleteEventEmbed(event.eventId)
       },
     })
   }

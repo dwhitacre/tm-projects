@@ -414,11 +414,17 @@ export class HdstmEventsClient extends Client {
     return this.httpDelete(`/api/event/${eventId}/player`, { accountId });
   }
 
-  getEventEmbed(eventId: Event["eventId"]) {
-    return this.httpGet<EventEmbedResponse>(`/api/event/${eventId}/embed`);
+  getEventEmbedMeta(eventId: Event["eventId"]) {
+    return this.httpGet<EventEmbedResponse>(
+      `/api/event/${eventId}/embed?meta=true`
+    );
   }
 
   updateEventEmbed(eventId: Event["eventId"], embed: Partial<Embed>) {
     return this.httpPost(`/api/event/${eventId}/embed`, embed);
+  }
+
+  deleteEventEmbed(eventId: Event["eventId"]) {
+    return this.httpDelete(`/api/event/${eventId}/embed`);
   }
 }

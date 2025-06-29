@@ -116,8 +116,8 @@ all_post AS (
   INSERT INTO Event (Name, Description, DateStart, DateEnd, ExternalUrl, Image, IsVisible, SortOrder, DateCreated, DateModified, OrganizationId)
   SELECT v.Name, v.Description, v.DateStart, v.DateEnd, v.ExternalUrl, v.Image, v.IsVisible, v.SortOrder, v.DateCreated::timestamp, v.DateModified::timestamp, o.OrganizationId
   FROM (VALUES
-    ('Trackmania World Championship 2025', 'The most prestigious Trackmania event of the year.', '2025-06-10'::timestamp, '2025-06-20'::timestamp, 'https://trackmania.io/world-championship-2025', 'assets/images/hds-events-nobg.png', true, 1, '2024-12-15', '2025-01-20'),
-    ('Trackmania Summer League', 'A summer-long league for Trackmania enthusiasts.', '2025-07-01'::timestamp, '2025-08-31'::timestamp, 'https://trackmania.io/summer-league-2025', 'assets/images/holydynasty.png', true, 2, '2025-01-25', '2025-03-10')
+    ('Trackmania World Championship 2025', 'The most prestigious Trackmania event of the year.', '2025-06-10'::timestamp, '2025-06-20'::timestamp, 'http://localhost:8102/2000', 'assets/images/hds-events-nobg.png', true, 1, '2024-12-15', '2025-01-20'),
+    ('Trackmania Summer League', 'A summer-long league for Trackmania enthusiasts.', '2025-07-01'::timestamp, '2025-08-31'::timestamp, 'http://localhost:8102/2006', 'assets/images/holydynasty.png', true, 2, '2025-01-25', '2025-03-10')
   ) AS v(Name, Description, DateStart, DateEnd, ExternalUrl, Image, IsVisible, SortOrder, DateCreated, DateModified)
   CROSS JOIN all_organization o
   ON CONFLICT DO NOTHING
@@ -325,6 +325,7 @@ SELECT 1;
 
 ---- create above / drop below ----
 
+DELETE FROM Embed;
 DELETE FROM EventPlayer;
 DELETE FROM PostTag;
 DELETE FROM Tag;

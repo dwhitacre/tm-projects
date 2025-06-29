@@ -76,14 +76,14 @@ export class ExternalService {
       );
     }
 
-    const blob = await response.text();
-    if (!blob.length) {
-      throw new Error(`Response from ${embed.image} has length 0: ${blob}`);
+    const blob = await response.blob();
+    if (!blob.type.startsWith("image/")) {
+      throw new Error(
+        `Response from ${embed.image} is not of type image: ${blob.type}`
+      );
     }
 
     await Bun.write(join(tmpdir, embed.localImage), blob);
-
-    embed.blob = blob;
     return embed;
   }
 }

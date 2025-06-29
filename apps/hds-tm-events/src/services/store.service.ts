@@ -31,6 +31,7 @@ import { Organization } from 'src/domain/organization'
 import { TeamRoleService } from './teamrole.service'
 import { TagService } from './tag.service'
 import { OrganizationService } from './organization.service'
+import { Embed } from 'src/domain/embed'
 
 export interface StoreState {
   leaderboard: Leaderboard
@@ -58,6 +59,7 @@ export interface StoreState {
   tags: Array<Tag>
   teamRoles: Array<TeamRole>
   players: Array<Player>
+  eventEmbeds: { [eventId: Event['eventId']]: Blob | undefined }
 }
 
 @Injectable({ providedIn: 'root' })
@@ -83,6 +85,7 @@ export class StoreService extends ComponentStore<StoreState> {
   readonly posts$ = this.select((state) => state.posts)
   readonly events$ = this.select((state) => state.events)
   readonly players$ = this.select((state) => state.players)
+  readonly eventEmbeds$ = this.select((state) => state.eventEmbeds)
 
   readonly leaderboardPlayers$ = this.select((state) =>
     state.leaderboard.players.sort((playerA, playerB) => {
@@ -393,6 +396,7 @@ export class StoreService extends ComponentStore<StoreState> {
       tags: [],
       teamRoles: [],
       players: [],
+      eventEmbeds: {},
     })
 
     this.fetchFeatureToggles()
@@ -864,7 +868,10 @@ export class StoreService extends ComponentStore<StoreState> {
       switchMap((organizationId) =>
         this.eventService.getAll(organizationId).pipe(
           tapResponse({
-            next: (res) => this.patchState({ events: res.events }),
+            next: (res) => {
+              this.patchState({ events: res.events })
+              res.events.forEach((event) => this.fetchEventEmbed(event.eventId))
+            },
             error: (error: HttpErrorResponse) => this.logService.error(error),
           }),
         ),
@@ -1128,6 +1135,48 @@ export class StoreService extends ComponentStore<StoreState> {
               this.patchState({ players: res })
             },
             error: (error: HttpErrorResponse) => this.logService.error(error),
+          }),
+        ),
+      ),
+    )
+  })
+
+  readonly fetchEventEmbed = this.effect<Event['eventId']>((eventId$) => {
+    return eventId$.pipe(
+      mergeMap((eventId) =>
+        this.eventService.getEmbed(eventId).pipe(
+          tapResponse({
+            next: (embedResponse) => {
+              if (embedResponse) {
+                this.patchState((state) => ({
+                  eventEmbeds: {
+                    ...state.eventEmbeds,
+                    [eventId]: embedResponse,
+                  },
+                }))
+              }
+            },
+            error: (error: HttpErrorResponse) => this.logService.error(error),
+          }),
+        ),
+      ),
+    )
+  })
+
+  readonly deleteEventEmbed = this.effect<Event['eventId']>((eventId$) => {
+    return eventId$.pipe(
+      switchMap((eventId) =>
+        this.eventService.deleteEmbed(eventId).pipe(
+          tapResponse({
+            next: () => {
+              this.patchState((state) => {
+                const { [eventId]: _, ...eventEmbeds } = state.eventEmbeds
+                return { eventEmbeds }
+              })
+              this.logService.success('Success', `Deleted embed for event: ${eventId}`, false)
+            },
+            error: (error: HttpErrorResponse) => this.logService.error(error),
+            finalize: () => this.fetchEventEmbed(eventId),
           }),
         ),
       ),

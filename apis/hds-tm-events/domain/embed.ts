@@ -16,7 +16,6 @@ export class Embed {
   dateCreated?: Date;
   dateModified?: Date;
   dateExpired?: Date;
-  blob?: string;
 
   static fromJson(json: JsonObject): Embed {
     json = Json.lowercaseKeys(json);
@@ -56,13 +55,12 @@ export class Embed {
 
   constructor() {}
 
-  async hydrateBlob(tmpdir: string): Promise<Embed> {
+  streamBlob(tmpdir: string): ReadableStream {
     if (!this.localImage) {
       throw new Error("Local image path is not set.");
     }
 
-    this.blob = await Bun.file(join(tmpdir, this.localImage)).text();
-    return this;
+    return Bun.file(join(tmpdir, this.localImage)).stream();
   }
 
   toJson(): JsonObject {
@@ -73,9 +71,6 @@ export class Embed {
       image: this.image,
       url: this.url,
       type: this.type,
-      localImage: this.localImage,
-      host: this.host,
-      blob: this.blob,
       dateCreated: this.dateCreated,
       dateModified: this.dateModified,
       dateExpired: this.dateExpired,
