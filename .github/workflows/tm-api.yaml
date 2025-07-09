@@ -5,6 +5,7 @@ on:
       - .github/workflows/tm-api.yaml
       - apis/tm-api/**
       - charts/tm-api/**
+      - environment/prod/tm-api.values.yaml
       # - dbs/tmapi/**
       # - sims/**
       # - tests/tm-api/**
@@ -53,4 +54,4 @@ jobs:
         run: |
           doctl kubernetes cluster kubeconfig save --expiry-seconds 240 ${{ secrets.DIGITALOCEAN_CLUSTER_NAME }}
           helm dependency update ./charts/tm-api
-          helm -n tm-api upgrade --install --wait --timeout 180s --atomic tm-api ./charts/tm-api/
+          helm -n tm-api upgrade --install --wait --timeout 180s --atomic tm-api ./charts/tm-api/ -f ./environment/prod/tm-api.values.yaml

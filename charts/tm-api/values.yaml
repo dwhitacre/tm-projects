@@ -1,4 +1,4 @@
-replicaCount: 2
+replicaCount: 1
 maxUnavailable: 1
 
 api:
@@ -8,16 +8,13 @@ api:
     tag: latest
   resources:
     limits:
-      cpu: 250m
-      memory: 256Mi
-    requests:
       cpu: 100m
       memory: 128Mi
   service:
     port: 8081
   securityContext: {}
 
-tmioUrl: https://trackmania.io
+tmioUrl: http://tmiosim:8100
 
 imagePullSecrets:
   - name: danonthemoon-ips
@@ -36,17 +33,10 @@ service:
   type: ClusterIP
 
 ingress:
-  enabled: true
-  annotations:
-    kubernetes.io/ingress.class: nginx
-    cert-manager.io/cluster-issuer: "letsencrypt-prod"
-    nginx.ingress.kubernetes.io/from-to-www-redirect: "true"
-  hosts:
-    - host: tm-api.danonthemoon.dev
-  tls:
-    - hosts:
-        - tm-api.danonthemoon.dev
-      secretName: tm-api-danonthemoondev-tls
+  enabled: false
+  annotations: {}
+  hosts: []
+  tls: []
 
 nodeSelector: {}
 tolerations: []
