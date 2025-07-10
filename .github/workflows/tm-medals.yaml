@@ -5,6 +5,7 @@ on:
       - .github/workflows/tm-medals.yaml
       - apis/tm-medals/**
       - charts/tm-medals/**
+      - environment/prod/tm-medals.values.yaml
       # - dbs/tmmedals/**
       # - plugins/player-medals/**
       # - tests/tm-medals/**
@@ -42,4 +43,4 @@ jobs:
         run: |
           doctl kubernetes cluster kubeconfig save --expiry-seconds 240 ${{ secrets.DIGITALOCEAN_CLUSTER_NAME }}
           helm dependency update ./charts/tm-medals
-          helm -n tm-medals upgrade --install --wait --timeout 60s --atomic tm-medals ./charts/tm-medals/
+          helm -n tm-medals upgrade --install --wait --timeout 60s --atomic tm-medals ./charts/tm-medals/ -f ./environment/prod/tm-medals.values.yaml

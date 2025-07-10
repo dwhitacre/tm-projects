@@ -1,4 +1,4 @@
-replicaCount: 2
+replicaCount: 1
 maxUnavailable: 1
 
 api:
@@ -8,9 +8,6 @@ api:
     tag: latest
   resources:
     limits:
-      cpu: 250m
-      memory: 512Mi
-    requests:
       cpu: 100m
       memory: 128Mi
   service:
@@ -34,19 +31,10 @@ service:
   type: ClusterIP
 
 ingress:
-  enabled: true
-  annotations:
-    kubernetes.io/ingress.class: nginx
-    cert-manager.io/cluster-issuer: "letsencrypt-prod"
-    nginx.ingress.kubernetes.io/from-to-www-redirect: "true"
-  hosts:
-    - host: tm-medals.danonthemoon.dev
-    - host: www.tm-medals.danonthemoon.dev
-  tls:
-    - hosts:
-        - tm-medals.danonthemoon.dev
-        - www.tm-medals.danonthemoon.dev
-      secretName: tm-medals-tls
+  enabled: false
+  annotations: {}
+  hosts: []
+  tls: []
   directs: []
 
 nodeSelector: {}
