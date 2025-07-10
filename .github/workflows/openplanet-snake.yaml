@@ -6,6 +6,7 @@ on:
       - apis/openplanet-snake/**
       - charts/openplanet-snake/**
       - dbs/openplanetsnake/**
+      - environment/prod/openplanet-snake.values.yaml
       # - plugins/snake/**
       # - sims/**
       # - tests/openplanet-snake/**
@@ -43,4 +44,4 @@ jobs:
         run: |
           doctl kubernetes cluster kubeconfig save --expiry-seconds 240 ${{ secrets.DIGITALOCEAN_CLUSTER_NAME }}
           helm dependency update ./charts/openplanet-snake
-          helm -n openplanet-snake upgrade --install --wait --timeout 60s --atomic openplanet-snake ./charts/openplanet-snake/
+          helm -n openplanet-snake upgrade --install --wait --timeout 60s --atomic openplanet-snake ./charts/openplanet-snake/ -f ./environment/prod/openplanet-snake.values.yaml
