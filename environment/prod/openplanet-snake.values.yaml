@@ -1,4 +1,4 @@
-replicaCount: 2
+replicaCount: 0
 maxUnavailable: 1
 
 api:
