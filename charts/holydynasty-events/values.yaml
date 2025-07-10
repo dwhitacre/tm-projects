@@ -1,4 +1,4 @@
-replicaCount: 2
+replicaCount: 1
 maxUnavailable: 1
 
 app:
@@ -8,9 +8,6 @@ app:
     tag: latest
   resources:
     limits:
-      cpu: 250m
-      memory: 256Mi
-    requests:
       cpu: 100m
       memory: 128Mi
   service:
@@ -24,16 +21,13 @@ api:
     tag: latest
   resources:
     limits:
-      cpu: 250m
-      memory: 256Mi
-    requests:
       cpu: 100m
       memory: 128Mi
   service:
     port: 8081
   securityContext: {}
 
-tmioUrl: https://trackmania.io
+tmioUrl: http://tmiosim:8100
 discordInviteUrl: https://discord.gg/yR5EtqAWW7
 
 imagePullSecrets:
@@ -53,22 +47,11 @@ service:
   type: ClusterIP
 
 ingress:
-  enabled: true
-  annotations:
-    kubernetes.io/ingress.class: nginx
-    cert-manager.io/cluster-issuer: "letsencrypt-prod"
-    nginx.ingress.kubernetes.io/from-to-www-redirect: "true"
-  hosts:
-    - host: holydynasty.events
-    - host: www.holydynasty.events
-  tls:
-    - hosts:
-        - holydynasty.events
-        - www.holydynasty.events
-        - join.holydynasty.events
-      secretName: holydynasty-events-tls
-  directs:
-    - host: join.holydynasty.events
+  enabled: false
+  annotations: {}
+  hosts: []
+  tls: []
+  directs: []
 
 nodeSelector: {}
 tolerations: []

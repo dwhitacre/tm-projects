@@ -7,6 +7,7 @@ on:
       - apps/hds-tm-events/**
       - charts/holydynasty-events/**
       - dbs/hsdtmevents/**
+      - environment/prod/holydynasty-events.values.yaml
       # - plugins/hds-bounty/**
       # - sims/**
       # - tests/hds-tm-events/**
@@ -61,4 +62,4 @@ jobs:
         run: |
           doctl kubernetes cluster kubeconfig save --expiry-seconds 240 ${{ secrets.DIGITALOCEAN_CLUSTER_NAME }}
           helm dependency update ./charts/holydynasty-events
-          helm -n holydynasty-events upgrade --install --wait --timeout 60s --atomic holydynasty-events ./charts/holydynasty-events/
+          helm -n holydynasty-events upgrade --install --wait --timeout 60s --atomic holydynasty-events ./charts/holydynasty-events/ -f ./environment/prod/holydynasty-events.values.yaml
