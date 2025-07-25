@@ -17,14 +17,16 @@ import { map, Observable, tap } from 'rxjs'
         <div class="column teams">
           <ng-container *ngIf="storeService.teams$ | async as teams">
             <ng-container *ngIf="teams.length > 0; else noTeams">
-              <div *ngFor="let team of teams" class="team-group">
-                <team-panel
-                  [showContextMenu]="(storeService.isAdmin$ | async) ?? false"
-                  [team]="team"
-                  (edit)="showTeamDialog(team, true)"
-                  (delete)="showTeamDeleteDialog(team)"
-                ></team-panel>
-              </div>
+              <ng-container *ngFor="let team of teams">
+                <div *ngIf="team.isVisible || (storeService.isAdmin$ | async)" class="team-group">
+                  <team-panel
+                    [showContextMenu]="(storeService.isAdmin$ | async) ?? false"
+                    [team]="team"
+                    (edit)="showTeamDialog(team, true)"
+                    (delete)="showTeamDeleteDialog(team)"
+                  ></team-panel>
+                </div>
+              </ng-container>
             </ng-container>
           </ng-container>
           <ng-template #noTeams>
@@ -37,14 +39,16 @@ import { map, Observable, tap } from 'rxjs'
         <div class="column posts">
           <ng-container *ngIf="storeService.posts$ | async as posts">
             <ng-container *ngIf="posts.length > 0; else noPosts">
-              <div *ngFor="let post of posts">
-                <post-panel
-                  [post]="post"
-                  [showContextMenu]="(storeService.isAdmin$ | async) ?? false"
-                  (edit)="showPostDialog(post, true)"
-                  (delete)="showPostDeleteDialog(post)"
-                ></post-panel>
-              </div>
+              <ng-container *ngFor="let post of posts">
+                <div *ngIf="post.isVisible || (storeService.isAdmin$ | async)">
+                  <post-panel
+                    [post]="post"
+                    [showContextMenu]="(storeService.isAdmin$ | async) ?? false"
+                    (edit)="showPostDialog(post, true)"
+                    (delete)="showPostDeleteDialog(post)"
+                  ></post-panel>
+                </div>
+              </ng-container>
             </ng-container>
           </ng-container>
           <ng-template #noPosts>
@@ -57,16 +61,18 @@ import { map, Observable, tap } from 'rxjs'
         <div class="column events">
           <ng-container *ngIf="storeService.events$ | async as events">
             <ng-container *ngIf="events.length > 0; else noEvents">
-              <div *ngFor="let event of events" class="event-card">
-                <event-panel
-                  [showContextMenu]="(storeService.isAdmin$ | async) ?? false"
-                  [event]="event"
-                  [eventEmbed]="getEventEmbed$(event) | async"
-                  (edit)="showEventDialog(event, true)"
-                  (delete)="showEventDeleteDialog(event)"
-                  (embedDelete)="showEventEmbedDeleteDialog(event)"
-                ></event-panel>
-              </div>
+              <ng-container *ngFor="let event of events">
+                <div *ngIf="event.isVisible || (storeService.isAdmin$ | async)" class="event-card">
+                  <event-panel
+                    [showContextMenu]="(storeService.isAdmin$ | async) ?? false"
+                    [event]="event"
+                    [eventEmbed]="getEventEmbed$(event) | async"
+                    (edit)="showEventDialog(event, true)"
+                    (delete)="showEventDeleteDialog(event)"
+                    (embedDelete)="showEventEmbedDeleteDialog(event)"
+                  ></event-panel>
+                </div>
+              </ng-container>
             </ng-container>
           </ng-container>
           <ng-template #noEvents>

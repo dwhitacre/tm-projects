@@ -10,7 +10,7 @@ import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser'
   selector: 'post',
   template: `
     <layout [title]="'Holy Dynasty'" [showWeeklyLeagueMenuItems]="false">
-      <div *ngIf="post; else noPost" class="post-container">
+      <div *ngIf="post && (post.isVisible || (storeService.isAdmin$ | async)); else noPost" class="post-container">
         <img [src]="post.image" alt="Post Image" class="post-image" />
         <div class="post-data">
           <h1>{{ post.title }}</h1>
