@@ -4,7 +4,9 @@ import auth from "./auth";
 import config from "./config";
 import gamemodes from "./gamemodes";
 import gamemodescores from "./gamemodescores";
+import initializedefaults from "./initializedefaults";
 import leaderboardgamemodes from "./leaderboardgamemodes";
+import leaderboardrankings from "./leaderboardrankings";
 import leaderboards from "./leaderboards";
 import me from "./me";
 import players from "./players";
@@ -26,8 +28,12 @@ async function handle(req: ApiRequest): Promise<ApiResponse> {
       response = await leaderboards.handle(req);
     else if (req.url.pathname === "/gamemodes")
       response = await gamemodes.handle(req);
+    else if (req.url.pathname === "/initializedefaults")
+      response = await initializedefaults.handle(req);
     else if (req.url.pathname === "/leaderboardgamemodes")
       response = await leaderboardgamemodes.handle(req);
+    else if (req.url.pathname === "/leaderboardrankings")
+      response = await leaderboardrankings.handle(req);
     else if (req.url.pathname === "/gamemodescores")
       response = await gamemodescores.handle(req);
     else response = await Route.defaultHandle(req);

@@ -11,6 +11,8 @@ import {
 import type {
   LeaderboardGameMode,
   LeaderboardGameModesResponse,
+  LeaderboardRanking,
+  LeaderboardRankingsResponse,
   SnakeLeaderboard,
   SnakeLeaderboardsResponse,
 } from "../domain/leaderboard";
@@ -92,6 +94,15 @@ export class SnakeClient extends Client {
     return this.httpPost(`/leaderboards`, leaderboard);
   }
 
+  getLeaderboardRankings(
+    leaderboardId: SnakeLeaderboard["id"],
+    gameModeId: LeaderboardGameMode["gameModeId"]
+  ) {
+    return this.httpGet<LeaderboardRankingsResponse>(
+      `/leaderboardrankings?leaderboardId=${leaderboardId}&gameModeId=${gameModeId}`
+    );
+  }
+
   getGameModeScores(
     gameModeId: GameMode["id"],
     gameModeScoreType: GameModeScoreType = GameModeScoreType.PlayerCurrentBest
@@ -107,5 +118,9 @@ export class SnakeClient extends Client {
 
   deleteGameModeScore(scoreId: GameModeScore["id"]) {
     return this.httpDelete(`/gamemodescores?scoreId=${scoreId}`);
+  }
+
+  initializeDefaults() {
+    return this.httpPost(`/initializedefaults`, {});
   }
 }

@@ -51,3 +51,16 @@ export interface LeaderboardGameModesResponse extends ApiResponse {
 export interface SnakeLeaderboardsResponse extends ApiResponse {
   leaderboards: Array<SnakeLeaderboard>;
 }
+
+export interface LeaderboardRanking {
+  position: number;
+  accountId: string;
+  playerName: string;
+  displayName: string;
+  score: number;
+  dateModified: Date;
+}
+
+export interface LeaderboardRankingsResponse extends ApiResponse {
+  rankings: Array<LeaderboardRanking>;
+}
