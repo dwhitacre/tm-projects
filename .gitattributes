@@ -1,1 +1,2 @@
 *.lockb binary diff=lockb
+dbs/init-user-db.sh text eol=lf
