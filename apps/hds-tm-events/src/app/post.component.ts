@@ -31,7 +31,7 @@ import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser'
                 <p
                   [ngClass]="{
                     'post-content-indented': paragraph.startsWith('\\t'),
-                    'post-content-centered': paragraph.startsWith('https://www.youtube-nocookie.com'),
+                    'post-content-centered': paragraph.startsWith('https://www.youtube-nocookie.com') || paragraph.startsWith('image://'),
                   }"
                 >
                   <ng-container *ngIf="paragraph.match(boldedPrefixRegex) as prefix; else notboldedPrefix">
@@ -40,7 +40,7 @@ import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser'
                   </ng-container>
                   <ng-template #notboldedPrefix>
                     <ng-container
-                      *ngIf="paragraph.startsWith('https://www.youtube-nocookie.com'); else normalParagraph"
+                      *ngIf="paragraph.startsWith('https://www.youtube-nocookie.com'); else checkImage"
                     >
                       <iframe
                         width="100%"
@@ -53,6 +53,16 @@ import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser'
                         allowfullscreen
                       ></iframe>
                     </ng-container>
+                    <ng-template #checkImage>
+                      <ng-container *ngIf="paragraph.startsWith('image://'); else normalParagraph">
+                        <img
+                          [src]="getImageUrl(paragraph)"
+                          [alt]="getImageCaption(paragraph)"
+                          class="embedded-image"
+                        />
+                        <div *ngIf="getImageCaption(paragraph)" class="image-caption">{{ getImageCaption(paragraph) }}</div>
+                      </ng-container>
+                    </ng-template>
                   </ng-template>
                   <ng-template #normalParagraph>{{ paragraph }}</ng-template>
                 </p>
@@ -131,9 +141,27 @@ import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser'
       .post-content p.post-content-centered {
         justify-content: center;
         display: flex;
+        flex-direction: column;
+        align-items: center;
       }
       .post-content p.post-content-indented {
         text-indent: 2em;
+      }
+      .embedded-image {
+        width: 100%;
+        max-width: 650px;
+        height: auto;
+        border-radius: 8px;
+        box-shadow: 0 4px 16px 0 rgba(0, 0, 0, 0.15);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+      }
+      .image-caption {
+        text-align: center;
+        font-style: italic;
+        color: #aaaaaa;
+        font-size: 0.9em;
+        margin-top: 8px;
+        margin-bottom: 16px;
       }
     `,
   ],
@@ -160,5 +188,15 @@ export class PostComponent {
 
   getSafeUrl(url: string): SafeResourceUrl {
     return this.sanitizer.bypassSecurityTrustResourceUrl(url)
+  }
+
+  getImageUrl(paragraph: string): string {
+    const match = paragraph.match(/^image:\/\/([^\s]+)/)
+    return match ? match[1] : ''
+  }
+
+  getImageCaption(paragraph: string): string {
+    const match = paragraph.match(/^image:\/\/[^\s]+\s+(.+)$/)
+    return match ? match[1].trim() : ''
   }
 }
