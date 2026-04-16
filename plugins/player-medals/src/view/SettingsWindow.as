@@ -140,7 +140,8 @@ namespace View {
             }
 
             Services::Settings.options.baseUrl = UI::InputText("Base Url", Services::Settings.options.baseUrl);
-            Services::Settings.options.apikey = UI::InputText("API Key", Services::Settings.options.apikey, false, UI::InputTextFlags::Password);
+            bool apikeyChanged = false;
+            Services::Settings.options.apikey = UI::InputText("API Key", Services::Settings.options.apikey, apikeyChanged, UI::InputTextFlags::Password);
             auto value = UI::InputInt("Latency", Services::Settings.options.latency);
             if (value >= 0) Services::Settings.options.latency = value;
             Services::Settings.options.debug = UI::Checkbox("Debug", Services::Settings.options.debug);

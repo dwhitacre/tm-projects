@@ -8,3 +8,4 @@ siteid = 610
 [script]
 dependencies = ["NadeoServices"]
 optional_dependencies = ["mapinfo"]
+exports = ["src/Export.as"]
