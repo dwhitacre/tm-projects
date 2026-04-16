@@ -2,4 +2,3 @@
 *.op
 dist/
 gimp/
-src/shared
